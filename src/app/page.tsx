@@ -1,12 +1,10 @@
 export default function Home() {
   return (
-    <div className="bg-black grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start text-white">
-      <div className="border border-gray-100">
-        hello
-      </div>
+    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 bg-black p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <main className="flex w-[800px] items-center flex-col gap-8 rounded-lg bg-stone-800 text-white sm:items-start mt-40">
+        <div className=" mt-10 rounded-xl p-2 mx-auto bg-green-500">Download Now 🔥</div>
+        <span className="text-6xl  text-center font-[800]">Download Linx VPN Software Today!</span>
       </main>
-     
     </div>
   );
 }
