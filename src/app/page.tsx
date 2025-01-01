@@ -6,15 +6,15 @@ import { Download } from 'lucide-react'
 
 export default function Home() {
   return (
-    <div className="font-poppins grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 bg-[#0f172a] p-8 pb-20 sm:p-20">
-      <Card className="mt-40 w-[800px] bg-[#1e293b] border-none text-white">
+    <div className="font-poppins min-h-screen flex items-center justify-center bg-[#0f172a] p-8 pb-20 sm:p-20">
+      <Card className="w-[800px] bg-[#1e293b] border-none text-white rounded-xl">
         <CardContent className="flex flex-col items-center gap-8 pt-10">
           <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-600/90 text-white">
-            Download Linx 🔥
+            Download Data Studio 🔥
           </Badge>
           
           <h1 className="text-center text-5xl font-[800] tracking-tight">
-            Download Linx VPN Software Today!
+            Download Data Studio Today!
           </h1>
           
           <p className="text-center text-muted-foreground max-w-[600px]">
@@ -34,7 +34,7 @@ export default function Home() {
             </Select>
 
             <Button className="bg-emerald-600 hover:bg-emerald-600/90">
-              <Download className="mr-2 h-4 w-4" /> Download VPN
+              <Download className="mr-2 h-4 w-4" /> Download Data Studio
             </Button>
           </div>
         </CardContent>
