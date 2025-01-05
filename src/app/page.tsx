@@ -17,7 +17,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-black via-zinc-900 to-black p-8 pb-20 font-poppins">
       <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#1f2937,transparent)]" />
       {/* Logo container with absolute positioning */}
-      <div className="absolute left-40 top-8">
+      <div className="absolute sm:left-40 sm:top-8">
         <Image src={logo} alt="logo" width={50} />
       </div>
       <div className="flex flex-1 items-center justify-center">
@@ -26,21 +26,21 @@ export default function Home() {
           <CardContent className="relative flex flex-col items-center gap-8 pt-10">
             <Badge
               variant="default"
-              className="animate-pulse bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-colors"
+              className="animate-pulse bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-colors "
             >
               Download Data Studio 🔥
             </Badge>
 
-            <h1 className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-center text-4xl font-[900] tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-center sm:text-4xl text-xl font-[900] tracking-tight text-transparent">
               Download Data Studio Today!
             </h1>
 
-            <p className="text-md max-w-[600px] text-center text-zinc-400">
+            <p className="sm:text-lg text-xs max-w-[600px] text-center text-zinc-400">
               Get instant access to secure browsing and content unblocking by
               downloading Data Studio app
             </p>
 
-            <div className="mb-8 mt-4 flex items-center gap-4">
+            <div className="mb-8 mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Select defaultValue="windows">
                 <SelectTrigger className="w-[180px] border-zinc-700 bg-zinc-800/50 backdrop-blur-sm transition-colors hover:bg-zinc-800">
                   <SelectValue placeholder="Select Platform" />
