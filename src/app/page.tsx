@@ -12,7 +12,7 @@ import { Download } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="font-poppins flex min-h-screen items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-black p-8 pb-20 sm:p-20">
+    <div className="font-poppins flex min-h-screen items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-black p-8 pb-20   ">
       <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#1f2937,transparent)]" />
       <Card className="relative w-[800px] overflow-hidden rounded-2xl border-white/5 bg-zinc-900/80 text-white shadow-2xl shadow-emerald-500/10 backdrop-blur-sm">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
@@ -24,11 +24,11 @@ export default function Home() {
             Download Data Studio 🔥
           </Badge>
 
-          <h1 className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-center text-6xl font-[800] tracking-tight text-transparent">
+          <h1 className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-center text-4xl font-[900] tracking-tight text-transparent ">
             Download Data Studio Today!
           </h1>
 
-          <p className="max-w-[600px] text-center text-lg text-zinc-400">
+          <p className="max-w-[600px] text-center text-md text-zinc-400">
             Get instant access to secure browsing and content unblocking by
             downloading Data Studio app
           </p>
@@ -46,7 +46,7 @@ export default function Home() {
             </Select>
 
             <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-105 hover:from-emerald-500 hover:to-emerald-400 hover:shadow-emerald-500/30">
-              <Download className="mr-2 h-4 w-4" /> Download
+              <Download className="h-4 w-4" /> Download
             </Button>
           </div>
         </CardContent>
