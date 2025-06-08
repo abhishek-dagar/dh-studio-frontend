@@ -561,7 +561,7 @@ export default function Features() {
                   </defs>
                 </svg>
               </span>
-            </h2>
+          </h2>
           </motion.div>
 
           {/* Description */}
@@ -608,7 +608,7 @@ export default function Features() {
 
               {/* Glass Effect Overlay */}
               <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100 dark:bg-white/5" />
-
+              
               {/* Content */}
               <div className="relative z-10 flex h-full flex-col">
                 {/* Icon Container */}
@@ -623,12 +623,12 @@ export default function Features() {
                     <div className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7">{feature.icon}</div>
                   </motion.div>
                 </div>
-
+                
                 {/* Title */}
                 <h3 className="mb-2 sm:mb-3 lg:mb-4 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-lg sm:text-xl font-semibold text-transparent transition-colors duration-300 group-hover:from-[#24B459] group-hover:to-[#63D68D] dark:from-white dark:to-gray-300">
                   {feature.title}
                 </h3>
-
+                
                 {/* Description */}
                 <p className="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300">
                   {feature.description}
@@ -648,4 +648,4 @@ export default function Features() {
       </div>
     </section>
   );
-}
+} 

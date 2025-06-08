@@ -44,18 +44,6 @@ const benefits = [
   },
 ];
 
-const draw = {
-  hidden: { pathLength: 0, opacity: 0 },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      pathLength: { duration: 2, bounce: 0 },
-      opacity: { duration: 0.01 }
-    }
-  }
-};
-
 export default function Benefits() {
   // Split benefits into inner and outer orbit groups
   const innerBenefits = benefits.slice(0, 2);
