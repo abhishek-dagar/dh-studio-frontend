@@ -53,7 +53,7 @@ export function Navbar() {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/80 dark:bg-[#1a1f2b]/80 backdrop-blur-lg shadow-lg"
+          ? "bg-white/80 dark:bg-[#191B1F]/80 backdrop-blur-lg shadow-lg"
           : "bg-transparent"
       }`}
     >
@@ -88,6 +88,18 @@ export function Navbar() {
               Home
             </Link>
             <Link
+              href="/features"
+              className="text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              href="/about"
+              className="text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
+            >
+              About Us
+            </Link>
+            <Link
               href="/download"
               className="text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
             >
@@ -98,15 +110,6 @@ export function Navbar() {
           {/* Right Side Items */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeSwitch />
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative group px-6 py-2 bg-gradient-to-r from-[#24B459] to-[#63D68D] text-white rounded-lg font-medium 
-                overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-[#24B459]/20"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#63D68D] to-[#24B459] opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
-              <span className="relative">Get Started</span>
-            </motion.button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -167,12 +170,6 @@ export function Navbar() {
               >
                 Download
               </Link>
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-3 bg-gradient-to-r from-[#24B459] to-[#63D68D] text-white rounded-lg font-medium"
-              >
-                Get Started
-              </motion.button>
             </div>
           </motion.div>
         )}
