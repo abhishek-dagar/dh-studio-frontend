@@ -9,6 +9,7 @@ import {
   ArrowRightIcon,
   ChartIcon,
 } from "@/components/icons";
+import Link from "next/link";
 
 const FeatureTag = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -28,9 +29,6 @@ export const Hero = () => {
       <div className="absolute inset-0">
         {/* Dot Grid Pattern */}
         <div className="bg-gradient-circle-light dark:bg-gradient-circle-dark absolute inset-0" />
-
-        {/* Hexagon Grid Pattern
-        <div className="bg-hexagon-pattern-light dark:bg-hexagon-pattern-dark absolute inset-0" /> */}
 
         {/* Animated Gradient Blobs */}
         <motion.div
@@ -218,53 +216,35 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 1 }}
             className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
           >
-            {/* Primary CTA */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#24B459] to-[#63D68D] px-8 py-4 font-medium text-white transition-all duration-300 hover:shadow-2xl hover:shadow-[#24B459]/20"
-            >
-              {/* Animated background effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#63D68D] to-[#24B459] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-              {/* Button content */}
-              <div className="relative flex items-center gap-2">
-                <span>Get Started Free</span>
-                <ArrowRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </div>
-
-              {/* Shine effect */}
-              <div className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white to-transparent opacity-0 transition-transform duration-1000 group-hover:translate-x-[100%] group-hover:opacity-20" />
-            </motion.button>
-
             {/* Secondary CTA */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative rounded-xl border border-[#24B459]/30 bg-white/5 px-8 py-4 font-medium text-gray-900 backdrop-blur-sm transition-all duration-300 hover:border-[#24B459] hover:shadow-xl hover:shadow-[#24B459]/10 dark:bg-white/5 dark:text-white"
-            >
-              <div className="relative flex items-center gap-2">
-                <span className="bg-gradient-to-r from-[#24B459] to-[#63D68D] bg-clip-text text-transparent">
-                  View Demo
-                </span>
-                <svg
-                  className="h-4 w-4 text-[#24B459] transition-transform duration-300 group-hover:translate-x-1"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  />
-                </svg>
-              </div>
-
-              {/* Hover gradient border */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#24B459] to-[#63D68D] opacity-0 transition-opacity duration-300 group-hover:opacity-10" />
-            </motion.button>
+            <Link href={"/download"}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative rounded-xl border border-[#24B459]/30 bg-white/5 px-8 py-4 font-medium text-gray-900 backdrop-blur-sm transition-all duration-300 hover:border-[#24B459] hover:shadow-xl hover:shadow-[#24B459]/10 dark:bg-white/5 dark:text-white"
+              >
+                <div className="relative flex items-center gap-2">
+                  <span className="bg-gradient-to-r from-[#24B459] to-[#63D68D] bg-clip-text text-transparent">
+                    Download
+                  </span>
+                  <svg
+                    className="h-4 w-4 text-[#24B459] transition-transform duration-300 group-hover:translate-x-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                </div>
+                {/* Hover gradient border */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#24B459] to-[#63D68D] opacity-0 transition-opacity duration-300 group-hover:opacity-10" />
+              </motion.div>
+            </Link>
           </motion.div>
         </div>
 

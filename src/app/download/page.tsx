@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Download, Monitor, Command, Terminal, LucideIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface DownloadOption {
   title: string;
@@ -13,6 +14,7 @@ interface DownloadOption {
   version: string;
   disabled?: boolean;
   comingSoon?: boolean;
+  downloadUrl?: string;
 }
 
 interface AnimatedCheckmarkProps {
@@ -24,9 +26,49 @@ interface DownloadButtonProps {
   size: string;
   version: string;
   disabled?: boolean;
+  downloadUrl?: string;
 }
 
-const downloadOptions: DownloadOption[] = [
+// Function to fetch file sizes using GitHub API
+const fetchFileSizes = async (): Promise<{ windows: string; macOS: string }> => {
+  try {
+    // Use GitHub Releases API to get release information
+    const response = await fetch('https://api.github.com/repos/abhishek-dagar/data-hive-studio/releases/tags/0.1.0-alpha');
+    const releaseData = await response.json();
+    
+    let windowsSize = "68 MB";
+    let macOSSize = "72 MB";
+    
+    if (releaseData.assets) {
+      // Find the Windows EXE file
+      const windowsAsset = releaseData.assets.find((asset: any) => 
+        asset.name.includes('.exe') || asset.name.includes('Setup')
+      );
+      
+      // Find the macOS DMG file
+      const macOSAsset = releaseData.assets.find((asset: any) => 
+        asset.name.includes('arm64.dmg') || asset.name.includes('.dmg')
+      );
+      
+      if (windowsAsset && windowsAsset.size) {
+        const sizeInMB = (windowsAsset.size / (1024 * 1024)).toFixed(1);
+        windowsSize = `${sizeInMB} MB`;
+      }
+      
+      if (macOSAsset && macOSAsset.size) {
+        const sizeInMB = (macOSAsset.size / (1024 * 1024)).toFixed(1);
+        macOSSize = `${sizeInMB} MB`;
+      }
+    }
+    
+    return { windows: windowsSize, macOS: macOSSize };
+  } catch (error) {
+    console.error('Error fetching file sizes from GitHub API:', error);
+    return { windows: "68 MB", macOS: "72 MB" }; // fallback
+  }
+};
+
+const getDownloadOptions = (windowsSize: string, macOSSize: string): DownloadOption[] => [
   {
     title: "Windows",
     description: "For Windows 10 and Windows 11",
@@ -38,8 +80,9 @@ const downloadOptions: DownloadOption[] = [
     ],
     icon: Monitor,
     color: "#24B459",
-    downloadSize: "68 MB",
-    version: "1.0.0"
+    downloadSize: windowsSize,
+    version: "0.1.0-alpha",
+    downloadUrl: "https://github.com/abhishek-dagar/data-hive-studio/releases/download/0.1.0-alpha/Data.Hive.Studio.Setup.0.1.0-alpha.exe"
   },
   {
     title: "macOS",
@@ -52,8 +95,9 @@ const downloadOptions: DownloadOption[] = [
     ],
     icon: Command,
     color: "#63D68D",
-    downloadSize: "72 MB",
-    version: "1.0.0"
+    downloadSize: macOSSize,
+    version: "0.1.0-alpha",
+    downloadUrl: "https://github.com/abhishek-dagar/data-hive-studio/releases/download/0.1.0-alpha/Data.Hive.Studio-0.1.0-alpha-arm64.dmg"
   },
   {
     title: "Linux",
@@ -74,15 +118,22 @@ const downloadOptions: DownloadOption[] = [
 ];
 
 // Animated download button component
-const DownloadButton: React.FC<DownloadButtonProps> = ({ os, size, version, disabled }) => {
+const DownloadButton: React.FC<DownloadButtonProps> = ({ os, size, version, disabled, downloadUrl }) => {
+  const handleDownload = () => {
+    if (downloadUrl && !disabled) {
+      window.open(downloadUrl, '_blank');
+    }
+  };
+
   return (
     <motion.button
       whileHover={disabled ? {} : { scale: 1.02 }}
       whileTap={disabled ? {} : { scale: 0.98 }}
-      className={`group relative w-full rounded-lg px-6 py-3 text-white shadow-lg transition-all ${
+      onClick={handleDownload}
+      className={`group relative w-full rounded-lg px-6 py-3 text-white shadow-lg transition-all backdrop-blur-sm ${
         disabled 
-          ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-50' 
-          : 'bg-gradient-to-r from-[#24B459] to-[#63D68D] hover:shadow-xl'
+          ? 'bg-gray-400/80 dark:bg-gray-600/80 cursor-not-allowed opacity-50' 
+          : 'bg-gradient-to-r from-[#24B459]/90 to-[#63D68D]/90 hover:shadow-xl hover:shadow-[#24B459]/30 hover:from-[#24B459] hover:to-[#63D68D]'
       }`}
       disabled={disabled}
     >
@@ -303,11 +354,30 @@ const getIllustration = (title: string) => {
 };
 
 export default function DownloadPage() {
+  const [windowsFileSize, setWindowsFileSize] = useState("68 MB");
+  const [macOSFileSize, setMacOSFileSize] = useState("72 MB");
+  const downloadOptions = getDownloadOptions(windowsFileSize, macOSFileSize);
+
+  useEffect(() => {
+    const loadFileSizes = async () => {
+      const sizes = await fetchFileSizes();
+      setWindowsFileSize(sizes.windows);
+      setMacOSFileSize(sizes.macOS);
+    };
+
+    loadFileSizes();
+  }, []);
+
   return (
-    <main className="relative min-h-screen bg-white dark:bg-[#1a1f2b]">
+    <main className="relative min-h-screen bg-white dark:bg-[#191B1F]">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="bg-hexagon-pattern-light dark:bg-hexagon-pattern-dark absolute inset-0" />
+        
+        {/* Glassmorphism Background Enhancements */}
+        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-[#24B459]/20 to-[#63D68D]/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-l from-[#63D68D]/15 to-[#24B459]/15 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-[#24B459]/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s' }} />
         
         {/* Animated Background SVG */}
         <div className="absolute inset-0 overflow-hidden">
@@ -345,13 +415,13 @@ export default function DownloadPage() {
         </div>
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 py-16">
+      <div className="container relative z-10 mx-auto px-4 py-16 pt-20">
         {/* Header Section */}
         <div className="mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative mb-6 inline-flex items-center justify-center rounded-full border border-[#24B459]/20 bg-gradient-to-r from-[#24B459]/10 to-[#63D68D]/10 px-4 py-2"
+            className="relative mb-6 inline-flex items-center justify-center rounded-full border border-[#24B459]/30 bg-gradient-to-r from-[#24B459]/10 to-[#63D68D]/10 backdrop-blur-md px-4 py-2 shadow-lg"
           >
             <span className="bg-gradient-to-r from-[#24B459] to-[#63D68D] bg-clip-text text-xs font-semibold text-transparent sm:text-sm md:text-base">
               Download Now
@@ -391,11 +461,16 @@ export default function DownloadPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + index * 0.1 }}
-              className={`relative rounded-2xl border bg-white p-6 shadow-lg transition-all dark:bg-[#232936] border-gray-100 dark:border-gray-700 overflow-hidden ${
+              className={`group relative rounded-2xl border bg-white/80 backdrop-blur-xl p-6 shadow-lg transition-all dark:bg-[#191B1F]/80 dark:backdrop-blur-xl border-gray-100/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-[#24B459]/10 dark:hover:shadow-[#24B459]/20 ${
                 option.disabled ? 'opacity-60 cursor-not-allowed' : ''
               }`}
             >
               {getIllustration(option.title)}
+              
+              {/* Glassmorphism Overlay */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 backdrop-blur-[1px] transition-opacity duration-300 group-hover:opacity-100" />
+              
               <div className="relative z-10">
                 <div className="mb-6 flex items-center gap-4">
                   <div
@@ -445,6 +520,7 @@ export default function DownloadPage() {
                   size={option.downloadSize} 
                   version={option.version}
                   disabled={option.disabled}
+                  downloadUrl={option.downloadUrl}
                 />
               </div>
             </motion.div>
@@ -456,7 +532,7 @@ export default function DownloadPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mt-16 rounded-2xl border border-gray-100 bg-white p-8 dark:border-gray-700 dark:bg-[#232936]"
+          className="mt-16 rounded-2xl border border-gray-100/50 bg-white/80 backdrop-blur-xl p-8 dark:border-gray-700/50 dark:bg-[#191B1F]/80 dark:backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
             System Requirements

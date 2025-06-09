@@ -135,9 +135,9 @@ export const DatabaseIcon = () => (
             transition={{ delay: 0.3 + index * 0.2, duration: 0.5 }}
             className="relative mb-4 last:mb-0"
           >
-            <div className="relative w-48 h-24 bg-[#2a3444] rounded-lg border border-[#24B459]/20 overflow-hidden">
+            <div className="relative w-48 h-24 bg-white dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 overflow-hidden shadow-lg dark:shadow-none">
               {/* Top Ellipse */}
-              <div className="absolute top-0 left-0 right-0 h-6 bg-[#24B459]/10 rounded-t-lg">
+              <div className="absolute top-0 left-0 right-0 h-6 bg-[#24B459]/20 dark:bg-[#24B459]/10 rounded-t-lg">
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-[#24B459]/20 to-transparent"
                   animate={{
@@ -161,7 +161,7 @@ export const DatabaseIcon = () => (
                 {[...Array(3)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="h-1 bg-[#24B459]/20 rounded"
+                    className="h-1 bg-[#24B459]/30 dark:bg-[#24B459]/20 rounded"
                     style={{ width: `${80 - i * 20}%` }}
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
@@ -261,7 +261,7 @@ export const NetworkIcon = () => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative w-32 h-32 bg-gray-100 dark:bg-[#2a3444] rounded-full border border-[#24B459]/20"
+          className="relative w-32 h-32 bg-white dark:bg-[#2a3444] rounded-full border border-[#24B459]/20 shadow-lg dark:shadow-none"
         >
           {isClient && (
             <motion.div
@@ -305,7 +305,7 @@ export const NetworkIcon = () => {
           return (
             <motion.div
               key={i}
-              className="absolute w-16 h-16 bg-gray-100 dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20"
+              className="absolute w-16 h-16 bg-white dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 shadow-md dark:shadow-none"
               style={{
                 left: `calc(50% + ${x}px)`,
                 top: `calc(50% + ${y}px)`,
@@ -375,10 +375,10 @@ export const CodeEditorIcon = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative w-[500px] h-[300px] bg-gray-100 dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 overflow-hidden"
+          className="relative w-[500px] h-[300px] bg-white dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 overflow-hidden shadow-lg dark:shadow-none"
         >
           {/* Window Header */}
-          <div className="h-8 bg-gray-200 dark:bg-[#1a1f2b] flex items-center px-4 space-x-2">
+          <div className="h-8 bg-gray-100 dark:bg-[#1a1f2b] flex items-center px-4 space-x-2">
             <div className="w-3 h-3 rounded-full bg-red-500/50"/>
             <div className="w-3 h-3 rounded-full bg-yellow-500/50"/>
             <div className="w-3 h-3 rounded-full bg-green-500/50"/>
@@ -394,9 +394,9 @@ export const CodeEditorIcon = () => {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.1 * i }}
               >
-                <div className="w-8 text-[#24B459]/40 text-sm">{i + 1}</div>
+                <div className="w-8 text-[#24B459]/60 dark:text-[#24B459]/40 text-sm">{i + 1}</div>
                 <motion.div
-                  className="h-4 bg-[#24B459]/10 rounded"
+                  className="h-4 bg-[#24B459]/20 dark:bg-[#24B459]/10 rounded"
                   style={{ width: `${codeLineWidths[i]}%` }}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -422,7 +422,7 @@ export const CodeEditorIcon = () => {
             return (
               <motion.div
                 key={i}
-                className="absolute text-[#24B459]/30 text-xl"
+                className="absolute text-[#24B459]/50 dark:text-[#24B459]/30 text-xl"
                 style={{
                   left: `${pos.x}%`,
                   top: `${pos.y}%`
@@ -472,7 +472,7 @@ export const DataVizIcon = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative w-[500px] h-[300px] bg-gray-100 dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 p-8"
+          className="relative w-[500px] h-[300px] bg-white dark:bg-[#2a3444] rounded-lg border border-[#24B459]/20 p-8 shadow-lg dark:shadow-none"
         >
           {/* Bar Chart */}
           <div className="absolute bottom-8 left-8 flex items-end space-x-4 h-[200px]">
