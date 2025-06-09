@@ -56,12 +56,15 @@ export default function AboutPage() {
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="bg-hexagon-pattern-light dark:bg-hexagon-pattern-dark absolute inset-0" />
-        
+
         {/* Glassmorphism Background Enhancements */}
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-[#24B459]/20 to-[#63D68D]/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-l from-[#63D68D]/15 to-[#24B459]/15 rounded-full blur-2xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-[#24B459]/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s' }} />
-        
+        <div className="absolute left-1/3 top-1/4 h-96 w-96 animate-pulse rounded-full bg-gradient-to-r from-[#24B459]/20 to-[#63D68D]/20 blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 h-80 w-80 animate-pulse rounded-full bg-gradient-to-l from-[#63D68D]/15 to-[#24B459]/15 blur-2xl delay-1000" />
+        <div
+          className="absolute left-1/4 top-1/2 h-64 w-64 animate-bounce rounded-full bg-[#24B459]/10 blur-xl"
+          style={{ animationDuration: "3s" }}
+        />
+
         {/* Animated Background SVG */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -92,7 +95,13 @@ export default function AboutPage() {
                   }}
                 />
               </pattern>
-              <rect x="0" y="0" width="100%" height="100%" fill="url(#download-pattern)" />
+              <rect
+                x="0"
+                y="0"
+                width="100%"
+                height="100%"
+                fill="url(#download-pattern)"
+              />
             </svg>
           </motion.div>
         </div>
@@ -132,9 +141,9 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="mx-auto max-w-3xl text-lg text-gray-600 dark:text-gray-400 md:text-xl"
           >
-            We're on a mission to democratize database management, making
+            {`We're on a mission to democratize database management, making
             powerful tools accessible to developers, data analysts, and
-            businesses of all sizes.
+            businesses of all sizes.`}
           </motion.p>
         </section>
 
@@ -159,10 +168,10 @@ export default function AboutPage() {
                   accomplish basic database tasks.
                 </p>
                 <p>
-                  We envisioned a single, powerful platform that could handle
+                  {` We envisioned a single, powerful platform that could handle
                   everything from simple data viewing to complex schema design,
                   all wrapped in an intuitive interface that doesn't sacrifice
-                  functionality for simplicity.
+                  functionality for simplicity.`}
                 </p>
                 <p>
                   Today, Data Hive Studio serves thousands of users worldwide,
@@ -187,7 +196,7 @@ export default function AboutPage() {
                         Innovation Driven
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400">
-                        Building tomorrow's tools today
+                        {`Building tomorrow's tools today`}
                       </p>
                     </div>
                   </div>
@@ -205,23 +214,23 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-10 backdrop-blur-xl shadow-xl transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
+              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-10 shadow-xl backdrop-blur-xl transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
             >
               {/* Background decorative elements */}
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-[#24B459]/5 to-[#63D68D]/5 blur-3xl transition-all duration-500 group-hover:scale-150 group-hover:from-[#24B459]/10 group-hover:to-[#63D68D]/10" />
               <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-gradient-to-br from-[#63D68D]/5 to-[#24B459]/5 blur-2xl transition-all duration-500 group-hover:scale-125" />
-              
+
               <div className="relative">
                 {/* Enhanced icon */}
                 <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:from-[#24B459]/20 group-hover:to-[#63D68D]/20 group-hover:shadow-2xl">
                   <Target className="h-10 w-10 text-[#24B459] transition-all duration-300 group-hover:scale-110" />
                 </div>
-                
+
                 {/* Enhanced text */}
                 <h3 className="mb-6 text-3xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-[#24B459] dark:text-white">
                   Our Mission
                 </h3>
-                <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                   To democratize database management by providing powerful,
                   intuitive tools that enable anyone to work with data
                   efficiently, regardless of their technical background.
@@ -235,26 +244,26 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-10 backdrop-blur-xl shadow-xl transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
+              className="group relative overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-10 shadow-xl backdrop-blur-xl transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
             >
               {/* Background decorative elements */}
               <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-[#63D68D]/5 to-[#24B459]/5 blur-3xl transition-all duration-500 group-hover:scale-150 group-hover:from-[#63D68D]/10 group-hover:to-[#24B459]/10" />
               <div className="absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-gradient-to-br from-[#24B459]/5 to-[#63D68D]/5 blur-2xl transition-all duration-500 group-hover:scale-125" />
-              
+
               <div className="relative">
                 {/* Enhanced icon */}
                 <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:from-[#24B459]/20 group-hover:to-[#63D68D]/20 group-hover:shadow-2xl">
                   <Users className="h-10 w-10 text-[#24B459] transition-all duration-300 group-hover:scale-110" />
                 </div>
-                
+
                 {/* Enhanced text */}
                 <h3 className="mb-6 text-3xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-[#24B459] dark:text-white">
                   Our Vision
                 </h3>
-                <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                   A world where data management is accessible to everyone, where
-                  powerful database tools empower creativity and innovation across
-                  all industries and skill levels.
+                  powerful database tools empower creativity and innovation
+                  across all industries and skill levels.
                 </p>
               </div>
             </motion.div>
@@ -287,22 +296,22 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -5, scale: 1.02 }}
-                className="group relative overflow-hidden rounded-2xl border border-gray-200/50 bg-white/90 p-8 backdrop-blur-xl shadow-lg transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-xl hover:shadow-[#24B459]/10 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
+                className="group relative overflow-hidden rounded-2xl border border-gray-200/50 bg-white/90 p-8 shadow-lg backdrop-blur-xl transition-all duration-500 hover:border-[#24B459]/50 hover:shadow-xl hover:shadow-[#24B459]/10 dark:border-gray-700/50 dark:bg-[#191B1F]/90"
               >
                 {/* Background decorative elements */}
                 <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-br from-[#24B459]/5 to-[#63D68D]/5 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:from-[#24B459]/10 group-hover:to-[#63D68D]/10" />
-                
+
                 <div className="relative">
                   {/* Enhanced icon */}
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:from-[#24B459]/20 group-hover:to-[#63D68D]/20 group-hover:shadow-xl">
                     <value.icon className="h-8 w-8 text-[#24B459] transition-all duration-300 group-hover:scale-110" />
                   </div>
-                  
+
                   {/* Enhanced text */}
                   <h3 className="mb-3 text-xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-[#24B459] dark:text-white">
                     {value.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <p className="leading-relaxed text-gray-600 dark:text-gray-400">
                     {value.description}
                   </p>
                 </div>
@@ -337,7 +346,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className={`group relative max-w-sm overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-8 backdrop-blur-xl shadow-xl transition-all duration-500 hover:shadow-2xl dark:border-gray-700/50 dark:bg-[#191B1F]/90 ${
+                className={`group relative max-w-sm overflow-hidden rounded-3xl border border-gray-200/50 bg-white/90 p-8 shadow-xl backdrop-blur-xl transition-all duration-500 hover:shadow-2xl dark:border-gray-700/50 dark:bg-[#191B1F]/90 ${
                   member.isPlaceholder
                     ? "opacity-60"
                     : "hover:border-[#24B459]/50 hover:shadow-[#24B459]/20"
@@ -345,11 +354,11 @@ export default function AboutPage() {
               >
                 {/* Background gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#24B459]/5 via-transparent to-[#63D68D]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                
+
                 {/* Decorative elements */}
                 <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 blur-xl transition-all duration-500 group-hover:scale-150" />
                 <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-gradient-to-br from-[#63D68D]/10 to-[#24B459]/10 blur-xl transition-all duration-500 group-hover:scale-125" />
-                
+
                 <div className="relative text-center">
                   {/* Enhanced avatar */}
                   <div className="mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#24B459]/20 to-[#63D68D]/20 p-1 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:shadow-xl">
@@ -368,7 +377,7 @@ export default function AboutPage() {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Enhanced text */}
                   <h3 className="mb-2 text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-[#24B459] dark:text-white">
                     {member.name}
@@ -378,7 +387,7 @@ export default function AboutPage() {
                       {member.role}
                     </p>
                   </div>
-                  <p className="mb-6 text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <p className="mb-6 leading-relaxed text-gray-600 dark:text-gray-400">
                     {member.bio}
                   </p>
 
@@ -437,18 +446,19 @@ export default function AboutPage() {
           whileHover={{ y: -5 }}
           className="group text-center"
         >
-          <div className="relative overflow-hidden rounded-3xl border border-gray-200/50 bg-gradient-to-br from-[#24B459]/5 to-[#63D68D]/5 p-16 backdrop-blur-xl shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:from-[#24B459]/10 dark:to-[#63D68D]/10">
+          <div className="relative overflow-hidden rounded-3xl border border-gray-200/50 bg-gradient-to-br from-[#24B459]/5 to-[#63D68D]/5 p-16 shadow-xl backdrop-blur-xl transition-all duration-500 hover:shadow-2xl hover:shadow-[#24B459]/20 dark:border-gray-700/50 dark:from-[#24B459]/10 dark:to-[#63D68D]/10">
             {/* Background decorative elements */}
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 blur-3xl transition-all duration-500 group-hover:scale-150" />
             <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-gradient-to-br from-[#63D68D]/10 to-[#24B459]/10 blur-2xl transition-all duration-500 group-hover:scale-125" />
-            
+
             <div className="relative">
               <h2 className="mb-6 text-4xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-[#24B459] dark:text-white md:text-5xl">
                 Join Our Journey
               </h2>
-              <p className="mx-auto mb-10 max-w-2xl text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-                Want to be part of building the future of database management?
-                We're always looking for passionate individuals to join our team.
+              <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-600 dark:text-gray-400">
+                {`Want to be part of building the future of database management?
+                We're always looking for passionate individuals to join our
+                team.`}
               </p>
               <div className="flex flex-col gap-6 sm:flex-row sm:justify-center">
                 <motion.a
@@ -464,7 +474,7 @@ export default function AboutPage() {
                   href="https://github.com/abhishek-dagar/data-hive-studio"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="rounded-xl border-2 border-gray-300 bg-white/80 px-10 py-4 font-semibold text-gray-900 backdrop-blur-sm shadow-lg transition-all duration-300 hover:border-[#24B459]/50 hover:bg-white hover:shadow-xl dark:border-gray-600 dark:bg-[#191B1F]/80 dark:text-white dark:hover:border-[#24B459]/50 dark:hover:bg-[#191B1F]"
+                  className="rounded-xl border-2 border-gray-300 bg-white/80 px-10 py-4 font-semibold text-gray-900 shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-[#24B459]/50 hover:bg-white hover:shadow-xl dark:border-gray-600 dark:bg-[#191B1F]/80 dark:text-white dark:hover:border-[#24B459]/50 dark:hover:bg-[#191B1F]"
                 >
                   Contribute on GitHub
                 </motion.a>
