@@ -93,9 +93,9 @@ const features = [
     ),
   },
   {
-    title: "Data Visualization",
+    title: "Schema Visualization",
     description:
-      "Transform your data into insightful charts and graphs. Create interactive dashboards to monitor your data.",
+      "Visualize your database schema with interactive diagrams. Understand relationships and dependencies at a glance.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -169,54 +169,222 @@ const AnimatedBackground = ({ index }: { index: number }) => {
     case 0:
       return (
         <motion.svg
-          className="absolute bottom-0 right-0 h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48 opacity-10"
-          viewBox="0 0 100 100"
+          className="absolute bottom-20 -right-4 h-48 w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 opacity-100"
+          viewBox="0 0 200 120"
           initial="hidden"
           animate="visible"
         >
+          {/* Main Background */}
+          <motion.rect
+            x="0"
+            y="0"
+            width="200"
+            height="120"
+            rx="4"
+            fill="#191B1F"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+          
+          {/* Top Navigation Bar */}
+          <motion.rect
+            x="0"
+            y="0"
+            width="200"
+            height="16"
+            rx="4"
+            fill="#191B1F"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          />
+          
+          {/* User Tab */}
           <motion.g
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {[...Array(5)].map((_, i) => (
-              <motion.rect
-                key={i}
-                x={i * 20}
-                y="20"
-                width="15"
-                height="15"
-                rx="2"
-                fill="#24B459"
-                initial={{ y: 20 }}
-                animate={{ y: [20, 25, 20] }}
-                transition={{
-                  duration: 2,
-                  delay: i * 0.2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+            <rect x="4" y="4" width="20" height="12" rx="2" fill="#203E2D" stroke="#24B459" strokeWidth="0.5" />
+            <text x="9" y="11" fontSize="3" fill="#ffffff" fontFamily="monospace">User</text>
+          </motion.g>
+          
+          {/* Query Tab */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <text x="30" y="11" fontSize="3" fill="#9ca3af" fontFamily="monospace">{"<>"}</text>
+            <text x="36" y="11" fontSize="3" fill="#9ca3af" fontFamily="monospace">Query-1</text>
+          </motion.g>
+          
+          {/* Plus Button */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <rect x="60" y="4" width="12" height="12" rx="2" fill="#24B459" />
+            <text x="66" y="14" fontSize="12" fill="#191B1F" textAnchor="middle" fontFamily="monospace">+</text>
+          </motion.g>
+          
+          {/* Pagination Info */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <text x="4" y="26" fontSize="2.5" fill="#9ca3af" fontFamily="monospace">2 : 2 rows</text>
+            <rect x="26" y="20" width="12" height="8" rx="1" fill="##191B1F" stroke="#3D444D" strokeWidth="0.5" />
+            <text x="32" y="25" fontSize="2.5" fill="#e5e7eb" textAnchor="middle" fontFamily="monospace">50</text>
+          </motion.g>
+          
+          {/* Action Buttons */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <rect x="140" y="20" width="24" height="8" rx="2" fill="#26272C" stroke="#3D444D" strokeWidth={"0.5"} />
+            <text x="152" y="25" fontSize="2.5" fill="#ffffff" textAnchor="middle" fontFamily="monospace">+ Add Record</text>
+            
+            <rect x="168" y="20" width="16" height="8" rx="2" fill="#26272C" stroke="#3D444D" strokeWidth={"0.5"} />
+            <text x="176" y="25" fontSize="2.5" fill="#e5e7eb" textAnchor="middle" fontFamily="monospace">Filter</text>
+          </motion.g>
+          
+          {/* Table Header */}
+          <motion.rect
+            x="0"
+            y="32"
+            width="200"
+            height="12"
+            fill="#1F2428"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          />
+          
+          {/* Column Headers */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            {/* Key Icon and id column */}
+            <text x="7" y="40" fontSize="2.5" fill="#fbbf24" fontFamily="monospace">🔑</text>
+            <text x="12" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">id</text>
+            <text x="18" y="40" fontSize="2" fill="#9ca3af" fontFamily="monospace">text</text>
+            
+            {/* name column */}
+            <text x="30" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">name</text>
+            <text x="42" y="40" fontSize="2" fill="#9ca3af" fontFamily="monospace">text</text>
+            
+            {/* firstName column */}
+            <text x="54" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">firstName</text>
+            <text x="74" y="40" fontSize="2" fill="#9ca3af" fontFamily="monospace">text</text>
+            
+            {/* lastName column */}
+            <text x="88" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">lastName</text>
+            <text x="108" y="40" fontSize="2" fill="#9ca3af" fontFamily="monospace">text</text>
+            
+            {/* phone column */}
+            <text x="120" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">phone</text>
+            <text x="134" y="40" fontSize="2" fill="#9ca3af" fontFamily="monospace">text</text>
+            
+            {/* email column */}
+            <text x="148" y="40" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">email</text>
+          </motion.g>
+          
+          
+          
+          {/* Table Rows */}
+          {[
+            { 
+              id: "01fa0c9f-d1e3", 
+              name: "Abhishek Dagar", 
+              firstName: "Abhishek", 
+              lastName: "Dagar", 
+              phone: "1234", 
+              email: "dagar@"
+            },
+            { 
+              id: "64a8a976-1f23", 
+              name: "Abhishek Dagar", 
+              firstName: "Abhishek", 
+              lastName: "Dagar", 
+              phone: "1234", 
+              email: "temp@"
+            }
+          ].map((row, rowIndex) => (
+            <motion.g
+              key={rowIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.0 + rowIndex * 0.1 }}
+            >
+              
+              {/* Row Number */}
+              <text x="2" y={50 + rowIndex * 10} fontSize="2.5" fill="#9ca3af" fontFamily="monospace">{rowIndex + 1}</text>
+              
+              {/* Row Data */}
+              <text x="7" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.id}</text>
+              <text x="30" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.name}</text>
+              <text x="54" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.firstName}</text>
+              <text x="88" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.lastName}</text>
+              <text x="120" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.phone}</text>
+              <text x="148" y={50 + rowIndex * 10} fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">{row.email}</text>
+              
+              {/* Row Separator */}
+              <line
+                x1="0"
+                y1={55 + rowIndex * 10}
+                x2="200"
+                y2={55 + rowIndex * 10}
+                stroke="#374151"
+                strokeWidth="0.5"
               />
-            ))}
-            {[...Array(5)].map((_, i) => (
-              <motion.rect
-                key={i}
-                x={i * 20}
-                y="45"
-                width="15"
-                height="15"
-                rx="2"
-                fill="#63D68D"
-                initial={{ y: 45 }}
-                animate={{ y: [45, 50, 45] }}
-                transition={{
-                  duration: 2,
-                  delay: i * 0.2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            ))}
+            </motion.g>
+          ))}
+
+          {/* Column Separators */}
+          {[6, 28, 52, 86, 118, 146].map((x, i) => (
+            <motion.line
+              key={i}
+              x1={x}
+              y1="32"
+              x2={x}
+              y2="65"
+              stroke="#3F454E"
+              strokeWidth="0.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.9 + i * 0.05 }}
+            />
+          ))}
+          
+          {/* Hover Effect on First Row */}
+          <motion.rect
+            x="0"
+            y="40"
+            width="200"
+            height="10"
+            fill="#24B459"
+            fillOpacity="0.1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.6, 0] }}
+            transition={{ duration: 3, delay: 2, repeat: Infinity, repeatDelay: 5 }}
+          />
+          
+          {/* Edit Indicator */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, delay: 3, repeat: Infinity, repeatDelay: 6 }}
+          >
+            <circle cx="24" cy="54" r="1" fill="#24B459" />
+            <text x="26" y="56" fontSize="2" fill="#24B459" fontFamily="monospace">editing...</text>
           </motion.g>
         </motion.svg>
       );
@@ -269,54 +437,415 @@ const AnimatedBackground = ({ index }: { index: number }) => {
     case 2:
       return (
         <motion.svg
-          className="absolute bottom-0 right-0 h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48 opacity-10"
-          viewBox="0 0 100 100"
+          className="absolute top-0 right-0 h-40 w-40 sm:h-48 sm:w-48 lg:h-56 lg:w-56 opacity70"
+          viewBox="0 0 180 140"
+          initial="hidden"
+          animate="visible"
         >
-          {[...Array(5)].map((_, i) => (
-            <motion.line
-              key={i}
-              x1="10"
-              y1={20 + i * 15}
-              x2="90"
-              y2={20 + i * 15}
-              stroke="#24B459"
-              strokeWidth="2"
-              initial={{ pathLength: 0, opacity: 0.3 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                duration: 2,
-                delay: i * 0.2,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            />
+          {/* Editor Background */}
+          <motion.rect
+            x="0"
+            y="0"
+            width="180"
+            height="140"
+            rx="6"
+            fill="#191B1F"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+          
+          {/* Top Bar */}
+          <motion.rect
+            x="0"
+            y="0"
+            width="180"
+            height="20"
+            fill="#191B1F"
+            rx={6}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          />
+          
+          {/* User Tab */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <rect x="8" y="4" width="25" height="12" rx="2" fill="#191B1F" />
+            <text x="10" y="12" fontSize="4" fill="#e2e8f0" fontFamily="monospace">User</text>
+          </motion.g>
+          
+          {/* Query Tab */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <rect x="38" y="4" width="45" height="12" rx="2" fill="#203E2D" stroke="#24B459" strokeWidth="0.5" />
+            <text x="40" y="12" fontSize="4" fill="#ffffff" fontFamily="monospace">{"<>"}</text>
+            <text x="47" y="12" fontSize="4" fill="#ffffff" fontFamily="monospace">Query-1</text>
+          </motion.g>
+          
+          {/* Plus Button */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <rect x="88" y="4" width="12" height="12" rx="2" fill="#24B459" />
+            <text x="94" y="14" fontSize="12" fill="#191B1F" textAnchor="middle" fontFamily="monospace">+</text>
+          </motion.g>
+          
+          {/* Line Numbers Background */}
+          <motion.rect
+            x="0"
+            y="20"
+            width="18"
+            height="120"
+            fill="#191B1F"
+            rx={6}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          />
+          
+          {/* Line Numbers */}
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((num, i) => (
+            <motion.text
+              key={num}
+              x="14"
+              y={32 + i * 8}
+              fontSize="3.5"
+              fill="#718096"
+              textAnchor="end"
+              fontFamily="monospace"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.6 + i * 0.05 }}
+            >
+              {num}
+            </motion.text>
           ))}
+          
+          {/* SQL Code Lines */}
+          <motion.g fontFamily="monospace" fontSize="3.5">
+            {/* Line 1: CREATE TABLE users ( */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.8 }}
+            >
+              <text x="22" y="32" fill="#e53e3e">CREATE TABLE</text>
+              <text x="52" y="32" fill="#e2e8f0">users (</text>
+            </motion.g>
+            
+            {/* Line 2: id SERIAL PRIMARY KEY, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.9 }}
+            >
+              <text x="26" y="40" fill="#e2e8f0">id</text>
+              <text x="35" y="40" fill="#63b3ed">SERIAL</text>
+              <text x="54" y="40" fill="#63b3ed">PRIMARY KEY</text>
+              <text x="82" y="40" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 3: username VARCHAR(50) NOT NULL UNIQUE, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.0 }}
+            >
+              <text x="26" y="48" fill="#e2e8f0">username</text>
+              <text x="56" y="48" fill="#63b3ed">VARCHAR</text>
+              <text x="80" y="48" fill="#e2e8f0">(50)</text>
+              <text x="92" y="48" fill="#63b3ed">NOT NULL UNIQUE</text>
+              <text x="138" y="48" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 4: email VARCHAR(100) NOT NULL UNIQUE, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.1 }}
+            >
+              <text x="26" y="56" fill="#e2e8f0">email</text>
+              <text x="46" y="56" fill="#63b3ed">VARCHAR</text>
+              <text x="70" y="56" fill="#e2e8f0">(100)</text>
+              <text x="86" y="56" fill="#63b3ed">NOT NULL UNIQUE</text>
+              <text x="132" y="56" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 5: password_hash VARCHAR(255) NOT NULL, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.2 }}
+            >
+              <text x="26" y="64" fill="#e2e8f0">password_hash</text>
+              <text x="72" y="64" fill="#63b3ed">VARCHAR</text>
+              <text x="96" y="64" fill="#e2e8f0">(255)</text>
+              <text x="112" y="64" fill="#63b3ed">NOT NULL</text>
+              <text x="136" y="64" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 6: full_name VARCHAR(100), */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.3 }}
+            >
+              <text x="26" y="72" fill="#e2e8f0">full_name</text>
+              <text x="60" y="72" fill="#63b3ed">VARCHAR</text>
+              <text x="84" y="72" fill="#e2e8f0">(100),</text>
+            </motion.g>
+            
+            {/* Line 7: date_of_birth DATE, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.4 }}
+            >
+              <text x="26" y="80" fill="#e2e8f0">date_of_birth</text>
+              <text x="72" y="80" fill="#63b3ed">DATE</text>
+              <text x="88" y="80" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 8: created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.5 }}
+            >
+              <text x="26" y="88" fill="#e2e8f0">created_at</text>
+              <text x="62" y="88" fill="#63b3ed">TIMESTAMP</text>
+              <text x="88" y="88" fill="#63b3ed">DEFAULT CURRENT_TIMESTAMP</text>
+              <text x="156" y="88" fill="#e2e8f0">,</text>
+            </motion.g>
+            
+            {/* Line 9: updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.6 }}
+            >
+              <text x="26" y="96" fill="#e2e8f0">updated_at</text>
+              <text x="62" y="96" fill="#63b3ed">TIMESTAMP</text>
+              <text x="88" y="96" fill="#63b3ed">DEFAULT CURRENT_TIMESTAMP</text>
+            </motion.g>
+            
+            {/* Line 10: ); */}
+            <motion.g
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.7 }}
+            >
+              <text x="22" y="104" fill="#e2e8f0">);</text>
+            </motion.g>
+          </motion.g>
+          
+          {/* Cursor */}
+          <motion.rect
+            x="22"
+            y="108"
+            width="1"
+            height="8"
+            fill="#24B459"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1, repeat: Infinity, delay: 2 }}
+          />
+          
+          {/* Selection Highlight */}
+          <motion.rect
+            x="22"
+            y="110"
+            width="156"
+            height="6"
+            fill="#4a5568"
+            fillOpacity="0.3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 3, repeatDelay: 2 }}
+          />
         </motion.svg>
       );
 
     case 3:
       return (
         <motion.svg
-          className="absolute bottom-0 right-0 h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48 opacity-10"
-          viewBox="0 0 100 100"
+          className="absolute top-0 right-0 h-48 w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 opacity-80"
+          viewBox="0 0 160 120"
+          initial="hidden"
+          animate="visible"
         >
-          {[...Array(3)].map((_, i) => (
-            <motion.path
-              key={i}
-              d="M20 20 L60 20 L60 60 L20 60 Z"
-              fill="none"
-              stroke="#63D68D"
-              strokeWidth="2"
-              transform={`translate(${i * 10} ${i * 10})`}
-              initial={{ y: 0 }}
-              animate={{ y: [0, -10, 0] }}
-              transition={{
-                duration: 3,
-                delay: i * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+          {/* Modal Background */}
+          <motion.rect
+            x="10"
+            y="10"
+            width="140"
+            height="100"
+            rx="6"
+            fill="#191B1F"
+            stroke="#3D444D"
+            strokeWidth="1"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+          
+          {/* Close Button */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <circle cx="140" cy="20" r="3" fill="#3D444D" />
+            <text x="140" y="22" fontSize="4" fill="#9ca3af" textAnchor="middle" fontFamily="monospace">×</text>
+          </motion.g>
+          
+          {/* Title */}
+          <motion.text
+            x="15"
+            y="25"
+            fontSize="5"
+            fill="#ffffff"
+            fontFamily="monospace"
+            fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
+            Export Data
+          </motion.text>
+          
+          {/* Subtitle */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
+            <text x="15" y="35" fontSize="2.5" fill="#9ca3af" fontFamily="monospace">Export Data to CSV, JSON, or Excel File. If number of records are greater, it will</text>
+            <text x="15" y="39" fontSize="2.5" fill="#9ca3af" fontFamily="monospace">run in background</text>
+          </motion.g>
+          
+          {/* Export Label */}
+          <motion.text
+            x="15"
+            y="50"
+            fontSize="3.5"
+            fill="#ffffff"
+            fontFamily="monospace"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            Export
+          </motion.text>
+          
+          {/* Filtered Data Dropdown */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
+          >
+            <rect x="15" y="54" width="60" height="10" rx="2" fill="#191B1F" stroke="#24B459" strokeWidth="1" />
+            <text x="18" y="61" fontSize="3" fill="#ffffff" fontFamily="monospace">Filtered Data</text>
+            <text x="68" y="61" fontSize="3" fill="#24B459" fontFamily="monospace">⌄</text>
+          </motion.g>
+          
+          {/* File Name Section */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.7 }}
+          >
+            <text x="15" y="75" fontSize="3.5" fill="#ffffff" fontFamily="monospace">File Name</text>
+            <rect x="15" y="78" width="80" height="8" rx="2" fill="#191B1F" stroke="#3D444D" strokeWidth="0.5" />
+            <text x="18" y="84" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">User-09-06-2025-14-01-19</text>
+          </motion.g>
+          
+          {/* Format Section */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.8 }}
+          >
+            <text x="100" y="75" fontSize="3.5" fill="#ffffff" fontFamily="monospace">Format</text>
+            <rect x="100" y="78" width="35" height="8" rx="2" fill="#191B1F" stroke="#3D444D" strokeWidth="0.5" />
+            <text x="103" y="84" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">CSV (.csv)</text>
+            <text x="128" y="84" fontSize="3" fill="#9ca3af" fontFamily="monospace">⌄</text>
+          </motion.g>
+          
+          {/* Output Directory Section */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.9 }}
+          >
+            <text x="15" y="95" fontSize="3.5" fill="#ffffff" fontFamily="monospace">Output Directory</text>
+            <rect x="15" y="98" width="100" height="8" rx="2" fill="#191B1F" stroke="#3D444D" strokeWidth="0.5" />
+            <text x="18" y="104" fontSize="2.5" fill="#e5e7eb" fontFamily="monospace">/Users/abhishekdagar/Downloads</text>
+            <rect x="118" y="98" width="18" height="8" rx="2" fill="#26272C" stroke="#3D444D" strokeWidth="0.5" />
+            <text x="127" y="104" fontSize="2.5" fill="#ffffff" textAnchor="middle" fontFamily="monospace">Choose</text>
+          </motion.g>
+          
+          {/* Export Button */}
+          <motion.g
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: 1.0 }}
+          >
+            <rect x="115" y="108" width="20" height="8" rx="3" fill="#24B459" />
+            <text x="125" y="114" fontSize="3" fill="#ffffff" textAnchor="middle" fontFamily="monospace">Export</text>
+          </motion.g>
+          
+          {/* Animated Export Process */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 2, delay: 2, repeat: Infinity, repeatDelay: 3 }}
+          >
+            {/* Progress indicator */}
+            <rect x="15" y="108" width="80" height="2" rx="1" fill="#26272C" />
+            <motion.rect
+              x="15"
+              y="108"
+              height="2"
+              rx="1"
+              fill="#24B459"
+              initial={{ width: 0 }}
+              animate={{ width: 80 }}
+              transition={{ duration: 2, delay: 2.5, repeat: Infinity, repeatDelay: 3 }}
             />
+            <text x="15" y="116" fontSize="2" fill="#24B459" fontFamily="monospace">Exporting...</text>
+          </motion.g>
+          
+          {/* File Export Animation */}
+          {[0, 1, 2].map((i) => (
+            <motion.g
+              key={`export-${i}`}
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ 
+                opacity: [0, 1, 0],
+                y: [0, -10, -20],
+                x: [0, 5, 10]
+              }}
+              transition={{ 
+                duration: 2,
+                delay: 3 + i * 0.3,
+                repeat: Infinity,
+                repeatDelay: 5,
+                ease: "easeOut"
+              }}
+            >
+              <rect x={120 + i * 5} y="85" width="8" height="10" rx="1" fill="#24B459" fillOpacity="0.7" />
+              <text x={124 + i * 5} y="92" fontSize="2" fill="#ffffff" textAnchor="middle" fontFamily="monospace">📄</text>
+            </motion.g>
           ))}
         </motion.svg>
       );

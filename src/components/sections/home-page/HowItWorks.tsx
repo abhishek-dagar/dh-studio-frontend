@@ -169,7 +169,7 @@ export default function HowItWorks() {
             className="relative"
           >
             <h2 className="relative mb-6 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
-              <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                 Get Started with
               </span>
               <br className="hidden sm:block" />
@@ -211,7 +211,7 @@ export default function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="relative mx-auto max-w-[90%] text-base text-gray-400 sm:max-w-3xl sm:text-lg md:text-xl"
+            className="relative mx-auto max-w-[90%] text-base text-gray-600 dark:text-gray-400 sm:max-w-3xl sm:text-lg md:text-xl"
           >
             <span className="relative">
               Get started with Data Hive Studio in just a few simple steps,
@@ -279,7 +279,7 @@ export default function HowItWorks() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="relative z-10 h-full p-8 bg-gradient-to-br from-[#1e2533]/80 via-[#1e2533]/70 to-[#1e2533]/50 backdrop-blur-2xl rounded-2xl border border-gray-800/20 shadow-[0_8px_32px_rgb(0_0_0_/0.2)] group-hover:shadow-[0_16px_48px_rgb(36_180_89_/0.2)] transition-all duration-500">
+                    <div className="relative z-10 h-full p-8 bg-gradient-to-br from-white/90 via-white/80 to-gray-50/90 dark:from-[#1e2533]/80 dark:via-[#1e2533]/70 dark:to-[#1e2533]/50 backdrop-blur-2xl rounded-2xl border border-gray-200/50 dark:border-gray-800/20 shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgb(0_0_0_/0.2)] group-hover:shadow-[0_16px_48px_rgba(36,180,89,0.15)] dark:group-hover:shadow-[0_16px_48px_rgb(36_180_89_/0.2)] transition-all duration-500">
                       {/* Animated Border Gradient */}
                       <div className="absolute inset-[1px] bg-gradient-to-br from-[#24B459]/0 via-[#24B459]/0 to-[#63D68D]/0 group-hover:from-[#24B459]/20 group-hover:via-[#24B459]/10 group-hover:to-[#63D68D]/20 rounded-2xl transition-all duration-500" />
                       
@@ -296,7 +296,7 @@ export default function HowItWorks() {
                         <div className="absolute inset-0 bg-gradient-to-br from-[#24B459] to-[#63D68D] rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
                         
                         {/* Icon Background */}
-                        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 p-3 text-[#24B459] shadow-lg group-hover:shadow-[0_8px_32px_rgb(36_180_89_/0.3)] transition-shadow duration-500">
+                        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#24B459]/10 to-[#63D68D]/10 p-3 text-[#24B459] shadow-lg group-hover:shadow-[0_8px_32px_rgba(36,180,89,0.3)] transition-shadow duration-500">
                           <step.icon className="w-full h-full" strokeWidth={1.5} />
                         </div>
                       </motion.div>
@@ -304,13 +304,13 @@ export default function HowItWorks() {
                       {/* Content Container */}
                       <div className="relative space-y-3">
                         <motion.h3 
-                          className="text-xl font-semibold text-white group-hover:bg-gradient-to-br group-hover:from-[#24B459] group-hover:to-[#63D68D] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300"
+                          className="text-xl font-semibold text-gray-900 dark:text-white group-hover:bg-gradient-to-br group-hover:from-[#24B459] group-hover:to-[#63D68D] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300"
                           whileHover={{ x: 5 }}
                           transition={{ duration: 0.2 }}
                         >
                           {step.title}
                         </motion.h3>
-                        <p className="text-gray-400 text-sm leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                           {step.description}
                         </p>
                       </div>
