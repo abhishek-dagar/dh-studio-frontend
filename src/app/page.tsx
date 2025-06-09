@@ -8,7 +8,7 @@ import FAQ from "@/components/sections/home-page/FAQ";
 
 const HomePage = () => {
   return (
-    <main className="relative min-h-screen bg-white dark:bg-[#1a1f2b]">
+    <main className="relative min-h-screen bg-white dark:bg-[#191B1F]">
       <div className="absolute inset-0 z-0">
         {/* Hexagon Grid Pattern */}
         <div className="bg-hexagon-pattern-light dark:bg-hexagon-pattern-dark absolute inset-0 z-0" />
