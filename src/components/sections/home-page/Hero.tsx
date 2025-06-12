@@ -216,6 +216,39 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 1 }}
             className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
           >
+            {/* Primary CTA - Try Demo */}
+            <Link href="https://demo-dh.vercel.app/" target="_blank" rel="noopener noreferrer">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#24B459] to-[#63D68D] px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#24B459]/25"
+              >
+                <div className="relative flex items-center gap-2">
+                  <span>Try Demo</span>
+                  <svg
+                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </div>
+                {/* Animated shine effect */}
+                <motion.div
+                  className="absolute inset-0 -skew-x-12 bg-white/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6 }}
+                />
+              </motion.div>
+            </Link>
+
             {/* Secondary CTA */}
             <Link href={"/download"}>
               <motion.div
