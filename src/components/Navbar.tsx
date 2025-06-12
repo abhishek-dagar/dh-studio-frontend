@@ -109,6 +109,29 @@ export function Navbar() {
 
           {/* Right Side Items */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="https://demo-dh.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative rounded-lg bg-gradient-to-r from-[#24B459] to-[#63D68D] px-6 py-2.5 font-medium text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#24B459]/20 hover:scale-105"
+            >
+              <div className="relative flex items-center gap-2">
+                <span>Try Demo</span>
+                <svg
+                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </div>
+            </Link>
             <ThemeSwitch />
           </div>
 
@@ -164,11 +187,34 @@ export function Navbar() {
                 Home
               </Link>
               <Link
+                href="/features"
+                className="block text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Features
+              </Link>
+              <Link
+                href="/about"
+                className="block text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About Us
+              </Link>
+              <Link
                 href="/download"
                 className="block text-gray-600 dark:text-gray-300 hover:text-[#24B459] dark:hover:text-[#24B459] transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Download
+              </Link>
+              <Link
+                href="https://demo-dh.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gradient-to-r from-[#24B459] to-[#63D68D] px-6 py-2.5 font-medium text-white rounded-lg hover:shadow-lg hover:shadow-[#24B459]/20 transition-all duration-300"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Try Demo
               </Link>
             </div>
           </motion.div>
