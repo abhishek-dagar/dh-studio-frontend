@@ -1,1 +1,0 @@
-# dh-studio-frontend
