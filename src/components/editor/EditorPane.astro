@@ -1,0 +1,55 @@
+---
+// The editor pane (spec 0002, AC-9): the system's signature surface, drawn the
+// way the app draws its own SQL editor. A flat surface with an optional tab
+// strip, numbered code lines, and optional result and status areas below.
+// Renders complete with no JavaScript. Styles live in depth.css.
+//
+// The tabs are decorative text, not controls. Slot EditorLine elements as the
+// code; give `label` when a line holds a real control, so the pane is a named group.
+// With `canvas` the default slot is a drawing surface instead of code (spec 0003,
+// revision 2026-10-11): on the ground, padded, with no gutter or line numbers.
+interface Tab {
+  readonly label: string;
+  readonly current?: boolean;
+}
+
+interface Props {
+  tabs?: readonly Tab[];
+  label?: string;
+  canvas?: boolean;
+  class?: string;
+}
+
+const { tabs, label, canvas = false, class: className } = Astro.props;
+---
+
+<div class:list={['editor-pane', className]} role={label === undefined ? undefined : 'group'} aria-label={label}>
+  {
+    tabs !== undefined && tabs.length > 0 && (
+      <div class="editor-tabs" aria-hidden="true">
+        {tabs.map((tab) => (
+          <span class="editor-tab" data-current={tab.current === true ? '' : undefined}>
+            {tab.label}
+          </span>
+        ))}
+      </div>
+    )
+  }
+  <div class={canvas ? 'editor-canvas' : 'editor-code'}>
+    <slot />
+  </div>
+  {
+    Astro.slots.has('result') && (
+      <div class="editor-result">
+        <slot name="result" />
+      </div>
+    )
+  }
+  {
+    Astro.slots.has('status') && (
+      <div class="status-bar">
+        <slot name="status" />
+      </div>
+    )
+  }
+</div>

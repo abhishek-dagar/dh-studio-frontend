@@ -1,0 +1,155 @@
+/*
+ * App greys and Red tokens (spec 0002). Two layers:
+ *   1. Primitives on :root. Raw values, never used by components, and kept
+ *      out of @theme so no Tailwind utility exists for them.
+ *   2. Roles under [data-theme]. Every role is defined in both theme blocks.
+ * The greys and the Red copy the desktop app's src/index.css (neutrals at hue
+ * 265, its red accent), converted from oklch to hex once. The oklch source
+ * sits beside each primitive.
+ * Add a role to both blocks and a pair to src/lib/contrast-pairs.ts, then run
+ * `bun run test`. The contrast test parses this file, so keep one declaration
+ * per line and no braces inside comments.
+ */
+
+:root {
+  /* Greys: the app's near neutral scale, dark end. */
+  --gray-1000: #101214; /* oklch(0.18 0.005 265) */
+  --gray-950: #161719; /* oklch(0.205 0.005 265) */
+  --gray-940: #191b1d; /* oklch(0.22 0.006 265) */
+  --gray-925: #1a1c1f; /* oklch(0.225 0.006 265) */
+  --gray-900: #1f2023; /* oklch(0.245 0.006 265) */
+  --gray-850: #2a2b2e; /* oklch(0.29 0.006 265) */
+  --gray-750: #46484b; /* oklch(0.4 0.006 265) */
+  --gray-600: #616367; /* oklch(0.5 0.006 265) */
+  --gray-550: #6a6c6f; /* oklch(0.53 0.006 265) */
+  --gray-500: #7e8084; /* oklch(0.6 0.006 265) */
+  --gray-300: #a9abaf; /* oklch(0.74 0.006 265) */
+  --gray-200: #c2c4c8; /* oklch(0.82 0.006 265) */
+
+  /* Greys: light end. */
+  --gray-100: #e1e3e6; /* oklch(0.915 0.005 265) */
+  --gray-50: #e9ebef; /* oklch(0.94 0.006 265) */
+  --gray-25: #f9fafc; /* oklch(0.985 0.003 265) */
+  --gray-0: #ffffff; /* oklch(1 0 0) */
+  --white-text: #fcfcfc; /* oklch(0.99 0 0) */
+
+  /* Red: the accent. Only for action, focus, selection, the highlighted row marker and the accent hairline. */
+  --red-300: #ff958d; /* oklch(0.78 0.13 25) */
+  --red-400: #f97770; /* oklch(0.72 0.16 25) */
+  --red-600: #c9222b; /* oklch(0.54 0.2 25) */
+  --red-700: #b00a1d; /* oklch(0.48 0.19 25) */
+  --red-tint-dark: #642724; /* oklch(0.36 0.09 25) */
+  --red-tint-light: #ffdedb; /* oklch(0.93 0.04 25) */
+
+  /* Green: latest, live, available. */
+  --green-300: #68d7a1; /* oklch(0.8 0.13 160) */
+  --green-700: #0b7643; /* oklch(0.5 0.12 155) */
+  --green-tint-dark: #132c20; /* oklch(0.27 0.04 160) */
+  --green-tint-light: #daf7e3; /* oklch(0.95 0.04 155) */
+
+  /* Syntax primitives for code blocks. */
+  --syntax-keyword-dark: #e8a3bc;
+  --syntax-keyword-light: #9b2f5a;
+  --syntax-string-dark: #a9d49a;
+  --syntax-string-light: #3d6b2c;
+  --syntax-number-dark: #d2b2f2;
+  --syntax-number-light: #6b3fa0;
+  --syntax-function-dark: #9cc6e6;
+  --syntax-function-light: #1f5f8b;
+
+  /* Layout. Theme independent. */
+  --width-prose: 68ch;
+  --width-content: 72rem;
+  --width-bleed: 100rem;
+  --width-nav: 60rem;
+  --gutter: 1rem;
+  --space-section: clamp(4rem, 2.5rem + 5vw, 6rem);
+  --header-h: 3.5rem;
+  --header-offset: 0.75rem;
+  /* Editor pane geometry: the line number gutter and the gap before the code. */
+  --editor-gutter: 3.25rem;
+  --editor-code-gap: 1.25rem;
+
+  /* Motion. Theme independent. */
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-reveal: 300ms;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 2rem;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --ground: var(--gray-1000);
+  --surface: var(--gray-950);
+  --raised: var(--gray-925);
+  --floating: var(--gray-900);
+  --line: var(--gray-850);
+  --line-strong: var(--gray-550);
+  --fg: var(--gray-50);
+  --fg-muted: var(--gray-300);
+  --action: var(--red-400);
+  --action-hover: var(--red-300);
+  --action-fg: var(--gray-1000);
+  --action-edge: var(--red-400);
+  --focus: var(--red-400);
+  --signal: var(--green-300);
+  --signal-tint: var(--green-tint-dark);
+  --selection: var(--red-tint-dark);
+
+  --syntax-fg: var(--gray-50);
+  --syntax-keyword: var(--syntax-keyword-dark);
+  --syntax-string: var(--syntax-string-dark);
+  --syntax-number: var(--syntax-number-dark);
+  --syntax-function: var(--syntax-function-dark);
+  --syntax-comment: var(--gray-300);
+  --syntax-punctuation: var(--gray-200);
+
+  --shadow-raised: 0 40px 80px -30px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.03);
+  --shadow-floating: 0 24px 60px -20px rgb(0 0 0 / 0.6), 0 8px 20px -10px rgb(0 0 0 / 0.4);
+  --shadow-header: 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+  --hairline: color-mix(in oklab, var(--red-400) 60%, transparent);
+  --glass-bg: color-mix(in oklab, var(--surface) 72%, transparent);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --ground: var(--gray-25);
+  --surface: var(--gray-0);
+  --raised: var(--gray-0);
+  --floating: var(--gray-0);
+  --line: var(--gray-100);
+  --line-strong: var(--gray-500);
+  --fg: var(--gray-940);
+  --fg-muted: var(--gray-600);
+  --action: var(--red-600);
+  --action-hover: var(--red-700);
+  --action-fg: var(--white-text);
+  --action-edge: var(--red-600);
+  --focus: var(--red-600);
+  --signal: var(--green-700);
+  --signal-tint: var(--green-tint-light);
+  --selection: var(--red-tint-light);
+
+  --syntax-fg: var(--gray-940);
+  --syntax-keyword: var(--syntax-keyword-light);
+  --syntax-string: var(--syntax-string-light);
+  --syntax-number: var(--syntax-number-light);
+  --syntax-function: var(--syntax-function-light);
+  --syntax-comment: var(--gray-600);
+  --syntax-punctuation: var(--gray-750);
+
+  --shadow-raised: 0 40px 80px -30px rgb(20 24 40 / 0.12), 0 0 0 1px rgb(20 24 40 / 0.03);
+  --shadow-floating: 0 24px 60px -20px rgb(20 24 40 / 0.18), 0 8px 20px -10px rgb(20 24 40 / 0.1);
+  --shadow-header: 0 8px 24px -12px rgb(20 24 40 / 0.1);
+  --highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.9);
+  --hairline: color-mix(in oklab, var(--red-600) 60%, transparent);
+  --glass-bg: color-mix(in oklab, var(--surface) 72%, transparent);
+}

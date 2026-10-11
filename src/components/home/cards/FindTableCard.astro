@@ -1,0 +1,35 @@
+---
+import Search from '@lucide/astro/icons/search';
+import Table from '@lucide/astro/icons/table-2';
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Schema designer: the find table box with its matches (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+
+const matches = [
+  { name: 'PaymentHistory', columns: 11 },
+  { name: 'Project', columns: 10 },
+] as const;
+---
+
+<PopupCard position={position}>
+  <div class="flex items-center gap-2 border-b border-line px-2 pt-1 pb-2">
+    <Search class="size-3.5 text-fg-muted" />
+    <span class="font-mono text-[0.92em]">pa</span>
+  </div>
+  <ul class="m-0 flex list-none flex-col p-0 pt-1">
+    {
+      matches.map((match, index) => (
+        <li class:list={['flex items-center gap-2 rounded-inset px-2 py-1', index === 0 && 'bg-wash text-fg']}>
+          <Table class="size-3.5 text-fg-muted" />
+          <span class="font-mono text-[0.92em]">{match.name}</span>
+          <span class="ms-auto text-fg-muted">{match.columns} columns</span>
+        </li>
+      ))
+    }
+  </ul>
+</PopupCard>

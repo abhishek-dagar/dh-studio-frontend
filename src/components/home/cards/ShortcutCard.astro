@@ -1,0 +1,18 @@
+---
+import Kbd from '../../ui/Kbd.astro';
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Command palette: the shortcut that opens it (spec 0003, AC-19). Decorative.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <div class="flex flex-col items-start gap-1.5 px-2 py-1">
+    <Kbd keys={['⌘', '⇧', 'P']} />
+    <span class="text-fg-muted">Open from anywhere in the app</span>
+  </div>
+</PopupCard>

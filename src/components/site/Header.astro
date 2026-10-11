@@ -1,0 +1,104 @@
+---
+import Download from '@lucide/astro/icons/download';
+import Menu from '@lucide/astro/icons/menu';
+import { getEntry } from 'astro:content';
+import { ThemeToggle } from '../../islands/ThemeToggle';
+import { latestRelease } from '../../lib/release';
+import { downloadHref, navLinks } from '../../lib/site';
+import { buttonClass } from '../../lib/ui/button';
+import Button from '../ui/Button.astro';
+import Logo from './Logo.astro';
+
+// Floating glass pill header (spec 0002, AC-14). Sticky just below the top of
+// the viewport, centered and capped at --width-nav. Glass and its solid
+// fallbacks live in depth.css. Below md the links and the theme toggle move
+// into a native popover menu, which handles Escape, outside clicks and returning
+// focus to its button. Logo, Menu and Download always stay in the pill.
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+// Download jumps to the Home result grid; a build without release data sends it to GitHub instead (spec 0003, AC-8).
+const [release, home] = await Promise.all([latestRelease, getEntry('home', 'home')]);
+const download =
+  release.status === 'live' || home === undefined
+    ? { href: downloadHref, label: 'Download' }
+    : { href: release.releasesPageUrl, label: home.data.download.fallback };
+
+const isCurrent = (href: string): boolean => href === currentPath;
+const navLinkClass = [
+  'inline-flex h-11 items-center rounded-button px-3 text-[0.875rem] font-medium text-fg-muted',
+  'transition-[background-color,color] duration-(--dur-fast)',
+  'hover:bg-wash hover:text-fg aria-[current=page]:bg-wash aria-[current=page]:text-fg',
+].join(' ');
+---
+
+<header class="pointer-events-none sticky top-(--header-offset) z-40 mt-(--header-offset) px-(--gutter)">
+  <div
+    class="header-pill pointer-events-auto mx-auto flex h-(--header-h) max-w-(--width-nav) items-center justify-between gap-2 rounded-pill border border-line ps-3 pe-1.5 shadow-(--shadow-header)"
+  >
+    <a href="/" class="-ms-1 rounded-button p-1" aria-current={isCurrent('/') ? 'page' : undefined}>
+      <Logo />
+    </a>
+
+    <div class="flex items-center gap-1">
+      <nav aria-label="Main" class="hidden md:block">
+        <ul class="flex items-center gap-0.5">
+          {
+            navLinks.map((link) => (
+              <li>
+                <a href={link.href} class={navLinkClass} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="hidden md:block">
+        <ThemeToggle client:idle />
+      </div>
+
+      <button
+        type="button"
+        popovertarget="site-menu"
+        aria-controls="site-menu"
+        aria-label="Menu"
+        class={buttonClass({ variant: 'ghost', iconOnly: true, className: 'md:hidden' })}
+      >
+        <Menu aria-hidden="true" />
+      </button>
+
+      <Button href={download.href} class="ms-1">
+        <Download aria-hidden="true" class="hidden sm:block" />
+        {download.label}
+      </Button>
+    </div>
+  </div>
+
+  <nav
+    id="site-menu"
+    popover
+    aria-label="Main"
+    class="pointer-events-auto fixed inset-auto top-[calc(var(--header-offset)+var(--header-h)+0.5rem)] right-(--gutter) m-0 w-[min(20rem,calc(100vw-2*var(--gutter)))] rounded-surface border border-line bg-floating p-2 text-fg shadow-(--shadow-floating) md:hidden"
+  >
+    <ul class="flex flex-col gap-0.5">
+      {
+        navLinks.map((link) => (
+          <li>
+            <a href={link.href} class:list={[navLinkClass, 'flex w-full']} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-2 flex items-center justify-between border-t border-line ps-3 pt-2">
+      <span class="text-[0.875rem] font-medium text-fg-muted">Theme</span>
+      <ThemeToggle client:idle />
+    </div>
+  </nav>
+</header>

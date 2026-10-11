@@ -1,0 +1,52 @@
+---
+import CircleAlert from '@lucide/astro/icons/circle-alert';
+
+// Text field with a visible label (spec 0002). There is no danger color, so an
+// invalid field is marked by an icon, message text and a heavier border.
+interface Props {
+  id: string;
+  label: string;
+  type?: 'text' | 'email' | 'search' | 'url' | 'password';
+  name?: string;
+  value?: string;
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  disabled?: boolean;
+  class?: string;
+}
+
+const { id, label, type = 'text', name, value, placeholder, hint, error, disabled = false, class: className } = Astro.props;
+
+const hintId = hint === undefined ? undefined : `${id}-hint`;
+const errorId = error === undefined ? undefined : `${id}-error`;
+const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
+---
+
+<div class:list={['flex flex-col gap-1.5', className]}>
+  <label for={id} class="text-body font-medium text-fg">{label}</label>
+  <input
+    id={id}
+    type={type}
+    name={name ?? id}
+    value={value}
+    placeholder={placeholder}
+    disabled={disabled}
+    aria-invalid={error === undefined ? undefined : 'true'}
+    aria-describedby={describedBy}
+    class:list={[
+      'h-11 w-full rounded-field bg-ground px-3 text-body text-fg placeholder:text-fg-muted',
+      'transition-[border-color] duration-(--dur-fast) disabled:cursor-not-allowed disabled:opacity-50',
+      error === undefined ? 'border border-line-strong hover:border-fg-muted' : 'border-2 border-fg',
+    ]}
+  />
+  {
+    error !== undefined && (
+      <p id={errorId} class="flex items-center gap-1.5 text-caption font-medium text-fg">
+        <CircleAlert class="size-4 shrink-0" aria-hidden="true" />
+        {error}
+      </p>
+    )
+  }
+  {hint !== undefined && <p id={hintId} class="text-caption text-fg-muted">{hint}</p>}
+</div>

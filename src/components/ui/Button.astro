@@ -1,0 +1,46 @@
+---
+import { buttonClass, type ButtonSize, type ButtonVariant } from '../../lib/ui/button';
+
+interface BaseProps {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+}
+
+// An icon only button has no visible text, so it must carry a label.
+type Props = BaseProps & ({ iconOnly?: false; label?: string } | { iconOnly: true; label: string });
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  iconOnly = false,
+  label,
+  class: className,
+} = Astro.props;
+
+const classes = buttonClass({ variant, size, iconOnly, className });
+---
+
+{
+  href !== undefined ? (
+    disabled ? (
+      <a class={classes} role="link" aria-disabled="true" aria-label={label}>
+        <slot />
+      </a>
+    ) : (
+      <a class={classes} href={href} aria-label={label}>
+        <slot />
+      </a>
+    )
+  ) : (
+    <button class={classes} type={type} disabled={disabled} aria-label={label}>
+      <slot />
+    </button>
+  )
+}

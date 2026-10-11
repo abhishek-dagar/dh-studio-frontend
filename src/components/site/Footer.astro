@@ -1,0 +1,32 @@
+---
+import { footerLinks, licenseLine } from '../../lib/site';
+import Container from '../ui/Container.astro';
+import Logo from './Logo.astro';
+
+// Site footer (spec 0002): links and the license line in 13px muted text, flat on the ground.
+---
+
+<footer class="border-t border-line bg-ground">
+  <Container class="flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-3">
+      <Logo />
+      <p class="text-caption text-fg-muted">{licenseLine}</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        {
+          footerLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-flex min-h-11 items-center rounded-inset text-caption text-fg-muted transition-[color] duration-(--dur-fast) hover:text-fg"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </Container>
+</footer>

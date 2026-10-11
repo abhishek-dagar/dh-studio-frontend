@@ -1,0 +1,107 @@
+---
+import Kbd from '../ui/Kbd.astro';
+import type { Declarations } from '../../lib/showcase';
+import { valueOf } from '../../lib/showcase';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+
+// The type scale and both families, with each step's real values from theme.css.
+interface Props {
+  theme: Declarations;
+}
+
+const { theme } = Astro.props;
+
+const steps = [
+  { name: 'display', className: 'text-display', use: 'Hero headline only', sample: 'Every database, one quiet desk' },
+  { name: 'h1', className: 'text-h1', use: 'Page titles', sample: 'Browse tables like a spreadsheet' },
+  { name: 'h2', className: 'text-h2', use: 'Section titles', sample: 'Write SQL with a real editor' },
+  { name: 'h3', className: 'text-h3', use: 'Subsection titles', sample: 'A schema you can see' },
+  { name: 'lead', className: 'text-lead', use: 'Intro paragraphs', sample: 'Connect to SQLite, PostgreSQL, MongoDB and DocumentDB from one native app.' },
+  { name: 'body', className: 'text-body', use: 'Body copy', sample: 'Passwords stay in your system keychain, never in a plain file.' },
+  { name: 'caption', className: 'text-caption', use: 'Captions, footer, badges', sample: '50 of 82 rows, 4568 ms' },
+  { name: 'code', className: 'font-mono text-code', use: 'Code blocks and keys', sample: 'select * from "Activity" limit 50;' },
+] as const;
+
+const tracking = [
+  { label: 'Body and labels: tracking 0', className: 'text-h3 tracking-normal font-normal' },
+  { label: 'Headlines: weight 600, tracking -0.01em to -0.04em', className: 'text-h3' },
+] as const;
+
+const weights = [
+  { label: '400', className: 'font-normal' },
+  { label: '500', className: 'font-medium' },
+  { label: '600', className: 'font-semibold' },
+] as const;
+---
+
+<ShowcaseSection
+  id="type"
+  title="Type"
+  intro="Mona Sans carries every word, always at normal width. Headlines are weight 600 with tight tracking and scale with the viewport between fixed bounds; body text stays at 16px. Geist Mono is kept for literal code, commands and keys."
+>
+  <div class="overflow-hidden rounded-surface border border-line bg-surface">
+    <dl class="flex flex-col divide-y divide-line">
+      {
+        steps.map((step) => (
+          <div class="grid gap-3 p-5 md:grid-cols-[13rem_minmax(0,1fr)] md:items-baseline md:gap-8 md:p-6">
+            <dt class="flex flex-col gap-1">
+              <code class="text-caption text-fg">--text-{step.name}</code>
+              <span class="text-caption text-fg-muted">{step.use}</span>
+              <code class="text-[0.75rem] leading-5 break-all text-fg-muted">
+                {valueOf(theme, `--text-${step.name}`)} / {valueOf(theme, `--text-${step.name}--line-height`)}
+              </code>
+            </dt>
+            <dd class:list={['m-0 min-w-0 break-words', step.className]}>{step.sample}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <Specimen title="Mona Sans" note="A variable face at normal width. Self hosted through the Astro Fonts API, with a metric matched fallback while it loads.">
+      <div class="flex flex-col gap-5">
+        {
+          tracking.map((sample) => (
+            <div class="flex flex-col gap-1">
+              <p class={sample.className}>Quiet desk for every database</p>
+              <p class="text-caption text-fg-muted">{sample.label}</p>
+            </div>
+          ))
+        }
+        <div class="flex flex-wrap gap-x-6 gap-y-2">
+          {
+            weights.map((weight) => (
+              <p class:list={['text-lead', weight.className]}>
+                Aa <span class="text-caption font-normal text-fg-muted">{weight.label}</span>
+              </p>
+            ))
+          }
+        </div>
+      </div>
+    </Specimen>
+
+    <Specimen title="Geist Mono" note="Only for literal code, commands and key names. Never for decorative labels.">
+      <div class="flex flex-col gap-5">
+        <p class="font-mono text-code break-words">bun run build</p>
+        <p class="font-mono text-code break-words">0123456789 {'{ } [ ] ( ) < > = ; :'}</p>
+        <p>
+          Press <Kbd keys={['⌘', '⇧', 'P']} /> to open the command palette, or <Kbd keys={['Esc']} /> to close it.
+        </p>
+      </div>
+    </Specimen>
+  </div>
+
+  <ul class="grid gap-4 text-fg-muted sm:grid-cols-3">
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Sentence case.</span> Headlines and labels never go all caps.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Tabular numbers.</span> Figures line up in tables, counts and versions.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Prose stays narrow.</span> Running text stops at 68 characters a line.
+    </li>
+  </ul>
+</ShowcaseSection>

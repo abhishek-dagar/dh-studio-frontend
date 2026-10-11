@@ -1,0 +1,146 @@
+---
+import Play from '@lucide/astro/icons/play';
+import type { TokenSet } from '../../lib/contrast';
+import type { Declarations } from '../../lib/showcase';
+import { valueOf } from '../../lib/showcase';
+import Button from '../ui/Button.astro';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+
+// Duration and easing tokens, each with a sample that travels on demand.
+// Under reduced motion the samples never move; they change color instead.
+interface Props {
+  tokens: TokenSet;
+  theme: Declarations;
+}
+
+const { tokens, theme } = Astro.props;
+
+const samples = [
+  { label: '--dur-fast', value: valueOf(tokens.primitives, '--dur-fast'), use: 'Hover, color and focus changes', dur: 'var(--dur-fast)', ease: 'var(--ease-in-out)' },
+  { label: '--dur-base', value: valueOf(tokens.primitives, '--dur-base'), use: 'Popover, accordion and tooltip', dur: 'var(--dur-base)', ease: 'var(--ease-in-out)' },
+  { label: '--dur-reveal', value: valueOf(tokens.primitives, '--dur-reveal'), use: 'The one reveal, a result appearing', dur: 'var(--dur-reveal)', ease: 'var(--ease-out)' },
+  { label: '--ease-out', value: valueOf(theme, '--ease-out'), use: 'The reveal and opening, shown over the reveal duration', dur: 'var(--dur-reveal)', ease: 'var(--ease-out)' },
+  { label: '--ease-in-out', value: valueOf(theme, '--ease-in-out'), use: 'State changes, shown over the reveal duration', dur: 'var(--dur-reveal)', ease: 'var(--ease-in-out)' },
+] as const;
+---
+
+<ShowcaseSection
+  id="motion"
+  title="Motion"
+  intro="Motion is quiet and functional: quick color changes, opening states, and one reveal per page, a result appearing as if the query just ran. No section fades or slides in on scroll. With reduced motion on, nothing moves at all."
+>
+  <Specimen
+    title="Durations and easing"
+    note="Play the samples to compare each token. With reduced motion on, the markers only change color, in 150ms or less."
+  >
+    <div class="flex flex-col gap-6" data-motion-samples data-at="start">
+      <ul class="flex flex-col gap-5">
+        {
+          samples.map((sample) => (
+            <li class="grid gap-2 md:grid-cols-[13rem_minmax(0,1fr)] md:items-center md:gap-6">
+              <span class="flex flex-col">
+                <code class="text-caption text-fg">{sample.label}</code>
+                <code class="text-caption break-all text-fg-muted">{sample.value}</code>
+                <span class="text-caption text-fg-muted">{sample.use}</span>
+              </span>
+              <span class="motion-track" style={`--sample-dur: ${sample.dur}; --sample-ease: ${sample.ease}`} aria-hidden="true">
+                <span class="motion-marker" />
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div data-motion-play hidden>
+          <Button variant="secondary">
+            <Play aria-hidden="true" />
+            <span data-motion-label>Play the samples</span>
+          </Button>
+        </div>
+        <p class="hidden text-caption text-fg-muted motion-reduce:block">
+          Reduced motion is on: markers change color instead of moving.
+        </p>
+      </div>
+    </div>
+  </Specimen>
+
+  <ul class="grid gap-4 text-fg-muted sm:grid-cols-3">
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">One reveal per page.</span> It fades the thing the page is about, once, and only
+      when JavaScript runs. Without it, the content is simply there.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Nothing tilts or drifts.</span> No parallax, no scroll driven motion and no
+      decorative movement anywhere.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Theme swaps are instant.</span> Colors change in one frame, with no transition,
+      when you switch the theme.
+    </li>
+  </ul>
+</ShowcaseSection>
+
+<style>
+  .motion-track {
+    position: relative;
+    display: block;
+    height: 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--line);
+  }
+
+  .motion-marker {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--fg-muted);
+    transition-property: left, background-color;
+    transition-duration: var(--sample-dur);
+    transition-timing-function: var(--sample-ease);
+    transition-delay: var(--sample-delay, 0ms);
+  }
+
+  [data-at='end'] .motion-marker {
+    left: calc(100% - 0.75rem);
+    background: var(--fg);
+  }
+
+  /* Nothing moves: the marker stays put and only its color changes, at --dur-fast. */
+  @media (prefers-reduced-motion: reduce) {
+    .motion-marker,
+    [data-at='end'] .motion-marker {
+      left: 0;
+      transition-delay: 0ms;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .motion-track {
+      border: 1px solid CanvasText;
+    }
+
+    .motion-marker {
+      background: CanvasText;
+    }
+  }
+</style>
+
+<script>
+  // Toggles the motion samples between their start and end. The control only
+  // appears when JavaScript runs; without it the samples rest at the start.
+  document.querySelectorAll<HTMLElement>('[data-motion-samples]').forEach((samples) => {
+    const control = samples.querySelector<HTMLElement>('[data-motion-play]');
+    const label = samples.querySelector<HTMLElement>('[data-motion-label]');
+    if (control === null || label === null) return;
+    control.hidden = false;
+    control.querySelector('button')?.addEventListener('click', () => {
+      const atEnd = samples.dataset.at === 'end';
+      samples.dataset.at = atEnd ? 'start' : 'end';
+      label.textContent = atEnd ? 'Play the samples' : 'Play them back';
+    });
+  });
+</script>

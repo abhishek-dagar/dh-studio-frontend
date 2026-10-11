@@ -1,0 +1,25 @@
+---
+// A flat panel (spec 0002). No elevation, by the restrained rule: depth lives only on windows, popup cards and overlays.
+// `accent` adds the red hairline along the top edge (depth.css).
+interface Props {
+  as?: 'div' | 'section' | 'article' | 'aside' | 'li';
+  padding?: 'sm' | 'md' | 'lg';
+  accent?: boolean;
+  class?: string;
+}
+
+const { as: Tag = 'div', padding = 'md', accent = false, class: className } = Astro.props;
+
+const paddings = { sm: 'p-4', md: 'p-6', lg: 'p-8 md:p-10' } as const;
+---
+
+<Tag
+  class:list={[
+    'surface rounded-surface border border-line bg-surface shadow-(--highlight)',
+    { 'surface-accent': accent },
+    paddings[padding],
+    className,
+  ]}
+>
+  <slot />
+</Tag>
