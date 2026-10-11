@@ -1,0 +1,99 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import AppWindow from '../editor/AppWindow.astro';
+import AutocompleteCard from './cards/AutocompleteCard.astro';
+import CardOutputCard from './cards/CardOutputCard.astro';
+import ColumnCard from './cards/ColumnCard.astro';
+import CompareCard from './cards/CompareCard.astro';
+import ConnectionFieldsCard from './cards/ConnectionFieldsCard.astro';
+import ConnectionTestCard from './cards/ConnectionTestCard.astro';
+import FilterCard from './cards/FilterCard.astro';
+import FindTableCard from './cards/FindTableCard.astro';
+import JoinCard from './cards/JoinCard.astro';
+import KeychainCard from './cards/KeychainCard.astro';
+import QueryResultCard from './cards/QueryResultCard.astro';
+import RelationCard from './cards/RelationCard.astro';
+import ReviewCard from './cards/ReviewCard.astro';
+import RowMenuCard from './cards/RowMenuCard.astro';
+import ShortcutCard from './cards/ShortcutCard.astro';
+
+// One feature of the browser (spec 0003, AC-19): its title, the benefit from
+// the entry body, and a real screenshot with up to three popup cards over it.
+// Without a screenshot (preview and local builds only, AC-20) a labeled frame
+// of the same size stands in. The panel id is the anchor its sidebar link uses.
+interface Props {
+  entry: CollectionEntry<'features'>;
+  panelId: string;
+}
+
+const { entry, panelId } = Astro.props;
+const { title, image, imageLight, alt, cards = [] } = entry.data;
+const { Content } = await render(entry);
+
+const cardComponents = {
+  filter: FilterCard,
+  review: ReviewCard,
+  rowMenu: RowMenuCard,
+  autocomplete: AutocompleteCard,
+  queryResult: QueryResultCard,
+  column: ColumnCard,
+  relation: RelationCard,
+  findTable: FindTableCard,
+  join: JoinCard,
+  cardOutput: CardOutputCard,
+  shortcut: ShortcutCard,
+  compare: CompareCard,
+  connectionFields: ConnectionFieldsCard,
+  connectionTest: ConnectionTestCard,
+  keychain: KeychainCard,
+} as const;
+
+const placed = cards.map((card) => ({ Card: cardComponents[card.kind], position: { x: card.x, y: card.y, width: card.width } }));
+const titleId = `${panelId}-title`;
+const sizes = '(min-width: 72rem) 52rem, (min-width: 64rem) 70vw, 100vw';
+---
+
+<section id={panelId} class="flex scroll-mt-[calc(var(--header-offset)+var(--header-h)+1.5rem)] flex-col gap-6" aria-labelledby={titleId} data-feature-panel data-title-id={titleId}>
+  <div class="flex max-w-(--width-prose) flex-col gap-2">
+    <h3 id={titleId} class="flex flex-wrap items-center gap-x-3 gap-y-1 text-h3">
+      {title}
+    </h3>
+    <div class="feature-benefit text-fg-muted"><Content /></div>
+  </div>
+
+  {
+    image === undefined ? (
+      <figure class="window">
+        <div class="window-chrome" aria-hidden="true">
+          <span class="flex gap-1.5">
+            <span class="size-2.5 rounded-pill bg-line" />
+            <span class="size-2.5 rounded-pill bg-line" />
+            <span class="size-2.5 rounded-pill bg-line" />
+          </span>
+          <span class="truncate text-caption text-fg-muted">DH Studio</span>
+          <span />
+        </div>
+        <div class="window-body grid aspect-2220/1544 place-items-center bg-ground" role="img" aria-label={alt}>
+          <span class="text-caption text-fg-muted" aria-hidden="true">
+            Screenshot placeholder: {entry.id}
+          </span>
+        </div>
+        {placed.map(({ Card, position }) => <Card position={position} />)}
+      </figure>
+    ) : (
+      <AppWindow image={image} imageLight={imageLight} alt={alt} title="DH Studio" sizes={sizes} bare>
+        {placed.map(({ Card, position }) => <Card position={position} />)}
+      </AppWindow>
+    )
+  }
+</section>
+
+<style>
+  .feature-benefit :global(p) {
+    margin: 0;
+  }
+
+  .feature-benefit :global(p + p) {
+    margin-top: 0.75rem;
+  }
+</style>

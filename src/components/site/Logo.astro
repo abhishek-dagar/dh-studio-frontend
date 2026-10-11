@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets';
+import mark from '../../assets/brand/logo.png';
+
+// The app icon next to the "DH Studio" wordmark in Mona Sans 600 at normal width (spec 0002).
+interface Props {
+  showWordmark?: boolean;
+  class?: string;
+}
+
+const { showWordmark = true, class: className } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2.5', className]}>
+  <Image src={mark} alt="" width={24} height={24} densities={[1, 2]} class="size-6 shrink-0 rounded-[6px]" aria-hidden="true" />
+  {showWordmark && <span class="text-[0.9375rem] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap">DH Studio</span>}
+</span>

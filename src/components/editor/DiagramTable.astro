@@ -1,0 +1,58 @@
+---
+import KeyRound from '@lucide/astro/icons/key-round';
+import Link2 from '@lucide/astro/icons/link-2';
+
+// One schema table box (spec 0003, revision 2026-10-11), drawn the way the
+// app's schema designer draws a table: a header with an icon and the name,
+// then mono rows with an optional key or link icon and a muted type. Styles
+// live in depth.css. The rows are decoration (`aria-hidden`); only the name
+// reaches assistive technology, as a heading when `headingLevel` is given.
+//
+// A row's `anchor` sets its CSS `anchor-name`, so relation lines can attach to it.
+interface Row {
+  readonly name: string;
+  readonly type?: string;
+  readonly kind?: 'key' | 'link';
+  readonly anchor?: string;
+}
+
+interface Props {
+  name: string;
+  rows: readonly Row[];
+  selected?: boolean;
+  headingLevel?: 2 | 3 | 4;
+  class?: string;
+}
+
+const { name, rows, selected = false, headingLevel, class: className } = Astro.props;
+
+const Heading = headingLevel === undefined ? 'p' : (`h${headingLevel}` as const);
+const rowIcons = { key: KeyRound, link: Link2 } as const;
+---
+
+<div class:list={['diagram-table', className]} data-selected={selected ? '' : undefined}>
+  <div class="diagram-table-head">
+    {
+      Astro.slots.has('icon') && (
+        <span class="diagram-table-icon" aria-hidden="true">
+          <slot name="icon" />
+        </span>
+      )
+    }
+    <Heading class="diagram-table-name">{name}</Heading>
+  </div>
+  <div aria-hidden="true">
+    {
+      rows.map((row) => {
+        const Icon = row.kind === undefined ? undefined : rowIcons[row.kind];
+        return (
+          <div class="diagram-table-row" data-kind={row.kind} style={row.anchor === undefined ? undefined : `anchor-name: ${row.anchor}`}>
+            {Icon === undefined ? <span /> : <Icon />}
+            <span class="diagram-table-row-name">{row.name}</span>
+            <span class="diagram-table-row-type">{row.type}</span>
+          </div>
+        );
+      })
+    }
+  </div>
+</div>

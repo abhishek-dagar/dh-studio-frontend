@@ -1,0 +1,38 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+
+// SQL editor: the result of the statement just run (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+
+const rows = [
+  { name: 'Asha', email: 'asha@planit.dev' },
+  { name: 'Ravi', email: 'ravi@planit.dev' },
+  { name: 'Mei', email: 'mei@planit.dev' },
+] as const;
+---
+
+<PopupCard position={position}>
+  <table class="w-full border-collapse font-mono text-[0.85em]">
+    <thead>
+      <tr class="text-fg-muted">
+        <th class="px-2 pb-1 text-start font-normal">name</th>
+        <th class="px-2 pb-1 text-start font-normal">email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr class="border-t border-line">
+            <td class="px-2 py-1">{row.name}</td>
+            <td class="px-2 py-1 text-fg-muted">{row.email}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="m-0 border-t border-line px-2 pt-1.5 font-mono text-[0.85em] text-fg-muted">3 rows in 18 ms</p>
+</PopupCard>

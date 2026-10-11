@@ -1,0 +1,13 @@
+---
+import { syntaxClass, type SyntaxKind } from '../../lib/ui/syntax';
+
+// A code token colored by its --syntax-* role (spec 0002). Islands use the
+// same classes through syntaxClass, so both render the same colors.
+interface Props {
+  kind: SyntaxKind;
+}
+
+const { kind } = Astro.props;
+---
+
+<span class={syntaxClass(kind)}><slot /></span>

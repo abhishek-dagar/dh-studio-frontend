@@ -1,0 +1,251 @@
+---
+import Database from '@lucide/astro/icons/database';
+import gridShot from '../../assets/screenshots/table-grid.png';
+import type { TokenSet } from '../../lib/contrast';
+import { roleRows } from '../../lib/showcase';
+import { resultClass, resultGridClass } from '../../lib/ui/result';
+import AppWindow from '../editor/AppWindow.astro';
+import DiagramTable from '../editor/DiagramTable.astro';
+import EditorLine from '../editor/EditorLine.astro';
+import EditorPane from '../editor/EditorPane.astro';
+import PopupCard from '../editor/PopupCard.astro';
+import Tok from '../editor/Tok.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+
+// Elevation levels, the editor language (pane, result grid, window, popup card),
+// and the depth tokens behind them.
+interface Props {
+  tokens: TokenSet;
+}
+
+const { tokens } = Astro.props;
+
+// Specimens of each level. In product UI, raised and floating appear only on windows, popup cards and overlays.
+const levels = [
+  { name: 'Ground', token: '--ground', style: 'background: var(--ground)', note: 'Page background' },
+  { name: 'Surface', token: '--surface', style: 'background: var(--surface); box-shadow: var(--highlight)', note: 'Flat, 1px line, top highlight' },
+  {
+    name: 'Raised',
+    token: '--raised',
+    style: 'background: var(--raised); box-shadow: var(--highlight), var(--shadow-raised)',
+    note: 'App window',
+  },
+  {
+    name: 'Floating',
+    token: '--floating',
+    style: 'background: var(--floating); box-shadow: var(--highlight), var(--shadow-floating)',
+    note: 'Popup cards, overlays',
+  },
+] as const;
+
+const depthTokens = roleRows(tokens, [
+  { role: 'shadow-raised', use: 'App window shadow, neutral' },
+  { role: 'shadow-floating', use: 'Popup card and overlay shadow' },
+  { role: 'shadow-header', use: 'Header pill shadow' },
+  { role: 'highlight', use: '1px inset top highlight on surfaces and windows' },
+  { role: 'hairline', use: 'Accent line along the top of a Surface with accent' },
+  { role: 'glass-bg', use: 'Header pill only' },
+]);
+
+// Sample rows for the result grid specimen: release files, one per system.
+const files = [
+  { system: 'macOS', arch: 'Apple silicon', file: 'DH.Studio_0.9.2_aarch64.dmg', size: '14.8 MB', current: true },
+  { system: 'Windows', arch: 'x64', file: 'DH.Studio_0.9.2_x64-setup.exe', size: '9.6 MB', current: false },
+  { system: 'Linux', arch: 'x64', file: 'DH.Studio_0.9.2_amd64.AppImage', size: '88.1 MB', current: false },
+] as const;
+---
+
+<ShowcaseSection
+  id="depth"
+  title="Depth"
+  intro="Four levels, and the app's own vernacular: an editor pane, a result grid, a screenshot window and the small popup cards the app uses for its menus. Everything sits flat on the page. Depth is kept for windows, popup cards, the header pill and overlays."
+>
+  <Specimen
+    title="Elevation"
+    note="Specimens of each level. Cards, editor panes, buttons and inputs stay on ground or surface; raised and floating live only on windows, popup cards and true overlays."
+  >
+    <ul class="grid grid-cols-2 gap-6 rounded-surface bg-ground p-6 sm:p-8 lg:grid-cols-4">
+      {
+        levels.map((level) => (
+          <li class="flex flex-col gap-3">
+            <span class="h-24 rounded-window border border-line" style={level.style} aria-hidden="true" />
+            <span class="flex flex-col">
+              <span class="font-medium">{level.name}</span>
+              <code class="text-caption text-fg-muted">{level.token}</code>
+              <span class="text-caption text-fg-muted">{level.note}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </Specimen>
+
+  <Specimen
+    title="Editor pane and result grid"
+    note="The signature surface. A tab strip, numbered lines with a comment headline, syntax colored code, a result grid with one highlighted row, and a status bar. Below md the gutter hides, code wraps and the grid stacks its rows."
+  >
+    <EditorPane tabs={[{ label: 'downloads.sql', current: true }, { label: 'activity.sql' }]}>
+      <EditorLine size="h2"><p><Tok kind="comment">--</Tok> Pick the build for your system</p></EditorLine>
+      <EditorLine>
+        <Tok kind="keyword">select</Tok> system<Tok kind="punctuation">,</Tok> arch<Tok kind="punctuation">,</Tok> file<Tok kind="punctuation">,</Tok> size
+      </EditorLine>
+      <EditorLine><Tok kind="keyword">from</Tok> <Tok kind="function">releases</Tok><Tok kind="punctuation">(</Tok><Tok kind="string">'latest'</Tok><Tok kind="punctuation">)</Tok></EditorLine>
+      <EditorLine>
+        <Tok kind="keyword">where</Tok> size <Tok kind="punctuation">&lt;</Tok> <Tok kind="number">100</Tok> <Tok kind="keyword">order by</Tok> system<Tok kind="punctuation">;</Tok>
+      </EditorLine>
+      <table slot="result" class={resultGridClass({ stack: true })} role="table">
+        <caption>Release files</caption>
+        <thead role="rowgroup">
+          <tr role="row">
+            <th scope="col" role="columnheader">system</th>
+            <th scope="col" role="columnheader">arch</th>
+            <th scope="col" role="columnheader">file</th>
+            <th scope="col" role="columnheader">size</th>
+            <th scope="col" role="columnheader"><span class="sr-only">Action</span></th>
+          </tr>
+        </thead>
+        <tbody role="rowgroup">
+          {
+            files.map((row) => (
+              <tr role="row" data-current={row.current ? '' : undefined}>
+                <td role="cell" data-label="system">{row.system}</td>
+                <td role="cell" data-label="arch">{row.arch}</td>
+                <td role="cell" data-label="file" class={resultClass.mono}>{row.file}</td>
+                <td role="cell" data-label="size" class={resultClass.mono}>{row.size}</td>
+                <td role="cell" class={resultClass.action}>
+                  <Button variant={row.current ? 'primary' : 'secondary'} type="button">
+                    Download<span class="sr-only"> for {row.system}</span>
+                  </Button>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <Fragment slot="status">
+        <span>3 rows, 12 ms</span>
+        <span>read only</span>
+      </Fragment>
+    </EditorPane>
+  </Specimen>
+
+  <Specimen
+    title="Canvas pane and diagram table"
+    note="The pane's body as a drawing surface, like the app's schema designer: tables with a key row, link rows and fields, the selected one outlined in red. The rows are decoration; the name is the only text assistive technology reads. Home's engines section joins tables with red relation lines."
+  >
+    <EditorPane canvas tabs={[{ label: 'Diagram', current: true }]}>
+      <div class="grid gap-6 sm:grid-cols-2 sm:items-start">
+        <DiagramTable
+          name="orders"
+          selected
+          rows={[
+            { name: 'id', kind: 'key' },
+            { name: 'customer_id', kind: 'link', type: 'int' },
+            { name: 'total', type: 'numeric' },
+          ]}
+        />
+        <DiagramTable
+          name="customers"
+          rows={[
+            { name: 'id', kind: 'key' },
+            { name: 'email', type: 'text' },
+            { name: 'created_at', type: 'timestamp' },
+          ]}
+        >
+          <Fragment slot="icon"><Database /></Fragment>
+        </DiagramTable>
+      </div>
+    </EditorPane>
+  </Specimen>
+
+  <Specimen
+    title="App window and popup card"
+    note="A real screenshot in a raised window, flat on the page, with one popup card drawn in HTML floating over it, like the app's own context menu. The card is decorative and hides below md."
+  >
+    <AppWindow
+      image={gridShot}
+      alt="The Activity table of a PostgreSQL database open in a spreadsheet style grid, with the schema tree on the left"
+      title="DH Studio"
+      sizes="(min-width: 80rem) 58rem, 100vw"
+    >
+      <PopupCard position={{ x: '54%', y: '30%', width: '34%' }}>
+        <div class="flex flex-col">
+          <p class="m-0 px-2.5 pt-1 pb-1.5 font-medium text-fg-muted">Filter rows</p>
+          <p class="m-0 flex items-center justify-between gap-3 rounded-inset bg-wash px-2.5 py-1.5">
+            <span><span class="font-mono text-[0.75rem]">type</span> is <span class="font-mono text-[0.75rem]">'UPDATE'</span></span>
+            <Badge>1</Badge>
+          </p>
+          <p class="m-0 px-2.5 py-1.5">Add a condition</p>
+          <p class="m-0 px-2.5 py-1.5">Clear all filters</p>
+        </div>
+      </PopupCard>
+    </AppWindow>
+  </Specimen>
+
+  <Specimen
+    title="The reveal"
+    note="The one load time motion: an element marked data-reveal fades in over --dur-reveal when its owner sets data-revealed, as if a query just ran. Without JavaScript or with reduced motion it simply shows."
+  >
+    <div class="flex flex-col gap-4" data-reveal-sample>
+      <div class="status-bar rounded-field border border-line" data-reveal data-revealed>
+        <span>1 row, 4 ms</span>
+        <span>query finished</span>
+      </div>
+      <div data-reveal-play hidden>
+        <Button variant="secondary" type="button">Run it again</Button>
+      </div>
+    </div>
+  </Specimen>
+
+  <Specimen title="Depth tokens" note="Shadow, light and glass values for each theme. The value in use right now is emphasized.">
+    <dl class="flex flex-col divide-y divide-line">
+      {
+        depthTokens.map((row) => (
+          <div class="grid gap-2 py-4 first:pt-0 last:pb-0 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-6">
+            <dt class="flex flex-col">
+              <code class="text-caption text-fg">--{row.role}</code>
+              <span class="text-caption text-fg-muted">{row.use}</span>
+            </dt>
+            <dd class="m-0 flex min-w-0 flex-col gap-1 font-mono text-[0.75rem] leading-5 text-fg-muted">
+              <span class="break-words [[data-theme=dark]_&]:text-fg">Dark {row.dark}</span>
+              <span class="break-words [[data-theme=light]_&]:text-fg">Light {row.light}</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Specimen>
+
+  <ul class="grid gap-4 text-fg-muted sm:grid-cols-3">
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Glass, once.</span> Only the header pill is glass. It turns solid when blur is
+      unsupported or reduced transparency is on. Popup cards are always solid.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">Compact below md.</span> The editor gutter hides and code wraps, stacked grids
+      turn rows into blocks, popup cards hide, and nothing scrolls sideways.
+    </li>
+    <li class="border-t border-line pt-4">
+      <span class="font-semibold text-fg">High contrast mode.</span> Hairline and shadows hide; panes, windows, cards and the
+      header keep a system color border, and the highlighted row keeps a heavier one.
+    </li>
+  </ul>
+</ShowcaseSection>
+
+<script>
+  // Replays the reveal on demand: drop data-revealed, then set it again two
+  // frames later so the fade runs. Shown only when JavaScript runs.
+  document.querySelectorAll<HTMLElement>('[data-reveal-sample]').forEach((sample) => {
+    const control = sample.querySelector<HTMLElement>('[data-reveal-play]');
+    const target = sample.querySelector<HTMLElement>('[data-reveal]');
+    if (control === null || target === null) return;
+    control.hidden = false;
+    control.querySelector('button')?.addEventListener('click', () => {
+      delete target.dataset.revealed;
+      requestAnimationFrame(() => requestAnimationFrame(() => (target.dataset.revealed = '')));
+    });
+  });
+</script>

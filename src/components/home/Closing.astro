@@ -1,0 +1,41 @@
+---
+import EditorLine from '../editor/EditorLine.astro';
+import Container from '../ui/Container.astro';
+import Section from '../ui/Section.astro';
+import { DownloadQuery } from '../../islands/DownloadQuery';
+import type { DownloadCopy, DownloadData, InstallCopy, LaunchTips, QueryCopy } from '../../lib/home/download';
+
+// The closing download (spec 0003, AC-22): a short editor pane whose one
+// comment line is the section heading, then the download island in its
+// compact form. The heading is static Astro passed in as line 1, never hydrated.
+interface Props {
+  comment: string;
+  data: DownloadData;
+  copy: { readonly query: QueryCopy; readonly download: DownloadCopy; readonly install: InstallCopy };
+  tips: LaunchTips;
+}
+
+const { comment, data, copy, tips } = Astro.props;
+---
+
+<Section id="get" labelledby="get-heading">
+  <Container>
+    <div class="max-w-3xl">
+      <DownloadQuery client:idle form="compact" data={data} copy={copy} tips={tips}>
+        <EditorLine size="h2">
+          <h2 id="get-heading"><span class="closing-comment" aria-hidden="true">--</span> {comment}</h2>
+        </EditorLine>
+      </DownloadQuery>
+    </div>
+  </Container>
+</Section>
+
+<style is:global>
+  /* The comment marker before the heading, pulled together like the hero's. */
+  .closing-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+</style>

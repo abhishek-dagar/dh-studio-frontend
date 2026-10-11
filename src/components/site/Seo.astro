@@ -1,0 +1,35 @@
+---
+import type { HeadTags } from '../../lib/seo/head';
+
+// The SEO and sharing head (spec 0004, AC-1, AC-2, AC-5, AC-10, AC-11). Every
+// value comes from headTags; `jsonLd` is already serialized with `<` escaped.
+interface Props {
+  tags: HeadTags;
+  jsonLd?: string | undefined;
+}
+
+const { tags, jsonLd } = Astro.props;
+const { og } = tags;
+---
+
+<title>{tags.title}</title>
+<meta name="description" content={tags.description} />
+<link rel="canonical" href={tags.canonical} />
+{tags.robots !== null && <meta name="robots" content={tags.robots} />}
+<meta name="theme-color" content={tags.themeColors.dark} media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content={tags.themeColors.light} media="(prefers-color-scheme: light)" />
+
+<meta property="og:title" content={og.title} />
+<meta property="og:description" content={og.description} />
+<meta property="og:url" content={og.url} />
+<meta property="og:type" content={og.type} />
+<meta property="og:site_name" content={og.siteName} />
+<meta property="og:locale" content={og.locale} />
+<meta property="og:image" content={og.image} />
+<meta property="og:image:width" content={String(og.width)} />
+<meta property="og:image:height" content={String(og.height)} />
+<meta property="og:image:type" content={og.imageType} />
+<meta property="og:image:alt" content={og.imageAlt} />
+<meta name="twitter:card" content={tags.twitterCard} />
+
+{jsonLd !== undefined && <script is:inline type="application/ld+json" set:html={jsonLd} />}

@@ -1,0 +1,14 @@
+# First launch help, shown under the result grid after a macOS or Windows download (spec 0003, AC-7).
+# The builds are not code signed yet, so each system warns once on first launch.
+macos:
+  title: If macOS says DH Studio is damaged or can't be opened
+  steps:
+    - Move DH Studio to your Applications folder.
+    - Open Terminal, run this command, then open the app again. You only do this once.
+  command: xattr -cr "/Applications/DH Studio.app"
+
+windows:
+  title: If Windows protected your PC appears
+  steps:
+    - Choose More info.
+    - Choose Run anyway. You only do this once.

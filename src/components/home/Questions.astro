@@ -1,0 +1,86 @@
+---
+import { toParagraphs } from '../../lib/home/faq';
+import { resultGridClass } from '../../lib/ui/result';
+import EditorLine from '../editor/EditorLine.astro';
+import EditorPane from '../editor/EditorPane.astro';
+import Tok from '../editor/Tok.astro';
+import Container from '../ui/Container.astro';
+import Section from '../ui/Section.astro';
+
+// The questions table (spec 0003, AC-21): every answer visible in a real
+// table, one row per `faq` entry, so the page keeps its result set voice.
+// No island. Below md each row stacks the question above its answer.
+interface Props {
+  heading: string;
+  /** Already in display order. */
+  entries: readonly { readonly id: string; readonly question: string; readonly answer: string }[];
+}
+
+const { heading, entries } = Astro.props;
+---
+
+<Section id="questions" labelledby="questions-heading">
+  <Container class="flex flex-col gap-8">
+    <h2 id="questions-heading" class="max-w-(--width-prose) text-h2">{heading}</h2>
+
+    <EditorPane tabs={[{ label: 'questions.sql', current: true }]}>
+      <EditorLine decorative>
+        <Tok kind="keyword">select</Tok> question<Tok kind="punctuation">,</Tok> answer <Tok kind="keyword">from</Tok> faq<Tok
+          kind="punctuation">;</Tok
+        >
+      </EditorLine>
+      <table slot="result" class:list={[resultGridClass({ stack: true }), 'questions-grid']} role="table">
+        <caption class="sr-only">{heading}</caption>
+        <thead role="rowgroup">
+          <tr role="row">
+            <th scope="col" role="columnheader">question</th>
+            <th scope="col" role="columnheader">answer</th>
+          </tr>
+        </thead>
+        <tbody role="rowgroup">
+          {
+            entries.map((entry) => (
+              <tr role="row">
+                <th scope="row" role="rowheader" class="font-medium text-fg">
+                  {entry.question}
+                </th>
+                <td role="cell" class="text-fg-muted">
+                  <div class="flex max-w-(--width-prose) flex-col gap-2">
+                    {toParagraphs(entry.answer).map((paragraph) => (
+                      <p>{paragraph}</p>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </EditorPane>
+  </Container>
+</Section>
+
+<style>
+  /* Answers are prose, so cells sit at the top and the question column keeps a readable measure. */
+  @media (min-width: 48rem) {
+    .questions-grid :global(tbody :is(th, td)) {
+      vertical-align: top;
+      padding-block: 0.875rem;
+    }
+
+    .questions-grid :global(tbody th) {
+      inline-size: 36%;
+    }
+  }
+
+  /* Stacked on phones: the question takes a full line above its answer. */
+  @media (max-width: 47.99rem) {
+    .questions-grid:global(.stack) :global(tbody :is(th, td)) {
+      grid-column: 1 / -1;
+    }
+
+    .questions-grid:global(.stack) :global(tbody tr) {
+      gap: 0.375rem;
+    }
+  }
+</style>

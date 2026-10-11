@@ -1,0 +1,246 @@
+---
+import Copy from '@lucide/astro/icons/copy';
+import Download from '@lucide/astro/icons/download';
+import Settings from '@lucide/astro/icons/settings';
+import { Accordion } from '../../islands/Accordion';
+import { Tooltip } from '../../islands/Tooltip';
+import { downloadHref, repoUrl } from '../../lib/site';
+import Logo from '../site/Logo.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import CodeBlock from '../ui/CodeBlock.astro';
+import Input from '../ui/Input.astro';
+import Kbd from '../ui/Kbd.astro';
+import Link from '../ui/Link.astro';
+import Surface from '../ui/Surface.astro';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+
+// Every base component in its variants and states.
+
+const variants = [
+  { variant: 'primary', label: 'Primary', note: 'The one action that matters on a screen.' },
+  { variant: 'secondary', label: 'Secondary', note: 'Supporting actions, with a strong control border.' },
+  { variant: 'ghost', label: 'Ghost', note: 'Quiet actions in toolbars and menus.' },
+] as const;
+
+const tokenCss = `/* Components use roles, never primitives. */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-surface);
+  transition: border-color var(--dur-fast) var(--ease-in-out);
+}`;
+
+const buttonUsage = `import { buttonClass } from '../lib/ui/button';
+
+// One recipe for Astro and React, so both render the same button.
+const download = buttonClass({ variant: 'primary', size: 'lg' });
+const settings = buttonClass({ variant: 'ghost', iconOnly: true });`;
+
+const rules = [
+  {
+    value: 'red',
+    title: 'Where can red appear?',
+    body: 'Only on the primary action (fill, hover and edge), the focus ring, text selection, the marker on the highlighted result row and the Surface accent hairline.\n\nLinks are fg with an underline. There is no red text, red badge or red icon anywhere else, and errors are shown by an icon and words, never by red.',
+  },
+  {
+    value: 'depth',
+    title: 'Where does depth live?',
+    body: 'Raised and floating levels and their shadows appear only on app windows, popup cards, the header pill and true overlays such as the menu and tooltips. Glass is on the header pill alone.\n\nCards, editor panes, buttons, inputs and text stay flat on ground or surface.',
+  },
+  {
+    value: 'token',
+    title: 'How do I add a token?',
+    body: 'Add the role to both theme blocks in tokens.css, map it in theme.css if a utility needs it, and add a contrast pair in contrast-pairs.ts.\n\nThen run the tests. A pair below AA fails the build before it reaches anyone.',
+  },
+] as const;
+---
+
+<ShowcaseSection
+  id="components"
+  title="Components"
+  intro="The base parts every page composes from. Each one shows the same focus ring on keyboard focus and works without a mouse. Press Tab to walk through them."
+>
+  <Specimen
+    title="Button"
+    note="Primary, secondary and ghost, in md and lg, with an icon only form that always carries a label. Given an href it renders a link. Hover and press any button to see its hover and pressed states."
+  >
+    <div class="flex flex-col divide-y divide-line">
+      {
+        variants.map((item) => (
+          <div class="grid gap-4 py-5 first:pt-0 last:pb-0 lg:grid-cols-[11rem_minmax(0,1fr)] lg:items-center lg:gap-6">
+            <div class="flex flex-col">
+              <span class="font-medium">{item.label}</span>
+              <span class="text-caption text-fg-muted">{item.note}</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <Button variant={item.variant}>Connect</Button>
+              <Button variant={item.variant} size="lg">
+                <Download aria-hidden="true" />
+                Download
+              </Button>
+              <Button variant={item.variant} iconOnly label={`Connection settings, ${item.label.toLowerCase()}`}>
+                <Settings aria-hidden="true" />
+              </Button>
+              <Button variant={item.variant} size="lg" iconOnly label={`Copy, ${item.label.toLowerCase()} large`}>
+                <Copy aria-hidden="true" />
+              </Button>
+              <Button variant={item.variant} disabled>
+                Disabled
+              </Button>
+              <Button variant={item.variant} href={downloadHref}>
+                As a link
+              </Button>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <div class="flex flex-wrap items-center gap-4 rounded-field bg-ground p-4">
+      <Button class="outline-2 outline-offset-2 outline-focus">Focus ring</Button>
+      <p class="max-w-(--width-prose) text-caption text-fg-muted">
+        Shown here for reference. On a real control the 2px focus ring appears only on keyboard focus, never on a click.
+      </p>
+    </div>
+  </Specimen>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <Specimen title="Input" note="A visible label always. An invalid field is marked by an icon, a message and a heavier border, never by color alone.">
+      <div class="flex flex-col gap-5">
+        <Input id="ds-name" label="Connection name" placeholder="project-planit" hint="Shown in the sidebar." />
+        <Input id="ds-database" label="Database" value="planit_dev" />
+        <Input id="ds-host" label="Host" value="local host" error="Enter a host without spaces, like localhost." />
+        <Input id="ds-password" label="Password" type="password" value="keychain" hint="Saved to your system keychain." />
+        <Input id="ds-port" label="Port" value="5432" disabled />
+      </div>
+    </Specimen>
+
+    <div class="flex min-w-0 flex-col gap-6">
+      <Specimen title="Link" note="Text links are fg with a quiet underline that turns fg on hover. Never red, always the same tab.">
+        <p>
+          Read the <Link href={`${repoUrl}#readme`}>project readme</Link>, or browse <Link href={`${repoUrl}/releases`}>every release</Link> on GitHub.
+        </p>
+      </Specimen>
+
+      <Specimen title="Badge" note="Short status labels. Signal pairs its dot with words.">
+        <div class="flex flex-wrap items-center gap-2">
+          <Badge variant="signal">Latest</Badge>
+          <Badge variant="signal">Available</Badge>
+          <Badge>PostgreSQL</Badge>
+          <Badge>SQLite</Badge>
+          <Badge variant="outline">Apache 2.0</Badge>
+        </div>
+      </Specimen>
+
+      <Specimen title="Kbd" note="Key names in Geist Mono on an inset surface, one key per cap.">
+        <ul class="flex flex-col gap-3">
+          <li class="flex flex-wrap items-center justify-between gap-2">
+            <span>Command palette</span>
+            <Kbd keys={['⌘', '⇧', 'P']} />
+          </li>
+          <li class="flex flex-wrap items-center justify-between gap-2">
+            <span>Run the query</span>
+            <Kbd keys={['⌘', 'Enter']} />
+          </li>
+          <li class="flex flex-wrap items-center justify-between gap-2">
+            <span>New tab</span>
+            <Kbd keys={['Ctrl', 'T']} />
+          </li>
+        </ul>
+      </Specimen>
+    </div>
+  </div>
+
+  <Specimen title="Surface" note="A flat panel with a line border and a 1px top highlight, in three paddings. With accent it carries a red hairline along its top edge. It never lifts; depth belongs to windows and overlays.">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <Surface padding="sm">
+        <p class="font-medium">Small</p>
+        <p class="text-caption text-fg-muted">Dense lists and toolbars</p>
+      </Surface>
+      <Surface padding="md">
+        <p class="font-medium">Medium</p>
+        <p class="text-caption text-fg-muted">The default for cards</p>
+      </Surface>
+      <Surface padding="lg">
+        <p class="font-medium">Large</p>
+        <p class="text-caption text-fg-muted">Feature panels</p>
+      </Surface>
+      <Surface accent>
+        <p class="font-medium">Accent</p>
+        <p class="text-caption text-fg-muted">One highlighted card in a group</p>
+      </Surface>
+    </div>
+  </Specimen>
+
+  <Specimen
+    title="CodeBlock"
+    note="Highlighted at build time, with colors that swap with the theme. Long lines scroll inside the block, and the copy button says what happened."
+  >
+    <div class="grid gap-4 xl:grid-cols-2">
+      <CodeBlock code={tokenCss} lang="css" title="panel.css" />
+      <CodeBlock code={buttonUsage} lang="ts" title="download.ts" />
+    </div>
+    <CodeBlock code="bun install && bun run build" lang="shell" copy={false} />
+  </Specimen>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <Specimen title="Accordion" note="Enter or Space opens an item; the arrow keys, Home and End move between headers.">
+      <Accordion client:visible items={rules} />
+    </Specimen>
+
+    <Specimen title="Tooltip" note="Shows on hover and on keyboard focus, closes on Escape, and only adds to a trigger that already has a name.">
+      <ul class="flex flex-col gap-4">
+        <li class="flex items-center gap-1">
+          <span>Unsigned build</span>
+          <Tooltip
+            client:visible
+            label="About the unsigned build"
+            tip="macOS may warn on first launch because the build is not signed yet. Right click the app and choose Open."
+          />
+        </li>
+        <li class="flex items-center gap-1">
+          <span>Shortcuts</span>
+          <Tooltip client:visible icon="keyboard" label="Keyboard shortcuts" tip="Press Command Shift P anywhere to open the command palette." />
+        </li>
+        <li class="flex items-center gap-1">
+          <span>License</span>
+          <Tooltip
+            client:visible
+            label="Read the license on GitHub"
+            tip="Apache 2.0. Opens the license file on GitHub."
+            href={`${repoUrl}/blob/HEAD/LICENSE`}
+          />
+        </li>
+      </ul>
+    </Specimen>
+  </div>
+
+  <Specimen
+    title="Brand and site chrome"
+    note="The logo is the app icon beside the wordmark in Mona Sans 600 at normal width. The header and footer on this page are the real ones."
+  >
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="flex min-h-28 items-center justify-center rounded-field bg-ground p-6">
+        <Logo />
+      </div>
+      <div class="flex min-h-28 items-center justify-center rounded-field bg-ground p-6">
+        <Logo showWordmark={false} />
+        <span class="sr-only">The logo mark on its own</span>
+      </div>
+    </div>
+    <ul class="grid gap-4 text-fg-muted sm:grid-cols-3">
+      <li class="border-t border-line pt-4">
+        <span class="font-semibold text-fg">Header.</span> A floating glass pill just below the top. Below md its links move
+        into a menu that closes on Escape.
+      </li>
+      <li class="border-t border-line pt-4">
+        <span class="font-semibold text-fg">Theme toggle.</span> The sun or moon button in the header. It follows your system
+        on a first visit and remembers your choice.
+      </li>
+      <li class="border-t border-line pt-4">
+        <span class="font-semibold text-fg">Footer.</span> Project links and the license line, on the ground with a top line.
+      </li>
+    </ul>
+  </Specimen>
+</ShowcaseSection>

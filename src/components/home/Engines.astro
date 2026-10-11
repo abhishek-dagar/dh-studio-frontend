@@ -1,0 +1,308 @@
+---
+import Database from '@lucide/astro/icons/database';
+import MongoDB from '../../assets/icons/databases/mongodb.svg';
+import PostgreSQL from '../../assets/icons/databases/postgresql.svg';
+import SQLite from '../../assets/icons/databases/sqlite.svg';
+import { diagramLayout, type EngineIcon } from '../../lib/home/engines';
+import DiagramTable from '../editor/DiagramTable.astro';
+import EditorPane from '../editor/EditorPane.astro';
+import Container from '../ui/Container.astro';
+import Section from '../ui/Section.astro';
+
+// The engines schema diagram (spec 0003, AC-17, AC-24, AC-25): a `dh_studio`
+// hub in the center related to one table per engine, drawn like the app's
+// schema designer. No island and no JavaScript. The meaning lives in the list
+// (each engine's name and sentence); the hub, the field rows and the lines are
+// decoration. Placement comes from `diagramLayout`, so adding an engine is a
+// content change only (plus its icon below).
+//
+// Icons are Simple Icons (CC0), monochrome in the current text color. Simple
+// Icons carries no AWS logos, so DocumentDB takes the plain lucide database icon.
+interface Props {
+  engines: {
+    readonly heading: string;
+    readonly hub: string;
+    readonly rows: readonly {
+      readonly name: string;
+      readonly icon: EngineIcon;
+      readonly what: string;
+      readonly fields: readonly { readonly name: string; readonly type: string }[];
+    }[];
+  };
+}
+
+const { engines } = Astro.props;
+
+const icons = { sqlite: SQLite, postgresql: PostgreSQL, mongodb: MongoDB, documentdb: Database } as const;
+const layout = diagramLayout(engines.rows);
+const placed = engines.rows.map((row, index) => ({ row, place: layout.engines[index]! }));
+
+const hubRows = [
+  { name: 'id', kind: 'key' as const },
+  ...layout.engines.map((engine) => ({ name: engine.key, kind: 'link' as const, anchor: engine.hubAnchor })),
+];
+
+const lineParts = ['hub', 'lane', 'engine'] as const;
+---
+
+<Section id="engines" labelledby="engines-heading">
+  <Container class="flex flex-col gap-8">
+    <h2 id="engines-heading" class="max-w-(--width-prose) text-h2">{engines.heading}</h2>
+
+    <EditorPane canvas tabs={[{ label: 'Diagram', current: true }]}>
+      <div class="engines-diagram" style={`--rows: ${layout.rowsPerSide}`}>
+        <div class="engines-hub" aria-hidden="true">
+          <DiagramTable name={engines.hub} rows={hubRows} selected />
+        </div>
+
+        <ul class="engines-list" role="list" aria-label="Engines">
+          {
+            placed.map(({ row, place }) => {
+              const Icon = icons[row.icon];
+              return (
+                <li class="engines-item" data-side={place.side} style={`--row: ${place.sideIndex + 1}`}>
+                  <DiagramTable
+                    name={row.name}
+                    headingLevel={3}
+                    rows={[{ name: 'id', kind: 'key', anchor: place.engineAnchor }, ...row.fields]}
+                  >
+                    <Fragment slot="icon">
+                      <Icon />
+                    </Fragment>
+                  </DiagramTable>
+                  <p class="engines-what">{row.what}</p>
+                </li>
+              );
+            })
+          }
+        </ul>
+
+        {
+          layout.engines.flatMap((engine) =>
+            lineParts.map((part) => (
+              <span
+                class="engines-line"
+                data-part={part}
+                data-side={engine.side}
+                style={`--hub: ${engine.hubAnchor}; --engine: ${engine.engineAnchor}; --lane: ${engine.lane}`}
+                aria-hidden="true"
+              />
+            )),
+          )
+        }
+      </div>
+    </EditorPane>
+  </Container>
+</Section>
+
+<style>
+  .engines-diagram {
+    --line-w: 1.5px;
+    --half: calc(var(--line-w) / 2);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .engines-what {
+    margin: 0.625rem 0 0;
+    color: var(--fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .engines-line {
+    display: none;
+  }
+
+  /*
+   * Below lg: the hub on top, the engines under it, joined by one spine on the
+   * left. Each item's border is the spine; the last item draws its piece down to
+   * its id row only. A branch meets each id row. Plain borders, every browser.
+   */
+  @media (max-width: 63.99rem) {
+    .engines-list {
+      padding-inline-start: 1rem;
+    }
+
+    .engines-item {
+      position: relative;
+      padding-top: 1.5rem;
+      padding-inline-start: 1rem;
+      border-inline-start: 1px solid var(--action);
+    }
+
+    .engines-item:last-child {
+      padding-inline-start: calc(1rem + 1px);
+      border-inline-start: 0;
+      clip-path: inset(0);
+    }
+
+    .engines-item :global([data-kind='key']) {
+      position: relative;
+    }
+
+    /* The branch: from the spine across the gap and the box's border to the id row. */
+    .engines-item :global([data-kind='key'])::before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 0.5px);
+      right: 100%;
+      width: calc(1rem + 1px);
+      height: 1px;
+      background: var(--action);
+    }
+
+    /* The spine's last piece, clipped at the item's top so it stops at the id row. */
+    .engines-item:last-child :global([data-kind='key'])::after {
+      content: '';
+      position: absolute;
+      right: calc(100% + 1rem + 1px);
+      bottom: 50%;
+      width: 1px;
+      height: 100vh;
+      background: var(--action);
+    }
+  }
+
+  /* From lg: left boxes, gutter, hub, gutter, right boxes. The list is a subgrid so it keeps list semantics. */
+  @media (min-width: 64rem) {
+    .engines-diagram {
+      display: grid;
+      grid-template-columns: 15rem minmax(4rem, 9rem) 15rem minmax(4rem, 9rem) 15rem;
+      grid-template-rows: repeat(var(--rows), auto);
+      justify-content: center;
+      row-gap: 2rem;
+    }
+
+    .engines-hub {
+      grid-column: 3;
+      grid-row: 1 / -1;
+      align-self: center;
+    }
+
+    .engines-list {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-row: 1 / -1;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+    }
+
+    .engines-item {
+      grid-row: var(--row);
+    }
+
+    .engines-item[data-side='left'] {
+      grid-column: 1;
+    }
+
+    .engines-item[data-side='right'] {
+      grid-column: 5;
+    }
+  }
+
+  /*
+   * The relation lines, attached with CSS anchor positioning: a hub stub, a lane
+   * and an engine stub per engine. `--mid` is the gutter's middle; anchor()
+   * resolves against the inset it lands in, so the same expression measures from
+   * the left in `left` and from the right in `right`. Each lane steps toward the
+   * boxes by `--lane`. Without anchor support the pieces stay hidden.
+   */
+  @supports (anchor-name: --a) {
+    @media (min-width: 64rem) {
+      .engines-line {
+        display: block;
+        position: absolute;
+        background: var(--action);
+        pointer-events: none;
+      }
+
+      .engines-line[data-side='left'] {
+        --mid: calc((anchor(var(--engine) right) + anchor(var(--hub) left)) / 2);
+        --step: calc(var(--lane) * -0.75rem);
+      }
+
+      .engines-line[data-side='right'] {
+        --mid: calc((anchor(var(--engine) left) + anchor(var(--hub) right)) / 2);
+        --step: calc(var(--lane) * 0.75rem);
+      }
+
+      .engines-line:is([data-part='hub'], [data-part='engine']) {
+        height: var(--line-w);
+      }
+
+      .engines-line[data-part='hub'] {
+        top: calc(anchor(var(--hub) center) - var(--half));
+      }
+
+      .engines-line[data-part='engine'] {
+        top: calc(anchor(var(--engine) center) - var(--half));
+      }
+
+      .engines-line[data-part='lane'] {
+        top: calc(min(anchor(var(--hub) center), anchor(var(--engine) center)) - var(--half));
+        bottom: calc(min(anchor(var(--hub) center), anchor(var(--engine) center)) - var(--half));
+        left: calc(var(--mid) + var(--step) - var(--half));
+        width: var(--line-w);
+      }
+
+      .engines-line[data-side='left'][data-part='hub'] {
+        left: calc(var(--mid) + var(--step) - var(--half));
+        right: anchor(var(--hub) left);
+      }
+
+      .engines-line[data-side='left'][data-part='engine'] {
+        left: anchor(var(--engine) right);
+        right: calc(var(--mid) - var(--step) - var(--half));
+      }
+
+      .engines-line[data-side='right'][data-part='hub'] {
+        left: anchor(var(--hub) right);
+        right: calc(var(--mid) - var(--step) - var(--half));
+      }
+
+      .engines-line[data-side='right'][data-part='engine'] {
+        left: calc(var(--mid) + var(--step) - var(--half));
+        right: anchor(var(--engine) left);
+      }
+
+      /* The arrowhead at the engine's edge, pointing into the box. */
+      .engines-line[data-part='engine']::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 6px;
+        height: 7px;
+        background: inherit;
+        translate: 0 -50%;
+      }
+
+      .engines-line[data-side='left'][data-part='engine']::after {
+        left: 0;
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      }
+
+      .engines-line[data-side='right'][data-part='engine']::after {
+        right: 0;
+        clip-path: polygon(100% 50%, 0 0, 0 100%);
+      }
+    }
+  }
+
+  /* Forced colors: the lines, arrowheads, spine and branches draw in CanvasText. */
+  @media (forced-colors: active) {
+    .engines-line,
+    .engines-line::after,
+    .engines-item :global([data-kind='key'])::before,
+    .engines-item :global([data-kind='key'])::after {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    .engines-item {
+      border-color: CanvasText;
+    }
+  }
+</style>
