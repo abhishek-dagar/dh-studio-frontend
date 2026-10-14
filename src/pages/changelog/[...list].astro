@@ -1,0 +1,110 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ChangelogHeader from '../../components/changelog/ChangelogHeader.astro';
+import ChangelogPager from '../../components/changelog/ChangelogPager.astro';
+import ChangelogTabs from '../../components/changelog/ChangelogTabs.astro';
+import ReleaseEntry from '../../components/changelog/ReleaseEntry.astro';
+import Container from '../../components/ui/Container.astro';
+import Link from '../../components/ui/Link.astro';
+import Section from '../../components/ui/Section.astro';
+import SectionIndexed from '../../components/ui/SectionIndexed.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  availableFilters,
+  changelogCopy,
+  changelogViews,
+  entriesFor,
+  fill,
+  indexItems,
+  isLatest,
+  pageDescription,
+  pageTitle,
+  releaseEntries,
+  viewSlug,
+  type ChangelogView,
+  type ReleaseEntry as Entry,
+} from '../../lib/changelog';
+import { latestRelease } from '../../lib/release';
+import { RELEASES_FEED_URL, RELEASES_PAGE_URL } from '../../lib/release/config';
+
+// The changelog lists (spec 0005, AC-1, AC-6 to AC-8, AC-12, AC-13): All,
+// Stable and Prereleases, ten per page. With no release history in this build,
+// only /changelog/ is built, in its unavailable state.
+export const getStaticPaths = (async () => {
+  const entries = await releaseEntries();
+  if (entries.length === 0) return [{ params: { list: undefined }, props: { view: null, total: 0, filters: [] } }];
+  const filters = availableFilters(entries);
+  return changelogViews(entries).map((view) => ({
+    params: { list: viewSlug(view.path) },
+    props: { view, total: entriesFor(entries, view.filter).length, filters },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  view: ChangelogView<Entry> | null;
+  total: number;
+  filters: ReturnType<typeof availableFilters>;
+}
+
+const { view, total, filters } = Astro.props;
+const [copy, release] = await Promise.all([changelogCopy(), latestRelease]);
+
+const subject = { kind: 'list', filter: view?.filter ?? 'all', page: view?.page ?? 1, pageCount: view?.pageCount ?? 1 } as const;
+const isLastPage = view === null || view.page === view.pageCount;
+// The version index (AC-18): only on a list page with 2 or more entries, never the unavailable state.
+const badges = { latest: copy.entry.latest, prerelease: copy.entry.prerelease };
+const items = view === null ? [] : indexItems(view.entries, release, badges);
+---
+
+<BaseLayout title={pageTitle(subject, copy)} description={pageDescription(subject, copy)} feedUrl={RELEASES_FEED_URL}>
+  <Section class="pt-10 md:pt-16">
+    <Container class:list={['flex max-w-3xl flex-col gap-6', { 'lg:max-w-5xl': items.length > 0 }]}>
+      <ChangelogHeader
+        heading={copy.heading}
+        tab={copy.editor.tab}
+        query={copy.editor.queries[subject.filter]}
+        rows={view === null ? undefined : `${total} ${copy.editor.rowsWord}`}
+      />
+      <ChangelogTabs filters={filters} current={subject.filter} copy={copy} />
+
+      {/* The index comes before the releases in the DOM, so keyboard order is tabs, index, releases at every width (AC-23). */}
+      <SectionIndexed label={copy.index.label} items={items}>
+        {
+          view === null ? (
+            <p>
+              {copy.unavailable} <Link href={RELEASES_PAGE_URL}>{copy.unavailableLink}</Link>
+            </p>
+          ) : (
+            <ol class="flex flex-col gap-6">
+              {view.entries.map((entry) => (
+                <li>
+                  <ReleaseEntry entry={entry} latest={isLatest(release, entry.data.version)} copy={copy.entry} />
+                </li>
+              ))}
+            </ol>
+          )
+        }
+
+        {
+          view !== null && (
+            <ChangelogPager
+              label={copy.pages.label}
+              newer={view.newerPath === undefined ? undefined : { href: view.newerPath, text: copy.pages.newer }}
+              older={view.olderPath === undefined ? undefined : { href: view.olderPath, text: copy.pages.older }}
+              position={fill(copy.pages.position, { page: view.page, count: view.pageCount })}
+            />
+          )
+        }
+
+        {
+          view !== null && isLastPage && (
+            <p class="text-fg-muted">
+              {copy.everyRelease} <Link href={RELEASES_PAGE_URL}>{copy.everyReleaseLink}</Link>
+            </p>
+          )
+        }
+      </SectionIndexed>
+    </Container>
+  </Section>
+</BaseLayout>
+

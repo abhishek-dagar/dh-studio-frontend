@@ -1,0 +1,63 @@
+---
+import EditorLine from '../editor/EditorLine.astro';
+import Container from '../ui/Container.astro';
+import Link from '../ui/Link.astro';
+import Section from '../ui/Section.astro';
+import { DownloadQuery } from '../../islands/DownloadQuery';
+import type { DownloadCopy, DownloadData, InstallCopy, LaunchTips, QueryCopy } from '../../lib/home/download';
+import { repoUrl } from '../../lib/site';
+
+// The Home hero (spec 0003, slice 1): an editor session whose first comment
+// line is the headline, a query for downloads where the OS is yours, and its
+// result. The island owns everything that depends on the visitor; the headline
+// is static Astro passed in as line 1, so it is never hydrated.
+interface Props {
+  hero: { readonly headline: string; readonly subline: string; readonly openSource: string; readonly viewSource: string };
+  data: DownloadData;
+  copy: { readonly query: QueryCopy; readonly download: DownloadCopy; readonly install: InstallCopy };
+  tips: LaunchTips;
+}
+
+const { hero, data, copy, tips } = Astro.props;
+---
+
+<Section class="pt-10 md:pt-16">
+  <Container>
+    <DownloadQuery client:idle data={data} copy={copy} tips={tips}>
+      <EditorLine size="display" class="hero-headline">
+        <h1><span class="hero-comment" aria-hidden="true">--</span> {hero.headline}</h1>
+      </EditorLine>
+    </DownloadQuery>
+
+    <div class="mt-8 flex max-w-(--width-prose) flex-col gap-3 md:ps-[calc(1px+var(--editor-gutter)+var(--editor-code-gap))]">
+      <p class="text-lead text-fg-muted">{hero.subline}</p>
+      <p class="text-fg-muted">
+        {hero.openSource} <Link href={repoUrl}>{hero.viewSource}</Link>
+      </p>
+    </div>
+  </Container>
+</Section>
+
+<style is:global>
+  /*
+   * The headline line: a mono comment marker before display type. Geist Mono
+   * spaces its dashes a full cell apart, so they are pulled together to read as
+   * one `--` at this size. The measure is wider than the 14ch display default,
+   * so the marker does not cost the headline a line.
+   */
+  .hero-headline .editor-line-text {
+    max-inline-size: 19ch;
+  }
+
+  /* depth.css spaces a headline line from the next one as a sibling; here the query sits in the island's group. */
+  .hero-headline {
+    margin-block-end: 0.75rem;
+  }
+
+  .hero-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+</style>

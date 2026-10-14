@@ -1,0 +1,24 @@
+---
+// One counted line of an EditorPane (spec 0002, AC-9). The pane numbers its
+// lines with a CSS counter in an aria-hidden gutter. A `display` or `h2` line
+// holds headline sized Mona Sans (a comment headline), and its number sits on
+// that line's first baseline. Put a heading element inside when the line is one.
+interface Props {
+  size?: 'code' | 'h2' | 'display';
+  /** Indent in characters, for code that nests. */
+  indent?: number;
+  /** Hides the line from assistive technology, for lines that only decorate. */
+  decorative?: boolean;
+  class?: string;
+}
+
+const { size = 'code', indent = 0, decorative = false, class: className } = Astro.props;
+
+const sizeClass = { code: undefined, h2: 'text-h2', display: 'text-display' } as const;
+---
+
+<div class:list={['editor-line', className]} data-size={size} aria-hidden={decorative ? 'true' : undefined}>
+  <div class:list={['editor-line-text', sizeClass[size]]} style={indent > 0 ? `padding-inline-start: ${indent}ch` : undefined}>
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,22 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+import Tok from '../../editor/Tok.astro';
+
+// Query console: the document the find on managers returns (spec 0008, AC-18).
+// Decorative copy of the app; it shows no password, salt or hash field.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 px-2 pt-1 pb-1.5 font-medium text-fg-muted">Result</p>
+  <pre class="m-0 rounded-inset border border-line bg-ground px-2 py-1.5 font-mono text-[0.85em] leading-relaxed whitespace-pre-wrap"><Tok kind="punctuation">{'{'}</Tok>
+  <Tok kind="ident">_id</Tok><Tok kind="punctuation">:</Tok> <Tok kind="function">ObjectId</Tok><Tok kind="punctuation">(</Tok><Tok kind="string">"63d9…"</Tok><Tok kind="punctuation">),</Tok>
+  <Tok kind="ident">displayName</Tok><Tok kind="punctuation">:</Tok> <Tok kind="string">"Manager"</Tok><Tok kind="punctuation">,</Tok>
+  <Tok kind="ident">designation</Tok><Tok kind="punctuation">:</Tok> <Tok kind="string">"MANAGER"</Tok>
+<Tok kind="punctuation">{'}'}</Tok></pre>
+  <p class="m-0 px-2 pt-1.5 font-mono text-[0.85em] text-fg-muted">1 document · 4 ms</p>
+</PopupCard>

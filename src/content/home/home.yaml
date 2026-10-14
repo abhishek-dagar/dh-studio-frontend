@@ -1,0 +1,95 @@
+# Home page copy (spec 0003). Edit freely; the schema in src/content.config.ts checks every field.
+home:
+  meta:
+    title: DH Studio, a fast desktop client for SQLite, PostgreSQL, MongoDB and DocumentDB
+    description: A free, open source desktop app to browse, query and design SQLite, PostgreSQL, MongoDB and Amazon DocumentDB databases. For macOS, Windows and Linux.
+
+  # The social card drawn at /og.png (spec 0004). Caps: comment 56, query 56, row 40, alt 160 characters.
+  card:
+    comment: Every database, on one quiet desk.
+    query: select engines from dh_studio;
+    row: SQLite, PostgreSQL, MongoDB, DocumentDB
+    alt: 'DH Studio in its editor look: the line "Every database, on one quiet desk." above a query whose result reads SQLite, PostgreSQL, MongoDB, DocumentDB.'
+
+  hero:
+    headline: Every database, on one quiet desk.
+    subline: DH Studio is a fast native desktop client for SQLite, PostgreSQL, MongoDB and Amazon DocumentDB. Browse tables like a spreadsheet, write SQL with a real editor, and keep saved passwords encrypted on your computer.
+    openSource: Free and open source under the Apache 2.0 license.
+    viewSource: View source on GitHub
+
+  query:
+    # Shown after `--` in the query.
+    otherComment: DH Studio runs on your computer. Grab it there.
+    yourSystemComment: your system
+    everySystem: every system
+    triggerLabel: 'Operating system: {os}, change'
+
+  download:
+    fallback: Download from GitHub
+    fallbackRow: No release data in this build.
+    seeReleases: See releases on GitHub
+    allSystems: All systems
+    hideTip: Hide tip
+    rowLink: Download
+    rowsWord: rows
+    versionPrefix: Version
+    releasedWord: released
+    # The download page's primary button reads "Download for macOS" (the OS name is added).
+    detectedPrefix: Download for
+    # Home's status bar link to /download/.
+    pageLink: All files and checksums
+
+  # The one line install, shown in place of a download button (commands live in src/lib/home/install.ts).
+  install:
+    heading: Install with one command
+    note: It fetches the right build for your computer, checks it against the release checksums, installs it and opens DH Studio. Run it again to update.
+    unixLabel: macOS and Linux
+    windowsLabel: Windows, in PowerShell
+    linuxNote: For a .deb or .rpm install, end it with sudo sh instead of sh.
+    copy: Copy
+    copied: Copied
+    copyFailed: Copy failed, select the command to copy it
+
+  # The engines schema diagram: `hub` is the center table, each row adds a table box
+  # and its relation line (1 to 8 engines). Fields: 2 or 3 per engine, name up to 16
+  # and type up to 12 characters. Check each field against the app before shipping.
+  engines:
+    heading: Works with the databases you already run
+    hub: dh_studio
+    rows:
+      - name: SQLite
+        icon: sqlite
+        what: Open any .db file and see every table.
+        fields:
+          - { name: file, type: .db }
+          - { name: server, type: none }
+      - name: PostgreSQL
+        icon: postgresql
+        what: Local or remote, with the password saved encrypted.
+        fields:
+          - { name: host, type: any }
+          - { name: password, type: encrypted }
+          - { name: schemas, type: all }
+      - name: MongoDB
+        icon: mongodb
+        what: Collections as rows, nested fields you can expand.
+        fields:
+          - { name: documents, type: as rows }
+          - { name: nested, type: expandable }
+      - name: Amazon DocumentDB
+        icon: documentdb
+        what: Your MongoDB compatible clusters on AWS, opened the same way.
+        fields:
+          - { name: cluster, type: aws }
+          - { name: wire, type: mongodb }
+
+  features:
+    heading: Everything you reach for, in one sidebar
+    # Each panel links to its section on /features/: "More about Table grid".
+    moreLink: More about
+
+  questions:
+    heading: Before you install
+
+  closing:
+    comment: Ready when you are.

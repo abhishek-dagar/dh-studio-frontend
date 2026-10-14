@@ -1,0 +1,29 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+
+// SQL editor: the autocomplete list for the User table (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+
+const columns = [
+  { name: 'roleId', type: 'text' },
+  { name: 'name', type: 'text' },
+  { name: 'isVerified', type: 'boolean' },
+] as const;
+---
+
+<PopupCard position={position}>
+  <ul class="m-0 flex list-none flex-col p-0">
+    {
+      columns.map((column, index) => (
+        <li class:list={['flex items-center justify-between gap-3 rounded-inset px-2 py-1', index === 0 && 'bg-wash']}>
+          <span class="font-mono text-[0.92em] text-syntax-fg">{column.name}</span>
+          <span class="font-mono text-[0.85em] text-fg-muted">{column.type}</span>
+        </li>
+      ))
+    }
+  </ul>
+</PopupCard>

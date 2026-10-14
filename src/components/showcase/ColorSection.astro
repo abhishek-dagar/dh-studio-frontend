@@ -1,0 +1,130 @@
+---
+import type { TokenSet } from '../../lib/contrast';
+import { primitiveScale, roleRows } from '../../lib/showcase';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+import Swatch from './Swatch.astro';
+
+// Color roles in both themes, the syntax roles, and the primitive scales behind them.
+interface Props {
+  tokens: TokenSet;
+}
+
+const { tokens } = Astro.props;
+
+const roleGroups = [
+  {
+    title: 'Planes',
+    note: 'Four steps up in the dark. In the light all three upper planes are white, and elevation reads from borders and shadows instead.',
+    roles: [
+      { role: 'ground', use: 'Page background' },
+      { role: 'surface', use: 'Flat UI: cards, inputs, code blocks, header fallback' },
+      { role: 'raised', use: 'App window body' },
+      { role: 'floating', use: 'Popup cards, popover menu, tooltip' },
+    ],
+  },
+  {
+    title: 'Text and lines',
+    note: 'Text is fg or fg muted, never red. Line strong is for control borders, line for everything decorative.',
+    roles: [
+      { role: 'fg', use: 'Text, icons and links' },
+      { role: 'fg-muted', use: 'Secondary text, captions, code comments' },
+      { role: 'line', use: 'Decorative borders and dividers' },
+      { role: 'line-strong', use: 'Control borders: inputs, secondary button' },
+    ],
+  },
+  {
+    title: 'The red accent',
+    note: 'Red marks the primary action, the focus ring, selection, the highlighted result row marker and the accent hairline. Nothing else, and never a state.',
+    roles: [
+      { role: 'action', use: 'Primary button fill' },
+      { role: 'action-hover', use: 'Primary button hover' },
+      { role: 'action-fg', use: 'Text on primary' },
+      { role: 'action-edge', use: 'Primary button 1px border' },
+      { role: 'focus', use: 'Focus ring' },
+      { role: 'selection', use: 'Text selection background' },
+    ],
+  },
+  {
+    title: 'Signal',
+    note: 'Latest, live, available. Always paired with a dot and words, so meaning never rests on color.',
+    roles: [
+      { role: 'signal', use: 'Signal badge text and dot' },
+      { role: 'signal-tint', use: 'Signal badge background' },
+    ],
+  },
+  {
+    title: 'Syntax',
+    wide: true,
+    note: 'Code highlighting on the surface plane. Every color clears 4.5:1 in both themes.',
+    roles: [
+      { role: 'syntax-fg', use: 'Plain code text' },
+      { role: 'syntax-keyword', use: 'Keywords' },
+      { role: 'syntax-string', use: 'Strings' },
+      { role: 'syntax-number', use: 'Numbers and constants' },
+      { role: 'syntax-function', use: 'Functions and links' },
+      { role: 'syntax-comment', use: 'Comments' },
+      { role: 'syntax-punctuation', use: 'Punctuation' },
+    ],
+  },
+] as const;
+
+const scales = [
+  { prefix: 'gray', label: 'Gray', note: 'The app\'s near neutral greys, hue 265' },
+  { prefix: 'white', label: 'White text', note: 'Text on the light theme primary' },
+  { prefix: 'red', label: 'Red', note: 'The accent' },
+  { prefix: 'green', label: 'Green', note: 'Latest, live, available' },
+  { prefix: 'syntax', label: 'Syntax', note: 'Code colors, one per theme' },
+] as const;
+---
+
+<ShowcaseSection
+  id="color"
+  title="Color"
+  intro="The desktop app's own greys in both themes, and one red accent. Components only ever use roles, so switching the theme in the header swaps every chip below at once."
+>
+  <div class="grid gap-6 xl:grid-cols-2">
+    {
+      roleGroups.map((group) => (
+        <Specimen title={group.title} note={group.note} class={'wide' in group ? 'xl:col-span-2' : undefined}>
+          <ul class:list={['grid gap-5 sm:grid-cols-2', 'wide' in group ? 'xl:grid-cols-3' : 'xl:grid-cols-1 2xl:grid-cols-2']}>
+            {roleRows(tokens, group.roles).map((row) => (
+              <Swatch token={`--${row.role}`} dark={row.dark} light={row.light} use={row.use} />
+            ))}
+          </ul>
+        </Specimen>
+      ))
+    }
+  </div>
+
+  <Specimen
+    title="Primitives"
+    note="The raw scales the roles point at. They have no Tailwind utility, so a primitive can never leak into a component."
+  >
+    <div class="flex flex-col gap-8">
+      {
+        scales.map((scale) => (
+          <div class="flex flex-col gap-3">
+            <p class="text-caption">
+              <span class="font-semibold text-fg">{scale.label}</span>
+              <span class="text-fg-muted"> · {scale.note}</span>
+            </p>
+            <ul class="grid grid-cols-[repeat(auto-fill,minmax(11.5rem,1fr))] gap-3">
+              {primitiveScale(tokens, scale.prefix).map((primitive) => (
+                <li class="flex min-w-0 flex-col gap-2">
+                  <span
+                    class="h-14 rounded-field border border-line forced-color-adjust-none"
+                    style={`background: var(${primitive.name})`}
+                    aria-hidden="true"
+                  />
+                  <code class="text-[0.75rem] leading-5 break-all text-fg">{primitive.name}</code>
+                  <code class="-mt-2 text-[0.75rem] leading-5 text-fg-muted">{primitive.value}</code>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </Specimen>
+</ShowcaseSection>

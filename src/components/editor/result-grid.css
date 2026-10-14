@@ -1,0 +1,183 @@
+/*
+ * The result grid (spec 0002, AC-11): a real <table> styled like the app's own
+ * result set. Class names live in src/lib/ui/result.ts. Mark the highlighted
+ * row with data-current: it gets the wash and a 3px red marker on its leading
+ * edge (the row that holds the primary action, allowed by the accent rule).
+ */
+
+.result-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.result-grid caption {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--fg-muted);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  text-align: start;
+}
+
+.result-grid thead th {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--fg-muted);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.result-grid tbody :is(td, th) {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--line);
+  font-weight: 400;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.result-grid tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.result-grid .mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+}
+
+.result-grid .action {
+  text-align: end;
+}
+
+.result-grid tr[data-current] > * {
+  background: var(--color-wash);
+}
+
+.result-grid tr[data-current] > :first-child {
+  box-shadow: inset 3px 0 0 var(--action);
+}
+
+.result-grid:dir(rtl) tr[data-current] > :first-child {
+  box-shadow: inset -3px 0 0 var(--action);
+}
+
+/* The status bar: one quiet mono line on the ground, under a grid or an editor pane. */
+.status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  min-height: 2rem;
+  padding: 0.375rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/*
+ * Stack, below md: each row becomes a block, cells two to a line with their
+ * column name above, the action cell full width. Changing a table's display
+ * can drop its semantics in some browsers, so a stack table carries explicit
+ * table roles in its markup (see design.md). Each cell names its column in
+ * data-label; the label is generated text with an empty alternative.
+ */
+@media (max-width: 47.99rem) {
+  .result-grid.stack,
+  .result-grid.stack tbody,
+  .result-grid.stack caption {
+    display: block;
+  }
+
+  .result-grid.stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .result-grid.stack tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .result-grid.stack tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .result-grid.stack tbody :is(td, th) {
+    display: block;
+    padding: 0;
+    border: 0;
+    text-align: start;
+  }
+
+  .result-grid.stack [data-label]::before {
+    content: attr(data-label);
+    content: attr(data-label) / '';
+    display: block;
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: 500;
+  }
+
+  .result-grid.stack .action {
+    grid-column: 1 / -1;
+  }
+
+  .result-grid.stack .action > :is(a, button) {
+    width: 100%;
+  }
+
+  .result-grid.stack tr[data-current] {
+    background: var(--color-wash);
+    box-shadow: inset 3px 0 0 var(--action);
+  }
+
+  .result-grid.stack tr[data-current] > *,
+  .result-grid.stack tr[data-current] > :first-child {
+    background: none;
+    box-shadow: none;
+  }
+}
+
+/* Windows High Contrast: the highlighted row keeps a visible border instead of the marker. */
+@media (forced-colors: active) {
+  .result-grid :is(caption, th, td),
+  .status-bar {
+    border-color: CanvasText;
+  }
+
+  .result-grid tr[data-current] > * {
+    box-shadow: none;
+    border-block: 2px solid CanvasText;
+  }
+
+  .result-grid tr[data-current] > :first-child {
+    border-inline-start: 2px solid CanvasText;
+  }
+
+  .result-grid tr[data-current] > :last-child {
+    border-inline-end: 2px solid CanvasText;
+  }
+
+  .result-grid.stack tr[data-current] {
+    box-shadow: none;
+    outline: 2px solid CanvasText;
+    outline-offset: -2px;
+  }
+}

@@ -1,0 +1,97 @@
+---
+import ColorSection from '../components/showcase/ColorSection.astro';
+import ComponentsSection from '../components/showcase/ComponentsSection.astro';
+import ContrastSection from '../components/showcase/ContrastSection.astro';
+import DepthSection from '../components/showcase/DepthSection.astro';
+import MotionSection from '../components/showcase/MotionSection.astro';
+import SpaceSection from '../components/showcase/SpaceSection.astro';
+import TypeSection from '../components/showcase/TypeSection.astro';
+import Badge from '../components/ui/Badge.astro';
+import Container from '../components/ui/Container.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contrastRows, readShowcaseTokens } from '../lib/showcase';
+import themeCss from '../styles/theme.css?raw';
+import tokensCss from '../styles/tokens.css?raw';
+
+// The design system showcase (scope feature #5): every token and base component
+// from spec 0002 on one page. Values are read from the stylesheets at build time.
+const { tokens, theme } = readShowcaseTokens(tokensCss, themeCss);
+
+const contrast = contrastRows(tokens);
+const facts = [
+  { value: String(Object.keys(tokens.themes.dark).length), label: 'roles, each defined for both themes' },
+  { value: `${contrast.filter((row) => row.passes).length}/${contrast.length}`, label: 'contrast pairs at WCAG AA' },
+  { value: '2', label: 'families: Mona Sans and Geist Mono' },
+] as const;
+
+const chapters = [
+  { id: 'color', label: 'Color' },
+  { id: 'contrast', label: 'Contrast' },
+  { id: 'type', label: 'Type' },
+  { id: 'space', label: 'Space and shape' },
+  { id: 'depth', label: 'Depth' },
+  { id: 'motion', label: 'Motion' },
+  { id: 'components', label: 'Components' },
+] as const;
+---
+
+<BaseLayout
+  title="Design system · DH Studio"
+  description="The DH Studio website's design system: color roles for both themes, type, spacing, depth, motion and every base component, in one place."
+>
+  <Container class="flex flex-col gap-10 pt-(--space-section)">
+    <div class="flex max-w-(--width-prose) flex-col items-start gap-6">
+      <Badge variant="outline">App greys and Red · spec 0002</Badge>
+      <h1 class="text-h1 text-balance">Design system</h1>
+      <p class="text-lead text-fg-muted">
+        The desktop app's own greys, one red accent, and an app window tilted back in soft light. Every token and base
+        component of the DH Studio website lives on this page, so you can check a value or a state before you build with it.
+      </p>
+      <p class="text-fg-muted">
+        Switch the theme with the sun or moon button in the header and everything below swaps at once. Turn on reduced
+        motion in your system settings and every sample keeps still.
+      </p>
+    </div>
+
+    <dl class="grid gap-6 border-y border-line py-6 sm:grid-cols-3">
+      {
+        facts.map((fact) => (
+          <div class="flex flex-col gap-1">
+            <dt class="order-2 text-caption text-fg-muted">{fact.label}</dt>
+            <dd class="order-1 m-0 text-h2">{fact.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Container>
+
+  <Container class="grid gap-x-12 lg:grid-cols-[11rem_minmax(0,1fr)]">
+    <nav aria-labelledby="toc-title" class="lg:sticky lg:top-[calc(var(--header-offset)+var(--header-h)+2rem)] lg:self-start lg:pt-(--space-section)">
+      <p class="mb-3 text-caption font-semibold" id="toc-title">On this page</p>
+      <ul class="flex flex-wrap gap-x-1 gap-y-1 lg:flex-col">
+        {
+          chapters.map((chapter) => (
+            <li>
+              <a
+                href={`#${chapter.id}`}
+                class="inline-flex min-h-11 items-center rounded-button px-3 text-fg-muted decoration-1 underline-offset-[3px] transition-[color] duration-(--dur-fast) hover:text-fg hover:underline lg:-ms-3"
+              >
+                {chapter.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="min-w-0">
+      <ColorSection tokens={tokens} />
+      <ContrastSection tokens={tokens} />
+      <TypeSection theme={theme} />
+      <SpaceSection tokens={tokens} theme={theme} />
+      <DepthSection tokens={tokens} />
+      <MotionSection tokens={tokens} theme={theme} />
+      <ComponentsSection />
+    </div>
+  </Container>
+</BaseLayout>

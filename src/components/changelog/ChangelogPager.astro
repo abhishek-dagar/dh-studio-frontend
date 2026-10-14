@@ -1,0 +1,41 @@
+---
+import ArrowLeft from '@lucide/astro/icons/arrow-left';
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import { buttonClass } from '../../lib/ui/button';
+
+// Newer and older links (spec 0005, AC-7, AC-9). Each is left out at its end;
+// the position text shows only when there is one.
+interface Props {
+  label: string;
+  newer?: { readonly href: string; readonly text: string } | undefined;
+  older?: { readonly href: string; readonly text: string } | undefined;
+  position?: string | undefined;
+}
+
+const { label, newer, older, position } = Astro.props;
+const linkClass = buttonClass({ variant: 'secondary', className: 'max-w-full' });
+---
+
+{
+  (newer !== undefined || older !== undefined) && (
+    <nav aria-label={label} class="flex flex-wrap items-center justify-between gap-3">
+      {newer !== undefined ? (
+        <a href={newer.href} rel="prev" class={linkClass}>
+          <ArrowLeft aria-hidden="true" />
+          <span class="truncate">{newer.text}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {position !== undefined && <p class="text-caption text-fg-muted">{position}</p>}
+      {older !== undefined ? (
+        <a href={older.href} rel="next" class={linkClass}>
+          <span class="truncate">{older.text}</span>
+          <ArrowRight aria-hidden="true" />
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}

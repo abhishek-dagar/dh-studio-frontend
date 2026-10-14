@@ -1,0 +1,43 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Query builder: the rows after the selected card (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+
+const rows = [
+  { name: 'Asha', role: 'manager', verified: 'true' },
+  { name: 'Ravi', role: 'manager', verified: 'true' },
+  { name: 'Mei', role: 'manager', verified: 'false' },
+] as const;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 flex items-center justify-between px-2 pt-1 pb-1.5">
+    <span class="font-medium text-fg">Card output</span>
+    <span class="font-mono text-[0.85em] text-fg-muted">after WHERE, 3 rows</span>
+  </p>
+  <table class="w-full border-collapse font-mono text-[0.85em]">
+    <thead>
+      <tr class="text-fg-muted">
+        <th class="px-2 pb-1 text-start font-normal">name</th>
+        <th class="px-2 pb-1 text-start font-normal">role</th>
+        <th class="px-2 pb-1 text-start font-normal">isVerified</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr class="border-t border-line">
+            <td class="px-2 py-1">{row.name}</td>
+            <td class="px-2 py-1 text-syntax-string">'{row.role}'</td>
+            <td class="px-2 py-1 text-syntax-keyword">{row.verified}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</PopupCard>

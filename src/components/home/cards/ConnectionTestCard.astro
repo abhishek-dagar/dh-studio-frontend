@@ -1,0 +1,19 @@
+---
+import CircleCheck from '@lucide/astro/icons/circle-check';
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Saved passwords: a successful connection test (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 flex items-center gap-2 px-2 pt-1 pb-1 font-medium text-fg">
+    <CircleCheck class="size-3.5 text-syntax-string" />
+    Connected
+  </p>
+  <p class="m-0 px-2 pb-1 text-fg-muted">project-planit on PostgreSQL 16, in 38 ms</p>
+</PopupCard>

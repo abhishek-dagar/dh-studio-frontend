@@ -1,0 +1,55 @@
+---
+import { osName } from '../../lib/home/format';
+import type { LaunchTip } from '../../lib/home/download';
+import type { Os } from '../../lib/release/types';
+import CommandLine from '../ui/CommandLine.astro';
+import Surface from '../ui/Surface.astro';
+
+// First launch help, one card per system (spec 0005, AC-8). Static: all three
+// show without JavaScript; once the query above picks a system, only its card
+// shows (the island sets <html data-download-os>, the CSS below follows it).
+interface Props {
+  heading: string;
+  note: string;
+  /** In display order: macOS, Windows, Linux. */
+  tips: readonly { readonly os: Os; readonly tip: LaunchTip }[];
+}
+
+const { heading, note, tips } = Astro.props;
+---
+
+<section aria-labelledby="launch-heading" class="flex flex-col gap-6">
+  <div class="flex max-w-(--width-prose) flex-col gap-2">
+    <h2 id="launch-heading" class="text-h2">{heading}</h2>
+    <p class="text-fg-muted">{note}</p>
+  </div>
+  <ul class="launch-grid grid gap-4 md:grid-cols-3 md:gap-6">
+    {
+      tips.map(({ os, tip }) => (
+        <Surface as="li" class="flex min-w-0 flex-col gap-3" data-launch-os={os}>
+          <h3 class="text-h3">First launch on {osName(os)}</h3>
+          <p class="font-medium text-fg">{tip.title}</p>
+          <ol class="flex list-decimal flex-col gap-1 ps-5 text-fg-muted marker:text-fg-muted">
+            {tip.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+          {tip.command !== undefined && <CommandLine command={tip.command} class="mt-auto" />}
+        </Surface>
+      ))
+    }
+  </ul>
+</section>
+
+<style is:global>
+  :root[data-download-os='macos'] [data-launch-os]:not([data-launch-os='macos']),
+  :root[data-download-os='windows'] [data-launch-os]:not([data-launch-os='windows']),
+  :root[data-download-os='linux'] [data-launch-os]:not([data-launch-os='linux']) {
+    display: none;
+  }
+
+  /* One card left: hold it to a readable width instead of a third of the row. */
+  :root[data-download-os] .launch-grid {
+    grid-template-columns: minmax(0, var(--width-prose));
+  }
+</style>

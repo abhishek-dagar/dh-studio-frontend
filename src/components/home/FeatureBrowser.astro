@@ -1,0 +1,164 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Container from '../ui/Container.astro';
+import Section from '../ui/Section.astro';
+import { featureSlug } from '../../lib/features/slug';
+import FeaturePanel from './FeaturePanel.astro';
+
+// The feature browser (spec 0003, AC-18). The built HTML is the stacked list:
+// a sidebar of in page links, then every feature in order. From lg the script
+// below upgrades it to vertical tabs (WAI-ARIA tabs, automatic activation) and
+// turns it back when the window narrows. No script, or an error, leaves the
+// stacked list, which works at every width.
+interface Props {
+  heading: string;
+  /** The text before each panel's link to its features page section, `More about`. */
+  moreLink: string;
+  /** In sidebar order. */
+  entries: readonly CollectionEntry<'features'>[];
+}
+
+const { heading, moreLink, entries } = Astro.props;
+
+const items = entries.map((entry) => ({ entry, panelId: `feature-${featureSlug(entry.id)}`, tabId: `tab-${featureSlug(entry.id)}` }));
+
+const tabClass = [
+  'inline-flex min-h-11 items-center gap-2 rounded-button border border-line px-3.5 text-[0.875rem] font-medium text-fg-muted',
+  'transition-[background-color,color] duration-(--dur-fast)',
+  'hover:bg-wash hover:text-fg aria-selected:bg-wash aria-selected:text-fg',
+  'lg:flex lg:w-full lg:border-transparent',
+].join(' ');
+---
+
+<Section id="features" labelledby="features-heading" class="overflow-x-clip">
+  <Container class="flex flex-col gap-8 lg:gap-10">
+    <h2 id="features-heading" class="max-w-(--width-prose) text-h2">{heading}</h2>
+
+    <div class="grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12" data-feature-browser>
+      <nav
+        aria-label="Features"
+        class="lg:sticky lg:top-[calc(var(--header-offset)+var(--header-h)+1.5rem)] lg:self-start"
+        data-feature-nav
+      >
+        <ul class="flex flex-wrap gap-2 lg:flex-col lg:gap-0.5" data-feature-list>
+          {
+            items.map(({ entry, panelId, tabId }) => (
+              <li data-feature-item>
+                <a id={tabId} href={`#${panelId}`} class={tabClass} data-feature-tab>
+                  {entry.data.tab}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="flex flex-col gap-16 lg:gap-20" data-feature-panels>
+        {
+          items.map(({ entry, panelId }) => <FeaturePanel entry={entry} panelId={panelId} moreLink={moreLink} />)
+        }
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<script>
+  import { initialTabIndex, nextTabIndex } from '../../lib/home/tabs';
+
+  // Upgrades one stacked feature list to vertical tabs from lg (spec 0003, AC-18).
+  // Every DOM change here is undone by `stack`, so the list can go back and forth.
+  const setUp = (root: HTMLElement): void => {
+    const nav = root.querySelector<HTMLElement>('[data-feature-nav]');
+    const list = root.querySelector<HTMLElement>('[data-feature-list]');
+    const items = [...root.querySelectorAll<HTMLElement>('[data-feature-item]')];
+    const tabs = [...root.querySelectorAll<HTMLAnchorElement>('[data-feature-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-feature-panel]')];
+    if (nav === null || list === null || tabs.length === 0 || tabs.length !== panels.length) return;
+
+    const state = { selected: initialTabIndex(panels.map((panel) => panel.id), window.location.hash) };
+
+    const select = (index: number, focus: boolean): void => {
+      state.selected = index;
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+      });
+      if (focus) tabs[index]?.focus();
+    };
+
+    const onKeyDown = (event: KeyboardEvent): void => {
+      const current = tabs.indexOf(event.currentTarget as HTMLAnchorElement);
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        select(current, false);
+        return;
+      }
+      const next = nextTabIndex(event.key, current, tabs.length);
+      if (next === undefined) return;
+      event.preventDefault();
+      select(next, true);
+    };
+
+    // A tab is still a link underneath; selecting it must not jump the page.
+    const onClick = (event: MouseEvent): void => {
+      event.preventDefault();
+      select(tabs.indexOf(event.currentTarget as HTMLAnchorElement), false);
+    };
+
+    const stack = (): void => {
+      nav.removeAttribute('role');
+      nav.removeAttribute('aria-orientation');
+      [list, ...items].forEach((element) => element.removeAttribute('role'));
+      tabs.forEach((tab) => {
+        ['role', 'aria-selected', 'aria-controls', 'tabindex'].forEach((name) => tab.removeAttribute(name));
+        tab.removeEventListener('keydown', onKeyDown);
+        tab.removeEventListener('click', onClick);
+      });
+      panels.forEach((panel) => {
+        panel.removeAttribute('role');
+        panel.removeAttribute('tabindex');
+        panel.setAttribute('aria-labelledby', panel.dataset.titleId ?? '');
+        panel.hidden = false;
+      });
+      delete root.dataset.tabs;
+    };
+
+    const tabify = (): void => {
+      nav.setAttribute('role', 'tablist');
+      nav.setAttribute('aria-orientation', 'vertical');
+      [list, ...items].forEach((element) => element.setAttribute('role', 'none'));
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-controls', panels[i]?.id ?? '');
+        tab.addEventListener('keydown', onKeyDown);
+        tab.addEventListener('click', onClick);
+      });
+      panels.forEach((panel, i) => {
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tabs[i]?.id ?? '');
+        panel.tabIndex = 0;
+      });
+      root.dataset.tabs = '';
+      select(state.selected, false);
+    };
+
+    const wide = window.matchMedia('(min-width: 64rem)');
+    const apply = (): void => {
+      try {
+        if (wide.matches) tabify();
+        else stack();
+      } catch (error) {
+        stack();
+        console.warn('[features] Tabs could not start, keeping the stacked list.', error);
+      }
+    };
+
+    apply();
+    wide.addEventListener('change', apply);
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-feature-browser]').forEach(setUp);
+</script>

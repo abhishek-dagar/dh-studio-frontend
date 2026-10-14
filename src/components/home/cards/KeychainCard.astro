@@ -1,0 +1,20 @@
+---
+import KeyRound from '@lucide/astro/icons/key-round';
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Saved passwords: a saved password field (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 px-2 pt-1 pb-1.5 font-medium text-fg-muted">password</p>
+  <div class="mx-1 rounded-inset border border-line bg-ground px-2 py-1 font-mono text-[0.92em] tracking-[0.2em]">••••••••••</div>
+  <p class="m-0 flex items-center gap-1.5 px-2 pt-2 pb-1">
+    <KeyRound class="size-3.5 text-fg-muted" />
+    Saved encrypted on this computer
+  </p>
+</PopupCard>

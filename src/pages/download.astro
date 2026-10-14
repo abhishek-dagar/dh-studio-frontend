@@ -1,0 +1,88 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import LaunchHelp from '../components/download/LaunchHelp.astro';
+import EditorLine from '../components/editor/EditorLine.astro';
+import Container from '../components/ui/Container.astro';
+import Link from '../components/ui/Link.astro';
+import Section from '../components/ui/Section.astro';
+import { DownloadQuery } from '../islands/DownloadQuery';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { OS_ORDER, toDownloadData, type LaunchTip } from '../lib/home/download';
+import { latestRelease } from '../lib/release';
+import { RELEASES_PAGE_URL } from '../lib/release/config';
+
+// The download page (spec 0005): Home's download query widened with a sha256
+// column, then first launch help and the release links.
+// Everything below the query is static, so it reads the same without JavaScript.
+const [release, page, home, tipEntries] = await Promise.all([
+  latestRelease,
+  getEntry('download', 'download'),
+  getEntry('home', 'home'),
+  getCollection('launchTips'),
+]);
+
+if (page === undefined) {
+  throw new Error(
+    '[download] No "download" entry. Check that src/content/download/download.yaml holds one entry with the id "download". ' +
+      'If src/content.config.ts was added while the dev server ran, restart it so the collection syncs.',
+  );
+}
+if (home === undefined) throw new Error('[download] No "home" entry in src/content/home/home.yaml, which holds the query copy.');
+
+const tipFor = (os: string): LaunchTip | undefined => {
+  const entry = tipEntries.find((candidate) => candidate.id === os);
+  return entry === undefined ? undefined : { title: entry.data.title, steps: entry.data.steps, command: entry.data.command };
+};
+const tips = OS_ORDER.flatMap((os) => {
+  const tip = tipFor(os);
+  if (tip === undefined) throw new Error(`[download] No "${os}" entry in src/content/home/launch-tips.yaml (spec 0005, AC-8).`);
+  return [{ os, tip }];
+});
+
+const { meta, heading, skipNote, hashMissing, copyHash, copyHashLabel, launch, links } = page.data;
+const { query, download, install } = home.data;
+const data = toDownloadData(release);
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <Section class="pt-10 md:pt-16">
+    <Container>
+      <DownloadQuery
+        client:idle
+        form="page"
+        data={data}
+        copy={{ query, download, install, page: { skipNote, hashMissing, copyHash, copyHashLabel } }}
+        tips={{}}
+      >
+        <EditorLine size="h2" class="download-heading">
+          <h1><span class="download-comment" aria-hidden="true">--</span> {heading}</h1>
+        </EditorLine>
+      </DownloadQuery>
+    </Container>
+  </Section>
+
+  <Section class="pt-0">
+    <Container class="flex flex-col gap-(--space-section)">
+      <LaunchHelp heading={launch.heading} note={launch.note} tips={tips} />
+      <p class="flex flex-wrap gap-x-6 gap-y-2">
+        {release.status === 'live' && <Link href={release.release.pageUrl}>{links.releaseNotes}</Link>}
+        <Link href={RELEASES_PAGE_URL}>{links.olderVersions}</Link>
+      </p>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style is:global>
+  /* The comment marker before the heading, pulled together like the changelog's. */
+  .download-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+
+  /* depth.css spaces a headline line from the next one as a sibling; here the query sits in the island's group. */
+  .download-heading {
+    margin-block-end: 0.75rem;
+  }
+</style>

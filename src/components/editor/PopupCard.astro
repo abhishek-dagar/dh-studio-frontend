@@ -1,0 +1,21 @@
+---
+// A small floating card like the app's own menus and popovers (spec 0002,
+// AC-13), placed over its positioned parent (an AppWindow) by `position`, in
+// percentages of that parent. Decorative: it is hidden from assistive
+// technology and below md, so never put a link or control inside it.
+// Up to three per AppWindow. Styles live in depth.css.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+  class?: string;
+}
+
+const { position, class: className } = Astro.props;
+---
+
+<div
+  class:list={['popup-card', className]}
+  style={`--x: ${position.x}; --y: ${position.y}; --w: ${position.width}`}
+  aria-hidden="true"
+>
+  <slot />
+</div>

@@ -1,0 +1,28 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+import Tok from '../../editor/Tok.astro';
+
+// Schema designer: a column's properties on the User table (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 px-2 pt-1 pb-1.5 font-medium text-fg-muted">User column</p>
+  <dl class="m-0 grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1.5 px-2 pb-1.5">
+    <dt class="text-fg-muted">name</dt>
+    <dd class="m-0 rounded-inset border border-line bg-ground px-2 py-0.5 font-mono text-[0.92em]">isOnline</dd>
+    <dt class="text-fg-muted">type</dt>
+    <dd class="m-0 rounded-inset border border-line bg-ground px-2 py-0.5 font-mono text-[0.92em]"><Tok kind="keyword">boolean</Tok></dd>
+    <dt class="text-fg-muted">nullable</dt>
+    <dd class="m-0 flex items-center gap-1.5">
+      <span class="size-3.5 rounded-[3px] border border-line-strong bg-ground"></span>
+      <span>no</span>
+    </dd>
+    <dt class="text-fg-muted">default</dt>
+    <dd class="m-0 rounded-inset border border-line bg-ground px-2 py-0.5 font-mono text-[0.92em]"><Tok kind="keyword">false</Tok></dd>
+  </dl>
+</PopupCard>

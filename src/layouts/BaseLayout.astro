@@ -1,0 +1,85 @@
+---
+import { Font } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { VERCEL_ENV } from 'astro:env/server';
+import Footer from '../components/site/Footer.astro';
+import Header from '../components/site/Header.astro';
+import Seo from '../components/site/Seo.astro';
+import { latestRelease } from '../lib/release';
+import { siteOrigin } from '../lib/seo/config';
+import { headTags, ogImageUrl } from '../lib/seo/head';
+import { serializeLd, type JsonLdNode } from '../lib/seo/ld';
+import { buttonClass } from '../lib/ui/button';
+import '../styles/global.css';
+
+// Every page passes its own title and description (spec 0004, PageMeta).
+// Indexing is derived from the path, so a page cannot forget it.
+interface Props {
+  title: string;
+  description: string;
+  jsonLd?: readonly JsonLdNode[];
+  /** An Atom feed this page announces in the head (the changelog, spec 0005, AC-14). */
+  feedUrl?: string;
+}
+
+const { title, description, jsonLd, feedUrl } = Astro.props;
+
+const [release, home] = await Promise.all([latestRelease, getEntry('home', 'home')]);
+if (home === undefined) throw new Error('[seo] No "home" entry in src/content/home/home.yaml, so the card has no alt text.');
+
+const site = siteOrigin(Astro.site);
+const tags = headTags(
+  { title, description },
+  { site, path: Astro.url.pathname, env: VERCEL_ENV, ogImageUrl: ogImageUrl(site, release), imageAlt: home.data.card.alt },
+);
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- One small icon (16 and 32px) so the browser fetches a single file early. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo tags={tags} jsonLd={jsonLd === undefined ? undefined : serializeLd(jsonLd)} feedUrl={feedUrl} />
+    <!-- Only the Mona Sans latin face is preloaded; Geist Mono loads when code appears. -->
+    <Font cssVariable="--font-mona" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-geist" />
+    <!-- Pre paint ground, kept equal to --ground in tokens.css. -->
+    <style is:inline>
+      html[data-theme='dark'] {
+        background-color: #101214;
+      }
+      html[data-theme='light'] {
+        background-color: #f9fafc;
+      }
+    </style>
+    <!-- Runs before paint so a static page never flashes the wrong theme. It also marks
+         that JavaScript runs (data-js), so the reveal only hides what a script will show. -->
+    <script is:inline>
+      (() => {
+        document.documentElement.dataset.js = '';
+        let theme;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body class="flex min-h-dvh flex-col antialiased">
+    <a href="#main" class={buttonClass({ className: 'fixed top-2 left-2 z-50 -translate-y-24 focus-visible:translate-y-0' })}>
+      Skip to content
+    </a>
+    <Header currentPath={Astro.url.pathname} />
+    <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

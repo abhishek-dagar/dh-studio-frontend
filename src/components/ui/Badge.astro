@@ -1,0 +1,15 @@
+---
+import { badgeClass, type BadgeVariant } from '../../lib/ui/badge';
+
+interface Props {
+  variant?: BadgeVariant;
+  class?: string;
+}
+
+const { variant = 'neutral', class: className } = Astro.props;
+---
+
+<span class={badgeClass({ variant, className })}>
+  {variant === 'signal' && <span class="size-1.5 rounded-pill bg-signal" aria-hidden="true" />}
+  <slot />
+</span>

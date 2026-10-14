@@ -1,0 +1,22 @@
+---
+import Copy from '@lucide/astro/icons/copy';
+import Pencil from '@lucide/astro/icons/pencil';
+import Trash from '@lucide/astro/icons/trash';
+import PopupCard from '../../editor/PopupCard.astro';
+
+// Table grid: the menu on a row (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <ul class="m-0 flex list-none flex-col p-0">
+    <li class="flex items-center gap-2 rounded-inset bg-wash px-2 py-1 text-fg"><Pencil class="size-3.5 text-fg-muted" />Edit cell</li>
+    <li class="flex items-center gap-2 px-2 py-1"><Copy class="size-3.5 text-fg-muted" />Copy row</li>
+    <li class="my-1 border-t border-line" role="presentation"></li>
+    <li class="flex items-center gap-2 px-2 py-1"><Trash class="size-3.5 text-fg-muted" />Delete row</li>
+  </ul>
+</PopupCard>
