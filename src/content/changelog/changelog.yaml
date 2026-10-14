@@ -1,0 +1,73 @@
+# Changelog copy (spec 0005). Edit freely; the schema in src/content.config.ts checks every field.
+# Templates fill {title}, {description}, {page}, {count}, {version} and {date}.
+changelog:
+  # The page's one h1, shown after `--` in the editor pane.
+  heading: Changelog
+
+  # Page titles; " · DH Studio" is added after each.
+  titles:
+    all: Changelog
+    stable: 'Changelog: stable releases'
+    prereleases: 'Changelog: prereleases'
+    page: '{title}, page {page}'
+    version: '{version} release notes'
+
+  descriptions:
+    all: Every DH Studio release with its full notes, newest first, so you can see what changed and when.
+    stable: Every stable DH Studio release with its full notes, newest first.
+    prereleases: Every DH Studio prerelease with its full notes, newest first.
+    page: '{description} Page {page} of {count}.'
+    version: 'What changed in DH Studio {version}, released {date}.'
+
+  # The editor pane's query, one line per numbered line. Its filter matches the tab.
+  editor:
+    tab: changelog.sql
+    rowsWord: rows
+    queries:
+      all:
+        - select version, published_at, notes
+        - from releases
+        - order by published_at desc;
+      stable:
+        - select version, published_at, notes
+        - from releases
+        - where prerelease = false
+        - order by published_at desc;
+      prereleases:
+        - select version, published_at, notes
+        - from releases
+        - where prerelease = true
+        - order by published_at desc;
+
+  filter:
+    label: Release filter
+    all: All
+    stable: Stable
+    prereleases: Prereleases
+
+  pages:
+    label: Changelog pages
+    newer: Newer
+    older: Older
+    position: 'Page {page} of {count}'
+
+  entry:
+    latest: Latest
+    prerelease: Prerelease
+    github: View on GitHub
+    emptyNotes: No notes for this release.
+
+  # The version index beside a list page's releases, and its folded form on phones.
+  index:
+    label: On this page
+
+  release:
+    heading: 'DH Studio {version}'
+    notesHeading: Release notes
+    allReleases: All releases
+
+  subscribe: Subscribe
+  everyRelease: Every release, with its files and checksums, is also on GitHub.
+  everyReleaseLink: All releases on GitHub
+  unavailable: Release history is unavailable right now.
+  unavailableLink: See releases on GitHub

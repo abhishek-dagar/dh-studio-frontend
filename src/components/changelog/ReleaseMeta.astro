@@ -1,0 +1,22 @@
+---
+import { formatReleaseDate, type ChangelogCopy } from '../../lib/changelog';
+import Badge from '../ui/Badge.astro';
+
+// A release's date and badges (spec 0005, AC-2, AC-9). The date is UTC, the
+// datetime is GitHub's own timestamp, and each badge always carries its word.
+interface Props {
+  publishedAt: string;
+  prerelease: boolean;
+  latest: boolean;
+  copy: ChangelogCopy['entry'];
+  class?: string;
+}
+
+const { publishedAt, prerelease, latest, copy, class: className } = Astro.props;
+---
+
+<p class:list={['flex flex-wrap items-center gap-x-3 gap-y-2 text-caption text-fg-muted', className]}>
+  <time datetime={publishedAt}>{formatReleaseDate(publishedAt)}</time>
+  {latest && <Badge variant="signal">{copy.latest}</Badge>}
+  {prerelease && <Badge variant="outline">{copy.prerelease}</Badge>}
+</p>

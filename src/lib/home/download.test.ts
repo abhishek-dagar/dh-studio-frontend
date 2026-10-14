@@ -11,13 +11,13 @@ const data = live(toDownloadData(v055Live));
 const files = (rows: readonly DownloadEntry[]): readonly string[] => rows.map((row) => row.fileName);
 
 describe('toDownloadData', () => {
-  it('carries the version, the UTC date label and the release page', () => {
+  it('carries the version, the UTC date label and the changelog page', () => {
     expect(data).toMatchObject({
       status: 'live',
       version: '0.5.5',
       publishedAt: '2026-10-04T10:28:23Z',
       dateLabel: 'October 4, 2026',
-      pageUrl: 'https://github.com/OnlyDev-India/data-hive-studio/releases/tag/v0.5.5',
+      changelogPath: '/changelog/0.5.5/',
     });
   });
 
@@ -33,7 +33,7 @@ describe('toDownloadData', () => {
     ]);
   });
 
-  it('turns each file into display strings', () => {
+  it('turns each file into display strings and carries its checksum', () => {
     expect(data.downloads[0]).toEqual({
       os: 'macos',
       arch: 'arm64',
@@ -43,7 +43,15 @@ describe('toDownloadData', () => {
       forLabel: 'Mac with Apple silicon',
       sizeLabel: '17.6 MB',
       url: 'https://github.com/OnlyDev-India/data-hive-studio/releases/download/v0.5.5/DH.Studio_0.5.5_aarch64.dmg',
+      sha256: '2b65578d2aa11c8a9a3826fd84b5ce9afa8b50d75b347679317ce6e45cd0d93e',
     });
+  });
+
+  it('leaves the checksum out when the file has none', () => {
+    if (v055Live.status !== 'live') throw new Error('expected live');
+    const downloads = v055Live.release.downloads.map((download) => ({ ...download, sha256: undefined }));
+    const unhashed = live(toDownloadData({ ...v055Live, release: { ...v055Live.release, downloads } }));
+    expect(unhashed.downloads.every((entry) => entry.sha256 === undefined)).toBe(true);
   });
 
   it('never carries the release notes', () => {

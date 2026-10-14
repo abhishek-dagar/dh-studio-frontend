@@ -1,0 +1,26 @@
+# Download page copy (spec 0005). Edit freely; the schema in src/content.config.ts checks every field.
+# The query, rows, status bar and install block reuse the `home` entry's copy, so both pages read the same.
+download:
+  meta:
+    title: Download · DH Studio
+    description: Download DH Studio for macOS, Windows and Linux. Every installer with its size and sha256 checksum, a one line install, and first launch help.
+
+  # The page's h1, on line 1 of the editor after the `--` comment marker.
+  heading: Download DH Studio
+
+  # Under the one line install.
+  skipNote: Installed this way, you can skip the first launch steps below. The script does them for you.
+
+  # The sha256 cell when GitHub sent no checksum for a file.
+  hashMissing: not published
+  copyHash: Copy
+  # The Copy button's accessible name; `{file}` is replaced by the file name.
+  copyHashLabel: Copy sha256 for {file}
+
+  launch:
+    heading: First launch
+    note: Only needed if you downloaded a file from the table. The builds aren't code signed yet, so each system asks you to confirm once.
+
+  links:
+    releaseNotes: Release notes
+    olderVersions: Older versions

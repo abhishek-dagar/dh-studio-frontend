@@ -1,0 +1,73 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { featureSlug } from '../../lib/features/slug';
+import type { EngineIcon } from '../../lib/home/engines';
+import { cardComponents } from '../home/cards';
+import FeatureShot from '../home/FeatureShot.astro';
+import EngineLine from './EngineLine.astro';
+
+// One feature on the features page (spec 0008, AC-5): the tab name as an
+// eyebrow, the title, Home's benefit, the engine line, the screenshot with its
+// one page card, then what you can do. The id is the feature's slug, the anchor
+// the matrix, the index and Home all link to.
+interface Props {
+  entry: CollectionEntry<'features'>;
+  engines: readonly { readonly name: string; readonly icon: EngineIcon }[];
+  copy: {
+    readonly worksWith: string;
+    readonly lineNotes: { readonly partial: string; readonly none: string };
+    readonly capabilitiesHeading: string;
+  };
+}
+
+const { entry, engines, copy } = Astro.props;
+const { tab, title, image, imageLight, alt, pageCard, capabilities } = entry.data;
+const { Content } = await render(entry);
+
+const slug = featureSlug(entry.id);
+const Card = pageCard === undefined ? undefined : cardComponents[pageCard.kind];
+const sizes = '(min-width: 72rem) 56rem, (min-width: 64rem) calc(100vw - 20rem), 100vw';
+---
+
+<section
+  id={slug}
+  aria-labelledby={`${slug}-title`}
+  class="feature-section flex scroll-mt-[calc(var(--header-offset)+var(--header-h)+1rem)] flex-col gap-8 border-t border-line py-14 first:border-t-0 first:pt-4 md:py-20"
+>
+  <div class="flex max-w-(--width-prose) flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <p class="text-caption font-medium text-fg-muted">{tab}</p>
+      <h2 id={`${slug}-title`} class="text-h2">{title}</h2>
+    </div>
+    <div class="feature-benefit text-lead text-fg-muted"><Content /></div>
+    <EngineLine id={`${slug}-engines`} label={copy.worksWith} words={copy.lineNotes} engines={engines} support={entry.data.engines} />
+  </div>
+
+  <FeatureShot id={entry.id} image={image} imageLight={imageLight} alt={alt} sizes={sizes}>
+    {Card !== undefined && pageCard !== undefined && <Card position={{ x: pageCard.x, y: pageCard.y, width: pageCard.width }} />}
+  </FeatureShot>
+
+  <div class="flex flex-col gap-5">
+    <h3 class="text-h3">{copy.capabilitiesHeading}</h3>
+    <ul class="grid gap-x-10 gap-y-6 md:grid-cols-2">
+      {
+        capabilities.map((item) => (
+          <li class="flex flex-col gap-1">
+            <h4 class="font-semibold">{item.title}</h4>
+            <p class="text-fg-muted">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .feature-benefit :global(p) {
+    margin: 0;
+  }
+
+  .feature-benefit :global(p + p) {
+    margin-top: 0.75rem;
+  }
+</style>

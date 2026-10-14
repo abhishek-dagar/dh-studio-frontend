@@ -1,0 +1,28 @@
+# Features page copy (spec 0008). Edit freely; the schema in src/content.config.ts checks every field.
+featuresPage:
+  # " · DH Studio" is not added here, so the title is written out in full.
+  title: Features · DH Studio
+  description: Every DH Studio feature in detail, from the table grid to compare tables, and which of SQLite, PostgreSQL, MongoDB and Amazon DocumentDB each one works with.
+
+  # The opener: an editor pane whose result is the support matrix.
+  tab: features.sql
+  # The page's one h1, shown after `--`.
+  comment: Every feature, on every engine.
+  lead: One query, one answer. Pick your database and see what works before you install.
+  caption: Feature support by database engine
+  levels:
+    full: 'Yes'
+    partial: Partly
+    none: 'No'
+  # The status bar reads "7 rows · 4 engines".
+  statusRows: rows
+  statusEngines: engines
+
+  # Each section's engine line: "Works with SQLite, MongoDB (partly, find and filter only)".
+  worksWith: Works with
+  lineNotes:
+    partial: partly
+    none: not supported
+
+  capabilitiesHeading: What you can do
+  indexLabel: On this page

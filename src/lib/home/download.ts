@@ -1,3 +1,4 @@
+import { versionPath } from '../changelog/views';
 import { pickFrom } from '../release/pick';
 import type { Arch, Format, Os, ReleaseResult, Role } from '../release/types';
 import { forLabel, formatReleaseDate, formatSize } from './format';
@@ -17,6 +18,8 @@ export type DownloadEntry = {
   readonly forLabel: string;
   readonly sizeLabel: string;
   readonly url: string;
+  /** The file's checksum, shown on the download page (spec 0005, AC-5). */
+  readonly sha256?: string | undefined;
 };
 
 export type DownloadData =
@@ -25,7 +28,8 @@ export type DownloadData =
       readonly version: string;
       readonly publishedAt: string;
       readonly dateLabel: string;
-      readonly pageUrl: string;
+      /** The release's changelog page, linked from the status bar version (spec 0005, AC-15). */
+      readonly changelogPath: string;
       readonly downloads: readonly DownloadEntry[];
     }
   | { readonly status: 'fallback'; readonly releasesPageUrl: string };
@@ -64,6 +68,19 @@ export type DownloadCopy = {
   readonly rowsWord: string;
   readonly versionPrefix: string;
   readonly releasedWord: string;
+  /** The primary button's label before the OS name, "Download for" (spec 0005, AC-2). */
+  readonly detectedPrefix: string;
+  /** Home's status bar link to the download page (spec 0005, AC-19). */
+  readonly pageLink: string;
+};
+
+/** The download page's own island copy, from the `download` entry (spec 0005). */
+export type PageCopy = {
+  readonly skipNote: string;
+  readonly hashMissing: string;
+  readonly copyHash: string;
+  /** `{file}` is replaced by the file name. */
+  readonly copyHashLabel: string;
 };
 
 /** A first launch tip from the `launchTips` collection. */
@@ -105,6 +122,7 @@ export const toDownloadData = (result: ReleaseResult): DownloadData => {
     forLabel: forLabel(download),
     sizeLabel: formatSize(download.sizeBytes),
     url: download.url,
+    sha256: download.sha256,
   }));
 
   return {
@@ -112,7 +130,7 @@ export const toDownloadData = (result: ReleaseResult): DownloadData => {
     version: release.version,
     publishedAt: release.publishedAt,
     dateLabel: formatReleaseDate(release.publishedAt),
-    pageUrl: release.pageUrl,
+    changelogPath: versionPath(release.version),
     // Stored in the built `in (...)` order, so the island and the static HTML agree.
     downloads: rowsFor(entries, { kind: 'all' }).rows,
   };

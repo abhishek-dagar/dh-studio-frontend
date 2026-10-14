@@ -1,0 +1,35 @@
+---
+import { versionAnchor, versionPath, type ChangelogCopy, type ReleaseEntry } from '../../lib/changelog';
+import Link from '../ui/Link.astro';
+import Surface from '../ui/Surface.astro';
+import ReleaseMeta from './ReleaseMeta.astro';
+import ReleaseNotes from './ReleaseNotes.astro';
+
+// One release in a changelog list (spec 0005, AC-2, AC-3). The version heading
+// links to the release's own page, the one link that never moves. The `v<version>`
+// id is what the version index jumps to, landing just below the header pill (AC-18, AC-20).
+interface Props {
+  entry: ReleaseEntry;
+  latest: boolean;
+  copy: ChangelogCopy['entry'];
+}
+
+const { entry, latest, copy } = Astro.props;
+const { version, publishedAt, prerelease, pageUrl } = entry.data;
+---
+
+<Surface
+  as="article"
+  id={versionAnchor(version)}
+  padding="md"
+  class="flex scroll-mt-[calc(var(--header-offset)+var(--header-h)+1rem)] flex-col gap-4"
+>
+  <header class="flex flex-col gap-2">
+    <h2 class="text-h3">
+      <Link href={versionPath(version)}>{version}</Link>
+    </h2>
+    <ReleaseMeta publishedAt={publishedAt} prerelease={prerelease} latest={latest} copy={copy} />
+  </header>
+  <ReleaseNotes entry={entry} emptyNotes={copy.emptyNotes} />
+  <p class="text-caption"><Link href={pageUrl}>{copy.github}</Link></p>
+</Surface>

@@ -7,12 +7,18 @@ describe('isListedPath', () => {
     expect(isListedPath('/design-system/')).toBe(false);
     expect(isListedPath('/design-system')).toBe(false);
   });
+
+  it('leaves out the not found page (spec 0006, AC-6)', () => {
+    expect(isListedPath('/404')).toBe(false);
+    expect(isListedPath('/404/')).toBe(false);
+  });
 });
 
 describe('isIndexable', () => {
   it('allows only a listed page in a production build', () => {
     expect(isIndexable('/', 'production')).toBe(true);
     expect(isIndexable('/design-system/', 'production')).toBe(false);
+    expect(isIndexable('/404', 'production')).toBe(false);
   });
 
   it('blocks every page in preview, development and local builds', () => {

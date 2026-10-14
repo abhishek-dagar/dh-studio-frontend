@@ -1,0 +1,46 @@
+---
+import Rss from '@lucide/astro/icons/rss';
+import { viewPath, type ChangelogCopy, type ChangelogFilter } from '../../lib/changelog';
+import { RELEASES_FEED_URL } from '../../lib/release/config';
+import { linkClass } from '../../lib/ui/link';
+
+// The filter tabs and the feed link (spec 0005, AC-6, AC-14). Tabs are plain
+// links to each view's first page, so they work with no JavaScript. The active
+// one is marked by aria-current, a fill, and an underline that survives forced colors.
+interface Props {
+  filters: readonly ChangelogFilter[];
+  current: ChangelogFilter;
+  copy: ChangelogCopy;
+}
+
+const { filters, current, copy } = Astro.props;
+
+const tabClass = [
+  'inline-flex h-11 items-center rounded-button px-3 text-[0.875rem] font-medium text-fg-muted',
+  'transition-[background-color,color] duration-(--dur-fast)',
+  'hover:bg-wash hover:text-fg',
+  'aria-[current=page]:bg-wash aria-[current=page]:text-fg aria-[current=page]:underline aria-[current=page]:decoration-line-strong aria-[current=page]:underline-offset-[6px]',
+].join(' ');
+---
+
+<div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+  {
+    filters.length > 0 && (
+      <nav aria-label={copy.filter.label}>
+        <ul class="flex flex-wrap items-center gap-0.5">
+          {filters.map((filter) => (
+            <li>
+              <a href={viewPath(filter, 1)} class={tabClass} aria-current={filter === current ? 'page' : undefined}>
+                {copy.filter[filter]}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+  <a href={RELEASES_FEED_URL} class:list={[linkClass, 'inline-flex min-h-11 items-center gap-2 text-[0.875rem]']}>
+    <Rss class="size-4 shrink-0 text-fg-muted" aria-hidden="true" />
+    {copy.subscribe}
+  </a>
+</div>

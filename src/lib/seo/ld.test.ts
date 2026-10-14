@@ -7,7 +7,7 @@ import { fallback, site } from './seo.fixture';
 const input = (release: typeof v055Live) => ({ site, description: 'A free desktop app.', release, imageUrl: ogImageUrl(site, release) });
 
 describe('softwareAppLd', () => {
-  it('describes a free developer app with the live version and its release page', () => {
+  it('describes a free developer app with the live version and the download page', () => {
     expect(softwareAppLd(input(v055Live))).toEqual({
       '@type': 'SoftwareApplication',
       name: 'DH Studio',
@@ -17,7 +17,7 @@ describe('softwareAppLd', () => {
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'macOS, Windows, Linux',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      downloadUrl: 'https://github.com/OnlyDev-India/data-hive-studio/releases/tag/v0.5.5',
+      downloadUrl: 'https://dh-studio-frontend.vercel.app/download/',
       license: 'https://github.com/OnlyDev-India/data-hive-studio/blob/HEAD/LICENSE',
       isAccessibleForFree: true,
       softwareVersion: '0.5.5',

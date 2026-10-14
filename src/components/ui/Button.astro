@@ -7,6 +7,8 @@ interface BaseProps {
   href?: string;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
+  /** Marks a link button as the page you are on (`aria-current="page"`). */
+  current?: boolean;
   class?: string;
 }
 
@@ -20,6 +22,7 @@ const {
   type = 'button',
   disabled = false,
   iconOnly = false,
+  current = false,
   label,
   class: className,
 } = Astro.props;
@@ -34,7 +37,7 @@ const classes = buttonClass({ variant, size, iconOnly, className });
         <slot />
       </a>
     ) : (
-      <a class={classes} href={href} aria-label={label}>
+      <a class={classes} href={href} aria-label={label} aria-current={current ? 'page' : undefined}>
         <slot />
       </a>
     )

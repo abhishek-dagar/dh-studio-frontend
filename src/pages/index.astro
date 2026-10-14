@@ -8,7 +8,7 @@ import Hero from '../components/home/Hero.astro';
 import Questions from '../components/home/Questions.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { toDownloadData, type LaunchTips } from '../lib/home/download';
-import { duplicateOrders, featureListProblem, orderFeatures } from '../lib/home/features';
+import { duplicateOrders, featureListProblem, homeFeatures, homeListProblem, orderFeatures } from '../lib/home/features';
 import { latestRelease } from '../lib/release';
 import { siteOrigin } from '../lib/seo/config';
 import { ogImageUrl } from '../lib/seo/head';
@@ -39,6 +39,9 @@ const tips: LaunchTips = Object.fromEntries(
 // A production build must show the real app, so a missing screenshot stops it (AC-20).
 const featureProblem = featureListProblem(featureEntries, { production: VERCEL_ENV === 'production' });
 if (featureProblem !== undefined) throw new Error(featureProblem);
+// Home lists only the `home: true` entries, and needs at least one (spec 0008, AC-10, AC-14).
+const homeProblem = homeListProblem(featureEntries);
+if (homeProblem !== undefined) throw new Error(homeProblem);
 
 // Questions keep their file order, so two entries may not share one (AC-21).
 const sharedFaqOrder = duplicateOrders(faqEntries);
@@ -47,6 +50,7 @@ const questionRows = orderFeatures(faqEntries).map((entry) => ({
   id: entry.id,
   question: entry.data.question,
   answer: entry.body ?? '',
+  link: entry.data.link,
 }));
 
 const { meta, hero, query, download, install, engines, features, questions, closing } = home.data;
@@ -60,7 +64,7 @@ const jsonLd = [softwareAppLd({ site, description: meta.description, release, im
 <BaseLayout title={meta.title} description={meta.description} jsonLd={jsonLd}>
   <Hero hero={hero} data={data} copy={{ query, download, install }} tips={tips} />
   <Engines engines={engines} />
-  <FeatureBrowser heading={features.heading} entries={orderFeatures(featureEntries)} />
+  <FeatureBrowser heading={features.heading} moreLink={features.moreLink} entries={orderFeatures(homeFeatures(featureEntries))} />
   <Questions heading={questions.heading} entries={questionRows} />
   <Closing comment={closing.comment} data={data} copy={{ query, download, install }} tips={tips} />
 </BaseLayout>

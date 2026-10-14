@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Container from '../ui/Container.astro';
 import Section from '../ui/Section.astro';
+import { featureSlug } from '../../lib/features/slug';
 import FeaturePanel from './FeaturePanel.astro';
 
 // The feature browser (spec 0003, AC-18). The built HTML is the stacked list:
@@ -11,14 +12,15 @@ import FeaturePanel from './FeaturePanel.astro';
 // stacked list, which works at every width.
 interface Props {
   heading: string;
+  /** The text before each panel's link to its features page section, `More about`. */
+  moreLink: string;
   /** In sidebar order. */
   entries: readonly CollectionEntry<'features'>[];
 }
 
-const { heading, entries } = Astro.props;
+const { heading, moreLink, entries } = Astro.props;
 
-const slugOf = (id: string): string => id.replace(/^\d+-/, '');
-const items = entries.map((entry) => ({ entry, panelId: `feature-${slugOf(entry.id)}`, tabId: `tab-${slugOf(entry.id)}` }));
+const items = entries.map((entry) => ({ entry, panelId: `feature-${featureSlug(entry.id)}`, tabId: `tab-${featureSlug(entry.id)}` }));
 
 const tabClass = [
   'inline-flex min-h-11 items-center gap-2 rounded-button border border-line px-3.5 text-[0.875rem] font-medium text-fg-muted',
@@ -53,7 +55,7 @@ const tabClass = [
 
       <div class="flex flex-col gap-16 lg:gap-20" data-feature-panels>
         {
-          items.map(({ entry, panelId }) => <FeaturePanel entry={entry} panelId={panelId} />)
+          items.map(({ entry, panelId }) => <FeaturePanel entry={entry} panelId={panelId} moreLink={moreLink} />)
         }
       </div>
     </div>

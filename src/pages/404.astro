@@ -1,0 +1,208 @@
+---
+import Download from '@lucide/astro/icons/download';
+import { getEntry } from 'astro:content';
+import EditorLine from '../components/editor/EditorLine.astro';
+import EditorPane from '../components/editor/EditorPane.astro';
+import Tok from '../components/editor/Tok.astro';
+import Button from '../components/ui/Button.astro';
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { queryPath } from '../lib/not-found/path';
+import { downloadHref } from '../lib/site';
+import { resultGridClass } from '../lib/ui/result';
+
+// The not found page (spec 0006): a query for the visitor's path that returns
+// zero rows, then a way home and to the download. Astro builds it to
+// dist/404.html, which Vercel serves with a 404 status for any unmatched path.
+// The headline, query and empty result are all in the built HTML; the inline
+// script only writes the real path and plays the run once.
+const page = await getEntry('notFound', 'notFound');
+if (page === undefined) {
+  throw new Error(
+    '[not-found] No "notFound" entry. Check that src/content/not-found/not-found.yaml holds one entry with the id "notFound". ' +
+      'If src/content.config.ts was added while the dev server ran, restart it so the collection syncs.',
+  );
+}
+
+const { meta, headline, subline, editor, buttons } = page.data;
+const tabs = [{ label: editor.tab, current: true }];
+
+// Download follows the header's rule: always the download page, which handles a
+// build without release data itself (spec 0005, AC-17).
+
+// AC-3 and AC-5. Inlined, not bundled, so the path is in place before paint.
+// Reduced motion skips the run and shows the end state at once.
+const runScript = `(() => {
+  const run = document.querySelector('[data-nf-run]');
+  const path = run.querySelector('[data-nf-path]');
+  path.textContent = (${queryPath.toString()})(location.pathname);
+  const reveal = () => run.querySelectorAll('[data-reveal]').forEach((el) => el.setAttribute('data-revealed', ''));
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return reveal();
+  run.setAttribute('data-running', '');
+  setTimeout(() => {
+    run.removeAttribute('data-running');
+    run.setAttribute('data-ran', '');
+    reveal();
+  }, 1100);
+})();`;
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <Section class="pt-10 md:pt-16">
+    <Container>
+      <div class="nf-run" data-nf-run>
+        <EditorPane tabs={tabs}>
+          <EditorLine size="display" class="nf-headline">
+            <h1><span class="nf-comment" aria-hidden="true">--</span> {headline}</h1>
+          </EditorLine>
+          <EditorLine class="nf-query">
+            <Tok kind="keyword">select</Tok> <Tok kind="punctuation">*</Tok> <Tok kind="keyword">from</Tok> {editor.table}
+          </EditorLine>
+          <EditorLine indent={2} class="nf-query">
+            <Tok kind="keyword">where</Tok> path <Tok kind="punctuation">=</Tok> <Tok kind="string">'<span data-nf-path>{editor.fallbackPath}</span>'</Tok><Tok kind="punctuation">;</Tok>
+          </EditorLine>
+          <Fragment slot="result">
+            <div class="nf-progress" aria-hidden="true"><span></span></div>
+            <div data-reveal>
+              <table class={resultGridClass()}>
+                <thead>
+                  <tr>{editor.columns.map((column) => <th scope="col">{column}</th>)}</tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan={editor.columns.length} class="text-fg-muted">{editor.empty}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </Fragment>
+          <Fragment slot="status">
+            <span class="nf-running" aria-hidden="true"><span class="nf-dot"></span>{editor.running}</span>
+            <span data-reveal>{editor.rows}</span>
+            <span data-reveal>{editor.code}</span>
+          </Fragment>
+        </EditorPane>
+      </div>
+      <script is:inline set:html={runScript} />
+
+      <div class="mt-8 flex max-w-(--width-prose) flex-col gap-5 md:ps-[calc(1px+var(--editor-gutter)+var(--editor-code-gap))]">
+        <p class="text-lead text-fg-muted">{subline}</p>
+        <div class="flex flex-wrap gap-3">
+          <Button href="/">{buttons.home}</Button>
+          <Button href={downloadHref} variant="secondary"><Download aria-hidden="true" />{buttons.download}</Button>
+        </div>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style is:global>
+  /* The headline line, drawn as on Home's hero (see Hero.astro). */
+  .nf-headline .editor-line-text {
+    max-inline-size: 19ch;
+  }
+
+  .nf-headline {
+    margin-block-end: 0.75rem;
+  }
+
+  .nf-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+
+  /*
+   * The run (spec 0006, AC-5): while data-running is set, the query lines take
+   * the wash, a bar sweeps the top of the result and the status bar says the
+   * query is running. The result and the final status text sit underneath at
+   * opacity 0 (the reveal in base.css), so they stay readable to assistive
+   * technology the whole time. The script never sets data-running under
+   * reduced motion, and without JavaScript nothing here applies.
+   */
+  .nf-run .editor-result,
+  .nf-run .status-bar {
+    position: relative;
+  }
+
+  .nf-query {
+    transition: background-color var(--dur-fast);
+  }
+
+  .nf-run[data-running] .nf-query {
+    background: var(--color-wash);
+  }
+
+  .nf-progress {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    block-size: 2px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--dur-fast);
+  }
+
+  .nf-progress > span {
+    display: block;
+    block-size: 100%;
+    inline-size: 40%;
+    background: var(--action);
+    transform: translateX(-100%);
+  }
+
+  .nf-run[data-running] .nf-progress {
+    opacity: 1;
+  }
+
+  .nf-running {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 1rem;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nf-run[data-running] .nf-running {
+    display: flex;
+  }
+
+  .nf-dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 999px;
+    background: var(--action);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nf-run[data-running] .nf-progress > span {
+      animation: nf-sweep 0.9s var(--ease-in-out) infinite;
+    }
+
+    .nf-run[data-running] .nf-dot {
+      animation: nf-pulse 0.9s ease-in-out infinite;
+    }
+  }
+
+  @keyframes nf-sweep {
+    to {
+      transform: translateX(250%);
+    }
+  }
+
+  @keyframes nf-pulse {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* Windows High Contrast drops backgrounds, so the bar and dot use a system color. */
+  @media (forced-colors: active) {
+    .nf-progress > span,
+    .nf-dot {
+      forced-color-adjust: none;
+      background: Highlight;
+    }
+  }
+</style>

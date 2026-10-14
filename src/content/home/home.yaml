@@ -13,7 +13,7 @@ home:
 
   hero:
     headline: Every database, on one quiet desk.
-    subline: DH Studio is a fast native desktop client for SQLite, PostgreSQL, MongoDB and Amazon DocumentDB. Browse tables like a spreadsheet, write SQL with a real editor, and keep every password in your system keychain.
+    subline: DH Studio is a fast native desktop client for SQLite, PostgreSQL, MongoDB and Amazon DocumentDB. Browse tables like a spreadsheet, write SQL with a real editor, and keep saved passwords encrypted on your computer.
     openSource: Free and open source under the Apache 2.0 license.
     viewSource: View source on GitHub
 
@@ -34,6 +34,10 @@ home:
     rowsWord: rows
     versionPrefix: Version
     releasedWord: released
+    # The download page's primary button reads "Download for macOS" (the OS name is added).
+    detectedPrefix: Download for
+    # Home's status bar link to /download/.
+    pageLink: All files and checksums
 
   # The one line install, shown in place of a download button (commands live in src/lib/home/install.ts).
   install:
@@ -61,10 +65,10 @@ home:
           - { name: server, type: none }
       - name: PostgreSQL
         icon: postgresql
-        what: Local or remote, with the password in your keychain.
+        what: Local or remote, with the password saved encrypted.
         fields:
           - { name: host, type: any }
-          - { name: password, type: keychain }
+          - { name: password, type: encrypted }
           - { name: schemas, type: all }
       - name: MongoDB
         icon: mongodb
@@ -81,6 +85,8 @@ home:
 
   features:
     heading: Everything you reach for, in one sidebar
+    # Each panel links to its section on /features/: "More about Table grid".
+    moreLink: More about
 
   questions:
     heading: Before you install

@@ -1,4 +1,5 @@
 import { RELEASES_PAGE_URL } from './config';
+import { missingDigests } from './digest';
 import { fetchReleaseList, type FetchDeps } from './fetch';
 import { selectLatest } from './select';
 import type { ReleaseResult } from './types';
@@ -25,7 +26,12 @@ const toResult = async (deps: LoadDeps): Promise<ReleaseResult> => {
 // strict mode on a fallback; every other path resolves to a ReleaseResult.
 export const loadRelease = async (deps: LoadDeps): Promise<ReleaseResult> => {
   const result = await toResult(deps);
-  if (result.status === 'live') return result;
+  if (result.status === 'live') {
+    // A missing checksum is supporting evidence gone, never a reason to fail (spec 0005, AC-6).
+    const unhashed = missingDigests(result.release);
+    if (unhashed.length > 0) deps.warn(`[release] no sha256 digest for: ${unhashed.join(', ')}`);
+    return result;
+  }
 
   if (deps.strict) {
     throw new Error(

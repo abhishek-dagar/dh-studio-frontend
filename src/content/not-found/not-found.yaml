@@ -1,0 +1,21 @@
+# Not found page copy (spec 0006). Edit freely; the schema in src/content.config.ts checks every field.
+# The SQL keywords (select, from, where, path) live in src/pages/404.astro, because they are code, not copy.
+notFound:
+  meta:
+    title: Page not found · DH Studio
+    description: This page does not exist. Head back to DH Studio or download the app.
+  headline: This page is not in the table.
+  subline: The link may be old, or the page moved. Head back home, or grab the app.
+  editor:
+    tab: not_found.sql
+    table: pages
+    # Shown in the query when JavaScript does not run, so the real path is unknown.
+    fallbackPath: this-page
+    columns: [path, title]
+    empty: No rows
+    running: Running query on pages.db…
+    rows: 0 rows
+    code: '404'
+  buttons:
+    home: Back home
+    download: Download

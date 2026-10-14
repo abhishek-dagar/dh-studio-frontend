@@ -1,3 +1,4 @@
+import { parseDigest } from './digest';
 import type { RawAsset } from './schema';
 import type { Arch, Download, Format, Os, Role } from './types';
 
@@ -39,6 +40,7 @@ export const classifyAsset = (asset: RawAsset): Download | null => {
         fileName: asset.name,
         url: asset.browser_download_url,
         sizeBytes: asset.size,
+        sha256: parseDigest(asset.digest),
       }
     : null;
 };

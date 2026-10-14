@@ -1,0 +1,154 @@
+---
+import { sqlTokens } from "../../lib/changelog/sql";
+import type { SupportMatrix } from "../../lib/features/support";
+import { resultGridClass } from "../../lib/ui/result";
+import EditorLine from "../editor/EditorLine.astro";
+import EditorPane from "../editor/EditorPane.astro";
+import Tok from "../editor/Tok.astro";
+import Link from "../ui/Link.astro";
+import { levelIcon } from "./level-icons";
+
+// The features page opener (spec 0008, AC-2 to AC-4): an editor pane whose
+// comment line is the page's one h1, then the query, then its answer, a
+// feature by engine result grid. The grid is the page's one reveal; the page
+// script sets data-revealed once it loads. Below md the grid stacks (AC-3).
+interface Props {
+  copy: {
+    readonly tab: string;
+    readonly comment: string;
+    readonly lead: string;
+    readonly caption: string;
+    readonly levels: {
+      readonly full: string;
+      readonly partial: string;
+      readonly none: string;
+    };
+    readonly statusRows: string;
+    readonly statusEngines: string;
+  };
+  matrix: SupportMatrix;
+}
+
+const { copy, matrix } = Astro.props;
+
+// The query names the columns the grid below returns, in the same order.
+const keys = matrix.columns.map((column) => column.key).join(", ");
+const query = [`select feature, ${keys}`, "from features order by position;"];
+const status = `${matrix.rows.length} ${copy.statusRows} · ${matrix.columns.length} ${copy.statusEngines}`;
+---
+
+<EditorPane tabs={[{ label: copy.tab, current: true }]}>
+  <EditorLine size="h2">
+    <h1>
+      <span class="features-comment" aria-hidden="true">--</span>
+      {copy.comment}
+    </h1>
+  </EditorLine>
+  <EditorLine>
+    <p class="text-syntax-comment">
+      <span aria-hidden="true">-- </span>{copy.lead}
+    </p>
+  </EditorLine>
+  {
+    query.map((line) => (
+      <EditorLine>
+        {sqlTokens(line).map((token) =>
+          token.kind === null ? (
+            token.text
+          ) : (
+            <Tok kind={token.kind}>{token.text}</Tok>
+          ),
+        )}
+      </EditorLine>
+    ))
+  }
+
+  <table
+    slot="result"
+    class:list={[resultGridClass({ stack: true }), "support-grid"]}
+    role="table"
+    data-reveal
+    data-features-reveal
+  >
+    <caption>{copy.caption}</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th scope="col" role="columnheader">feature</th>
+        {
+          matrix.columns.map((column) => (
+            <th scope="col" role="columnheader">
+              {column.name}
+            </th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {
+        matrix.rows.map((row) => (
+          <tr role="row">
+            <th scope="row" role="rowheader">
+              <Link href={`#${row.slug}`} class="font-medium">
+                {row.tab}
+              </Link>
+            </th>
+            {row.cells.map((cell, index) => {
+              const Icon = levelIcon(cell.level);
+              return (
+                <td role="cell" data-label={matrix.columns[index]?.name}>
+                  <span
+                    class:list={[
+                      "inline-flex items-center gap-1.5",
+                      { "text-fg-muted": cell.level === "none" },
+                    ]}
+                  >
+                    <Icon
+                      class={`level-icon size-3.5 shrink-0 ${cell.level === "full" ? "text-[#68D7A1] fill-[#132C20]" : cell.level === "none" ? "border-border border border-dashed rounded-full" : ""}`}
+                      aria-hidden="true"
+                    />
+                    {copy.levels[cell.level]}
+                  </span>
+                  {cell.note !== undefined && (
+                    <span class="block text-caption text-fg-muted">
+                      {cell.note}
+                    </span>
+                  )}
+                </td>
+              );
+            })}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  <span slot="status">{status}</span>
+  <span slot="status">{copy.tab}</span>
+</EditorPane>
+
+<style is:global>
+  /* The comment marker before the heading, pulled together like the changelog's. */
+  .features-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+
+  .support-grid td {
+    vertical-align: top;
+  }
+
+  /* Stacked, each feature name heads its block across both cell columns. */
+  @media (max-width: 47.99rem) {
+    .support-grid.stack tbody th[scope="row"] {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .support-grid .level-icon {
+      color: CanvasText;
+    }
+  }
+</style>

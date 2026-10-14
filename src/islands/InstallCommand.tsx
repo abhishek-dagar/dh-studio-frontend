@@ -4,21 +4,11 @@ import { useEffect, useState } from 'react';
 import type { InstallCopy } from '../lib/home/download';
 import type { InstallCommand } from '../lib/home/install';
 import { buttonClass } from '../lib/ui/button';
+import { copyText } from '../lib/ui/clipboard';
 
 type CopyState = 'idle' | 'copied' | 'failed';
 
 const RESET_MS = 2000;
-
-/** Writes to the clipboard and reports success, never throws (needs a secure context). */
-const copyText = async (text: string): Promise<boolean> => {
-  try {
-    if (navigator.clipboard === undefined) return false;
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-};
 
 interface Props {
   install: InstallCommand;
@@ -28,7 +18,7 @@ interface Props {
   /** The red primary copy button, for the one command that answers the visitor's system. */
   primary: boolean;
   /** For analytics (#10): where this command sits on the page. */
-  placement: 'hero' | 'final';
+  placement: 'hero' | 'final' | 'page';
 }
 
 /**

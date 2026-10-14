@@ -5,7 +5,7 @@ import type { BuildEnv } from './config';
 // they can never disagree.
 
 /** Built pages kept out of search and the sitemap, each with a trailing slash. */
-export const UNLISTED_PATHS: readonly string[] = ['/design-system/'];
+export const UNLISTED_PATHS: readonly string[] = ['/design-system/', '/404/'];
 
 /** `/design-system` and `/design-system/` name the same page. */
 export const withTrailingSlash = (path: string): string => (path.endsWith('/') ? path : `${path}/`);
