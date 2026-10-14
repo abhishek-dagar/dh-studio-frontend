@@ -1,0 +1,154 @@
+/*
+ * Element defaults (spec 0002): body type, the focus ring, selection, the
+ * reveal, reduced motion and forced colors.
+ */
+
+@layer base {
+  html {
+    background-color: var(--ground);
+  }
+
+  body {
+    background-color: var(--ground);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-variant-numeric: tabular-nums;
+    /* Nothing wide ever scrolls the page sideways. */
+    overflow-x: clip;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+  }
+
+  ::selection {
+    background-color: var(--selection);
+    color: var(--fg);
+  }
+
+  /* One ring for every interactive element, on keyboard focus only. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* Shiki's css-variables theme, mapped to the syntax roles (CodeBlock). */
+:root {
+  --astro-code-foreground: var(--syntax-fg);
+  --astro-code-background: var(--surface);
+  --astro-code-token-keyword: var(--syntax-keyword);
+  --astro-code-token-string: var(--syntax-string);
+  --astro-code-token-string-expression: var(--syntax-string);
+  --astro-code-token-constant: var(--syntax-number);
+  --astro-code-token-function: var(--syntax-function);
+  --astro-code-token-comment: var(--syntax-comment);
+  --astro-code-token-punctuation: var(--syntax-punctuation);
+  --astro-code-token-parameter: var(--syntax-fg);
+  --astro-code-token-link: var(--syntax-function);
+}
+
+/* The code scrolls inside itself; the page never does. */
+.code-block {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: var(--text-code);
+  line-height: var(--text-code--line-height);
+}
+
+/*
+ * The reveal (AC-12): the one load time motion. An element marked data-reveal
+ * fades in when its owner sets data-revealed. It starts hidden only when
+ * JavaScript runs (html[data-js], set by the head script), so without
+ * JavaScript it is visible from the start. With reduced motion it is never
+ * hidden, so it simply shows its end state.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-js] [data-reveal]:not([data-revealed]) {
+    opacity: 0;
+  }
+
+  [data-reveal] {
+    transition: opacity var(--dur-reveal) var(--ease-out);
+  }
+}
+
+/*
+ * The download query's hold (spec 0003, AC-6; spec 0005, AC-12). While the
+ * DownloadQuery island has not settled detection, its rows and status bar are
+ * hidden and the result holds about three rows of height, so nothing jumps when
+ * it narrows. The reveal above fades them in when the island sets
+ * data-revealed. If the island never loads, the delayed animation shows the
+ * built rows after 3 seconds. It changes no motion, only visibility, so it runs
+ * under reduced motion too (hence the !important over the reduced motion
+ * reset). Without JavaScript, html has no data-js and none of this applies.
+ * Lives here, not in one page, because Home and /download/ both render it.
+ */
+html[data-js] [data-dq-state='pending'] [data-dq-hold] {
+  visibility: hidden;
+  animation: dq-hold-timeout 0s linear 3s forwards !important;
+}
+
+html[data-js] [data-dq-state='pending'] [data-dq-reserve] {
+  max-block-size: 11.5rem;
+  overflow: hidden;
+}
+
+/* The download page's header and three rows, measured in Chrome with JavaScript off. */
+html[data-js] [data-dq-state='pending'][data-dq-form='page'] [data-dq-reserve] {
+  max-block-size: 10rem;
+}
+
+@media (max-width: 47.99rem) {
+  html[data-js] [data-dq-state='pending'] [data-dq-reserve] {
+    max-block-size: 27rem;
+  }
+
+  /* Its stacked rows carry one more line each, the sha256 line. */
+  html[data-js] [data-dq-state='pending'][data-dq-form='page'] [data-dq-reserve] {
+    max-block-size: 44.25rem;
+  }
+}
+
+@keyframes dq-hold-timeout {
+  to {
+    visibility: visible;
+    opacity: 1;
+    max-block-size: none;
+  }
+}
+
+/* The theme toggle sets this for one frame so colors swap without transitions. */
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition: none !important;
+}
+
+/* Nothing moves: no animation, no transform transitions, only quick color and opacity changes. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, opacity !important;
+    transition-duration: var(--dur-fast) !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight;
+  }
+}

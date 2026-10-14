@@ -1,0 +1,27 @@
+---
+// A live color chip plus its value in each theme. The chip reads the token
+// itself, so it swaps with the theme; the value for the active theme is emphasized.
+interface Props {
+  token: string;
+  dark: string;
+  light: string;
+  use?: string;
+}
+
+const { token, dark, light, use } = Astro.props;
+---
+
+<li class="flex min-w-0 items-start gap-4">
+  <span
+    class="mt-0.5 size-12 shrink-0 rounded-field border border-line forced-color-adjust-none"
+    style={`background: var(${token})`}
+    aria-hidden="true"></span>
+  <span class="flex min-w-0 flex-col gap-1">
+    <code class="text-caption break-all text-fg">{token}</code>
+    <span class="flex flex-wrap gap-x-3 font-mono text-[0.75rem] leading-5 text-fg-muted">
+      <span class="[[data-theme=dark]_&]:font-semibold [[data-theme=dark]_&]:text-fg">Dark {dark}</span>
+      <span class="[[data-theme=light]_&]:font-semibold [[data-theme=light]_&]:text-fg">Light {light}</span>
+    </span>
+    {use !== undefined && <span class="text-caption text-fg-muted">{use}</span>}
+  </span>
+</li>

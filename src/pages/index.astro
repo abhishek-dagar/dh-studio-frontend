@@ -1,0 +1,70 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { VERCEL_ENV } from 'astro:env/server';
+import Closing from '../components/home/Closing.astro';
+import Engines from '../components/home/Engines.astro';
+import FeatureBrowser from '../components/home/FeatureBrowser.astro';
+import Hero from '../components/home/Hero.astro';
+import Questions from '../components/home/Questions.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { toDownloadData, type LaunchTips } from '../lib/home/download';
+import { duplicateOrders, featureListProblem, homeFeatures, homeListProblem, orderFeatures } from '../lib/home/features';
+import { latestRelease } from '../lib/release';
+import { siteOrigin } from '../lib/seo/config';
+import { ogImageUrl } from '../lib/seo/head';
+import { softwareAppLd, websiteLd } from '../lib/seo/ld';
+
+// Home (spec 0003): an editor session whose query returns your download.
+const [release, home, tipEntries, featureEntries, faqEntries] = await Promise.all([
+  latestRelease,
+  getEntry('home', 'home'),
+  getCollection('launchTips'),
+  getCollection('features'),
+  getCollection('faq'),
+]);
+
+if (home === undefined) {
+  throw new Error(
+    '[home] No "home" entry. Check that src/content/home/home.yaml holds one entry with the id "home". ' +
+      'If src/content.config.ts was added while the dev server ran, restart it so the collection syncs.',
+  );
+}
+
+const tips: LaunchTips = Object.fromEntries(
+  tipEntries
+    .filter((entry) => entry.id === 'macos' || entry.id === 'windows')
+    .map((entry) => [entry.id, { title: entry.data.title, steps: entry.data.steps, command: entry.data.command }]),
+);
+
+// A production build must show the real app, so a missing screenshot stops it (AC-20).
+const featureProblem = featureListProblem(featureEntries, { production: VERCEL_ENV === 'production' });
+if (featureProblem !== undefined) throw new Error(featureProblem);
+// Home lists only the `home: true` entries, and needs at least one (spec 0008, AC-10, AC-14).
+const homeProblem = homeListProblem(featureEntries);
+if (homeProblem !== undefined) throw new Error(homeProblem);
+
+// Questions keep their file order, so two entries may not share one (AC-21).
+const sharedFaqOrder = duplicateOrders(faqEntries);
+if (sharedFaqOrder.length > 0) throw new Error(`[faq] These entries share an order: ${sharedFaqOrder.join(', ')}.`);
+const questionRows = orderFeatures(faqEntries).map((entry) => ({
+  id: entry.id,
+  question: entry.data.question,
+  answer: entry.body ?? '',
+  link: entry.data.link,
+}));
+
+const { meta, hero, query, download, install, engines, features, questions, closing } = home.data;
+const data = toDownloadData(release);
+
+// Structured data, Home only (spec 0004, AC-5, AC-6).
+const site = siteOrigin(Astro.site);
+const jsonLd = [softwareAppLd({ site, description: meta.description, release, imageUrl: ogImageUrl(site, release) }), websiteLd(site)];
+---
+
+<BaseLayout title={meta.title} description={meta.description} jsonLd={jsonLd}>
+  <Hero hero={hero} data={data} copy={{ query, download, install }} tips={tips} />
+  <Engines engines={engines} />
+  <FeatureBrowser heading={features.heading} moreLink={features.moreLink} entries={orderFeatures(homeFeatures(featureEntries))} />
+  <Questions heading={questions.heading} entries={questionRows} />
+  <Closing comment={closing.comment} data={data} copy={{ query, download, install }} tips={tips} />
+</BaseLayout>

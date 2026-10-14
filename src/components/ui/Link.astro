@@ -1,0 +1,11 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { linkClass } from '../../lib/ui/link';
+
+// Text link (spec 0002): --fg with an underline, never red. Same tab for every link.
+type Props = Omit<HTMLAttributes<'a'>, 'href'> & { href: string };
+
+const { href, class: className, ...rest } = Astro.props;
+---
+
+<a href={href} class:list={[linkClass, className]} {...rest}><slot /></a>

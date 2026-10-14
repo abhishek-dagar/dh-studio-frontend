@@ -1,0 +1,22 @@
+---
+import { CopyButton } from '../../islands/CopyButton';
+
+// One shell command as a terminal line: the prompt, the command and a Copy
+// button, inset in a card. The command is selectable without JavaScript.
+interface Props {
+  command: string;
+  /** Shown before the command; never copied. */
+  prompt?: string;
+  class?: string;
+}
+
+const { command, prompt = '$', class: className } = Astro.props;
+---
+
+<div class:list={['flex min-w-0 items-center gap-3 rounded-field border border-line bg-ground py-1.5 ps-4 pe-1.5', className]}>
+  {/* Focusable so a keyboard can scroll a command wider than the field. */}
+  <code tabindex="0" class="min-w-0 flex-1 overflow-x-auto py-2 font-mono text-code whitespace-nowrap text-syntax-fg">
+    <span aria-hidden="true" class="text-fg-muted select-none">{prompt} </span>{command}
+  </code>
+  <CopyButton client:visible text={command} appearance="text" />
+</div>

@@ -1,0 +1,32 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+import Tok from '../../editor/Tok.astro';
+
+// Table grid: edits waiting for review before they are saved (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 flex items-center justify-between px-2 pt-1 pb-1.5">
+    <span class="font-medium text-fg">Review changes</span>
+    <span class="text-fg-muted">2 cells</span>
+  </p>
+  <ul class="m-0 flex list-none flex-col gap-1 p-0 px-1 font-mono text-[0.85em]">
+    <li class="rounded-inset border border-line bg-ground px-2 py-1">
+      <span class="text-fg-muted">row 3 title</span><br />
+      <Tok kind="string">'Task updated'</Tok> <Tok kind="punctuation">to</Tok> <Tok kind="string">'Task moved'</Tok>
+    </li>
+    <li class="rounded-inset border border-line bg-ground px-2 py-1">
+      <span class="text-fg-muted">row 7 type</span><br />
+      <Tok kind="string">'UPDATE'</Tok> <Tok kind="punctuation">to</Tok> <Tok kind="string">'CREATE'</Tok>
+    </li>
+  </ul>
+  <div class="flex items-center justify-end gap-2 px-1 pt-2 pb-0.5">
+    <span class="px-2 py-1 text-fg-muted">Discard</span>
+    <span class="rounded-button bg-wash px-3 py-1 font-medium text-fg">Save 2 changes</span>
+  </div>
+</PopupCard>

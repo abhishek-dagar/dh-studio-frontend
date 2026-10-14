@@ -1,0 +1,44 @@
+---
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import type { SectionIndexItem } from '../../lib/ui/section-index';
+import Badge from './Badge.astro';
+
+// The section index folded for phones (spec 0008, AC-6; spec 0005, AC-18, AC-19,
+// AC-23): a native <details>, closed by default, with the same links as the
+// SectionIndex column. It needs no JavaScript and never carries the "you are here" mark.
+interface Props {
+  label: string;
+  items: readonly SectionIndexItem[];
+  class?: string;
+}
+
+const { label, items, class: className } = Astro.props;
+---
+
+<details class:list={['section-jump group rounded-field border border-line bg-surface', className]}>
+  <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-field px-4 text-[0.875rem] font-medium">
+    {label}
+    <ChevronDown class="size-4 shrink-0 text-fg-muted transition-transform duration-(--dur-fast) group-open:rotate-180" aria-hidden="true" />
+  </summary>
+  <nav aria-label={label} class="border-t border-line px-4 py-3">
+    <ol class="flex flex-col gap-0.5">
+      {
+        items.map((item) => (
+          <li>
+            <a href={`#${item.anchor}`} class="flex min-h-11 flex-wrap items-center gap-x-2 gap-y-1 text-[0.875rem] text-fg-muted hover:text-fg">
+              <span class:list={{ 'font-mono': item.mono === true }}>{item.label}</span>
+              {item.badges?.map((badge) => <Badge variant={badge.variant}>{badge.label}</Badge>)}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+</details>
+
+<style is:global>
+  /* The marker is the chevron, so Safari's own triangle goes too. */
+  .section-jump > summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

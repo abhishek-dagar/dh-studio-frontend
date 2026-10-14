@@ -1,0 +1,51 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { featureHref } from '../../lib/features/slug';
+import Link from '../ui/Link.astro';
+import { cardComponents } from './cards';
+import FeatureShot from './FeatureShot.astro';
+
+// One feature of the browser (spec 0003, AC-19): its title, the benefit from
+// the entry body, and a real screenshot with up to three popup cards over it.
+// Without a screenshot (preview and local builds only, AC-20) a labeled frame
+// of the same size stands in. The panel id is the anchor its sidebar link uses.
+// Under the benefit, a link leads to the feature's section on /features/ (spec 0008, AC-8).
+interface Props {
+  entry: CollectionEntry<'features'>;
+  panelId: string;
+  /** The link's text before the tab name, `More about`. */
+  moreLink: string;
+}
+
+const { entry, panelId, moreLink } = Astro.props;
+const { title, image, imageLight, alt, cards = [] } = entry.data;
+const { Content } = await render(entry);
+
+const placed = cards.map((card) => ({ Card: cardComponents[card.kind], position: { x: card.x, y: card.y, width: card.width } }));
+const titleId = `${panelId}-title`;
+const sizes = '(min-width: 72rem) 52rem, (min-width: 64rem) 70vw, 100vw';
+---
+
+<section id={panelId} class="flex scroll-mt-[calc(var(--header-offset)+var(--header-h)+1.5rem)] flex-col gap-6" aria-labelledby={titleId} data-feature-panel data-title-id={titleId}>
+  <div class="flex max-w-(--width-prose) flex-col gap-2">
+    <h3 id={titleId} class="flex flex-wrap items-center gap-x-3 gap-y-1 text-h3">
+      {title}
+    </h3>
+    <div class="feature-benefit text-fg-muted"><Content /></div>
+    <p class="mt-1"><Link href={featureHref(entry.id)}>{moreLink} {entry.data.tab}</Link></p>
+  </div>
+
+  <FeatureShot id={entry.id} image={image} imageLight={imageLight} alt={alt} sizes={sizes}>
+    {placed.map(({ Card, position }) => <Card position={position} />)}
+  </FeatureShot>
+</section>
+
+<style>
+  .feature-benefit :global(p) {
+    margin: 0;
+  }
+
+  .feature-benefit :global(p + p) {
+    margin-top: 0.75rem;
+  }
+</style>

@@ -1,0 +1,101 @@
+/*
+ * Tailwind names for the role tokens (spec 0002). `inline` makes utilities
+ * read the role variable directly, so a theme swap under [data-theme] reaches
+ * every utility. Default colors, radii and easings are cleared so only the
+ * role names exist (there is no `bg-gray-900` or `bg-red-500`).
+ */
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --ease-*: initial;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-floating: var(--floating);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-fg: var(--action-fg);
+  --color-action-edge: var(--action-edge);
+  --color-focus: var(--focus);
+  --color-signal: var(--signal);
+  --color-signal-tint: var(--signal-tint);
+
+  /* Syntax roles, for code drawn in HTML (editor/Tok.astro and lib/ui/syntax.ts). */
+  --color-syntax-fg: var(--syntax-fg);
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-function: var(--syntax-function);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-punctuation: var(--syntax-punctuation);
+
+  /* Derived washes, mixed from roles: secondary button fill, and the ghost and nav hover. */
+  --color-control: color-mix(in oklab, var(--fg) 4%, var(--surface));
+  --color-wash: color-mix(in oklab, var(--fg) 6%, transparent);
+
+  /* Astro's Fonts API defines --font-mona and --font-geist, each with a metric matched fallback. */
+  --font-sans: var(--font-mona);
+  --font-mono: var(--font-geist);
+}
+
+@theme {
+  /* Type scale. Every heading at normal width; display, h1 and h2 scale between 360px and 1440px. */
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.25rem;
+  --text-caption--font-weight: 450;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.55;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 600;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h2: clamp(1.9rem, 1.2rem + 2.4vw, 3rem);
+  --text-h2--line-height: 1.05;
+  --text-h2--font-weight: 600;
+  --text-h2--letter-spacing: -0.035em;
+  --text-h1: clamp(2.075rem, 1.6rem + 2vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--font-weight: 600;
+  --text-h1--letter-spacing: -0.03em;
+  --text-display: clamp(2.6rem, 1.5rem + 4.2vw, 4.75rem);
+  --text-display--line-height: 1.02;
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: -0.04em;
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.7;
+
+  /* Radius by role, not one radius everywhere. */
+  --radius-inset: 5px;
+  --radius-field: 10px;
+  --radius-button: 9999px;
+  --radius-surface: 18px;
+  --radius-panel: 24px;
+  --radius-window: 14px;
+  --radius-pill: 9999px;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+/* Display and h2 cap their measure and balance their lines. */
+@layer utilities {
+  .text-display {
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  .text-h2 {
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+}

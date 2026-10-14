@@ -1,0 +1,22 @@
+# First launch help. Home shows the macOS and Windows tips after a download (spec 0003, AC-7);
+# the download page lists all three in its First launch section (spec 0005, AC-8).
+# The builds are not code signed yet, so each system warns once on first launch.
+macos:
+  title: If macOS says DH Studio is damaged or can't be opened
+  steps:
+    - Move DH Studio to your Applications folder.
+    - Open Terminal, run this command, then open the app again. You only do this once.
+  command: xattr -cr "/Applications/DH Studio.app"
+
+windows:
+  title: If Windows protected your PC appears
+  steps:
+    - Choose More info.
+    - Choose Run anyway. You only do this once.
+
+linux:
+  title: If the AppImage won't open
+  steps:
+    - Make the AppImage executable.
+    - Open it again. You only do this once.
+  command: chmod +x DH.Studio_*_amd64.AppImage

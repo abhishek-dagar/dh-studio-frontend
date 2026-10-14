@@ -1,0 +1,24 @@
+---
+import PopupCard from '../../editor/PopupCard.astro';
+import Tok from '../../editor/Tok.astro';
+
+// Table grid: the filter popover under the where bar (spec 0003, AC-19). Decorative copy of the app.
+interface Props {
+  position: { readonly x: string; readonly y: string; readonly width: string };
+}
+
+const { position } = Astro.props;
+---
+
+<PopupCard position={position}>
+  <p class="m-0 px-2 pt-1 pb-1.5 font-medium text-fg-muted">Filter rows</p>
+  <div class="flex items-center gap-1.5 px-1">
+    <span class="flex-1 rounded-inset border border-line bg-ground px-2 py-1 font-mono text-[0.92em]">type</span>
+    <span class="rounded-inset border border-line bg-ground px-2 py-1 font-mono text-[0.92em]"><Tok kind="punctuation">=</Tok></span>
+    <span class="flex-1 rounded-inset border border-line bg-ground px-2 py-1 font-mono text-[0.92em]"><Tok kind="string">'CREATE'</Tok></span>
+  </div>
+  <div class="flex items-center justify-between px-2 pt-2 pb-1">
+    <span class="text-fg-muted">Add a condition</span>
+    <span class="rounded-button bg-wash px-3 py-1 font-medium text-fg">Apply</span>
+  </div>
+</PopupCard>

@@ -1,0 +1,42 @@
+---
+import { sqlTokens } from '../../lib/changelog/sql';
+import EditorLine from '../editor/EditorLine.astro';
+import EditorPane from '../editor/EditorPane.astro';
+import Tok from '../editor/Tok.astro';
+
+// The changelog opener (spec 0005, AC-8): an editor pane whose comment line is
+// the page's one h1, then the query the list below answers.
+interface Props {
+  heading: string;
+  tab: string;
+  query: readonly string[];
+  /** The status bar's row count, left out when there is nothing to count. */
+  rows?: string | undefined;
+}
+
+const { heading, tab, query, rows } = Astro.props;
+---
+
+<EditorPane tabs={[{ label: tab, current: true }]}>
+  <EditorLine size="h2">
+    <h1><span class="changelog-comment" aria-hidden="true">--</span> {heading}</h1>
+  </EditorLine>
+  {
+    query.map((line) => (
+      <EditorLine>
+        {sqlTokens(line).map((token) => (token.kind === null ? token.text : <Tok kind={token.kind}>{token.text}</Tok>))}
+      </EditorLine>
+    ))
+  }
+  {rows !== undefined && <span slot="status">{rows}</span>}
+</EditorPane>
+
+<style is:global>
+  /* The comment marker before the heading, pulled together like Home's closing one. */
+  .changelog-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+</style>

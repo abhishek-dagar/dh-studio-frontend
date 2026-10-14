@@ -1,0 +1,20 @@
+---
+// Key names (spec 0002): Geist Mono on an inset surface. One <kbd> per key,
+// wrapped in an outer <kbd> so a shortcut reads as one input.
+interface Props {
+  keys: readonly string[];
+  class?: string;
+}
+
+const { keys, class: className } = Astro.props;
+---
+
+<kbd class:list={['inline-flex items-center gap-1 align-baseline font-sans', className]}>
+  {
+    keys.map((key) => (
+      <kbd class="inline-flex min-w-[1.75em] items-center justify-center rounded-inset border border-line bg-surface px-1.5 py-0.5 font-mono text-[0.75rem] leading-none text-fg shadow-[inset_0_-1px_0_var(--line)]">
+        {key}
+      </kbd>
+    ))
+  }
+</kbd>

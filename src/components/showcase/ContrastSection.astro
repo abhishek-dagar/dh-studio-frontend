@@ -1,0 +1,96 @@
+---
+import Check from '@lucide/astro/icons/check';
+import X from '@lucide/astro/icons/x';
+import type { TokenSet } from '../../lib/contrast';
+import { contrastRows, formatRatio } from '../../lib/showcase';
+import ShowcaseSection from './ShowcaseSection.astro';
+
+// Every pair the contrast test asserts, measured at build time from tokens.css.
+interface Props {
+  tokens: TokenSet;
+}
+
+const { tokens } = Astro.props;
+
+const rows = contrastRows(tokens);
+const passing = rows.filter((row) => row.passes).length;
+const meets = (ratio: number | null, min: number): boolean => ratio !== null && ratio >= min;
+---
+
+<ShowcaseSection
+  id="contrast"
+  title="Contrast"
+  intro="These ratios are measured from tokens.css when the site builds, with the same pairs the contrast test asserts. Text needs 4.5:1; focus rings, control borders and the light primary edge need 3:1."
+>
+  <p class="text-lead">
+    <span class="font-semibold">{passing} of {rows.length}</span>
+    <span class="text-fg-muted"> pairs meet WCAG AA in every theme they apply to.</span>
+  </p>
+
+  <div
+    class="relative overflow-x-auto rounded-surface border border-line bg-surface"
+    role="region"
+    aria-labelledby="contrast-table-caption"
+    tabindex="0"
+  >
+    <table class="w-full min-w-160 border-collapse text-start">
+      <caption id="contrast-table-caption" class="sr-only">Contrast ratio of each token pair in the dark and light themes</caption>
+      <thead>
+        <tr class="border-b border-line text-caption text-fg-muted">
+          <th scope="col" class="px-4 py-3 text-start font-medium">Pair</th>
+          <th scope="col" class="px-4 py-3 text-start font-medium">Needs</th>
+          <th scope="col" class="px-4 py-3 text-start font-medium">Dark</th>
+          <th scope="col" class="px-4 py-3 text-start font-medium">Light</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr class="border-b border-line last:border-b-0">
+              <th scope="row" class="px-4 py-3 text-start font-normal">
+                <span class="flex items-center gap-3">
+                  <span
+                    class="inline-flex size-9 shrink-0 items-center justify-center rounded-field border border-line text-caption font-semibold forced-color-adjust-none"
+                    style={
+                      row.pair.min < 4.5
+                        ? `background: var(--${row.pair.bg}); box-shadow: inset 0 0 0 2px var(--${row.pair.fg})`
+                        : `background: var(--${row.pair.bg}); color: var(--${row.pair.fg})`
+                    }
+                    aria-hidden="true"
+                  >
+                    {row.pair.min < 4.5 ? '' : 'Aa'}
+                  </span>
+                  <code class="text-caption break-all">
+                    --{row.pair.fg} <span class="text-fg-muted">on</span> --{row.pair.bg}
+                  </code>
+                </span>
+              </th>
+              <td class="px-4 py-3 font-mono text-caption text-fg-muted">{row.pair.min}:1</td>
+              {[row.dark, row.light].map((ratio, index) => {
+                const applies = row.pair.themes.includes(index === 0 ? 'dark' : 'light');
+                const ok = meets(ratio, row.pair.min);
+                return (
+                  <td class="px-4 py-3 font-mono text-caption">
+                    {applies ? (
+                      <span class="inline-flex items-center gap-1.5">
+                        {ok ? (
+                          <Check class="size-4 text-fg-muted" aria-hidden="true" />
+                        ) : (
+                          <X class="size-4 text-fg" aria-hidden="true" />
+                        )}
+                        {formatRatio(ratio)}
+                        <span class="sr-only">{ok ? ', passes' : ', fails'}</span>
+                      </span>
+                    ) : (
+                      <span class="text-fg-muted">Not tested</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</ShowcaseSection>

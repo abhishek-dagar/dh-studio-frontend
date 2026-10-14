@@ -1,0 +1,15 @@
+---
+// Centered column at one of the three layout widths, with the page gutter (spec 0002).
+interface Props {
+  width?: 'prose' | 'content' | 'bleed';
+  class?: string;
+}
+
+const { width = 'content', class: className } = Astro.props;
+
+const widths = { prose: 'max-w-(--width-prose)', content: 'max-w-(--width-content)', bleed: 'max-w-(--width-bleed)' } as const;
+---
+
+<div class:list={['mx-auto w-full px-(--gutter)', widths[width], className]}>
+  <slot />
+</div>

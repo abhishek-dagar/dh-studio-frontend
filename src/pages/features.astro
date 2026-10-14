@@ -1,0 +1,80 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { VERCEL_ENV } from 'astro:env/server';
+import FeatureSection from '../components/features/FeatureSection.astro';
+import FeaturesOpener from '../components/features/FeaturesOpener.astro';
+import Closing from '../components/home/Closing.astro';
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import SectionIndexed from '../components/ui/SectionIndexed.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { featureSlug } from '../lib/features/slug';
+import { supportMatrix, supportProblem } from '../lib/features/support';
+import { toDownloadData, type LaunchTips } from '../lib/home/download';
+import { featureListProblem, orderFeatures } from '../lib/home/features';
+import { latestRelease } from '../lib/release';
+
+// The features page (spec 0008): a query whose result is the feature by engine
+// support matrix, then one section per feature in Home's order, an `On this
+// page` index, and Home's closing download. Every link works without JavaScript.
+const [release, page, home, tipEntries, featureEntries] = await Promise.all([
+  latestRelease,
+  getEntry('featuresPage', 'featuresPage'),
+  getEntry('home', 'home'),
+  getCollection('launchTips'),
+  getCollection('features'),
+]);
+
+if (page === undefined) {
+  throw new Error(
+    '[features] No "featuresPage" entry. Check that src/content/features-page/features-page.yaml holds one entry with the id "featuresPage". ' +
+      'If src/content.config.ts was added while the dev server ran, restart it so the collection syncs.',
+  );
+}
+if (home === undefined) throw new Error('[features] No "home" entry in src/content/home/home.yaml, which holds the engines and the closing.');
+
+const { engines, query, download, install, closing } = home.data;
+
+// The same list checks as Home (spec 0003, AC-20), then the engine support rules (AC-10), in every environment.
+const listProblem = featureListProblem(featureEntries, { production: VERCEL_ENV === 'production' });
+if (listProblem !== undefined) throw new Error(listProblem);
+const support = supportProblem(featureEntries, engines.rows);
+if (support !== undefined) throw new Error(support);
+
+const entries = orderFeatures(featureEntries);
+const matrix = supportMatrix(entries, engines.rows);
+const indexItems = entries.map((entry) => ({ anchor: featureSlug(entry.id), label: entry.data.tab }));
+
+const tips: LaunchTips = Object.fromEntries(
+  tipEntries
+    .filter((entry) => entry.id === 'macos' || entry.id === 'windows')
+    .map((entry) => [entry.id, { title: entry.data.title, steps: entry.data.steps, command: entry.data.command }]),
+);
+const data = toDownloadData(release);
+const copy = page.data;
+---
+
+<BaseLayout title={copy.title} description={copy.description}>
+  <Section class="pt-10 pb-0 md:pt-16">
+    <Container class="flex flex-col gap-10">
+      <FeaturesOpener copy={copy} matrix={matrix} />
+
+      <SectionIndexed label={copy.indexLabel} items={indexItems}>
+        <div class="flex flex-col">
+          {entries.map((entry) => <FeatureSection entry={entry} engines={engines.rows} copy={copy} />)}
+        </div>
+      </SectionIndexed>
+    </Container>
+  </Section>
+
+  <Closing comment={closing.comment} data={data} copy={{ query, download, install }} tips={tips} />
+</BaseLayout>
+
+<script>
+  // The one reveal (AC-4): the result grid fades in as if the query just ran.
+  // Two frames, so the hidden start paints before the transition begins. Without
+  // JavaScript, or under reduced motion, base.css never hides it.
+  document.querySelectorAll<HTMLElement>('[data-features-reveal]').forEach((grid) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => grid.setAttribute('data-revealed', '')));
+  });
+</script>

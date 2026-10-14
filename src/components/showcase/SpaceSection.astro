@@ -1,0 +1,111 @@
+---
+import type { TokenSet } from '../../lib/contrast';
+import type { Declarations } from '../../lib/showcase';
+import { valueOf } from '../../lib/showcase';
+import ShowcaseSection from './ShowcaseSection.astro';
+import Specimen from './Specimen.astro';
+
+// Spacing steps, layout widths and the radius hierarchy.
+interface Props {
+  tokens: TokenSet;
+  theme: Declarations;
+}
+
+const { tokens, theme } = Astro.props;
+
+// Literal class names, so Tailwind generates each one.
+const spacing = [
+  { step: 1, className: 'w-1' },
+  { step: 2, className: 'w-2' },
+  { step: 3, className: 'w-3' },
+  { step: 4, className: 'w-4' },
+  { step: 6, className: 'w-6' },
+  { step: 8, className: 'w-8' },
+  { step: 12, className: 'w-12' },
+  { step: 16, className: 'w-16' },
+  { step: 24, className: 'w-24' },
+] as const;
+
+const layout = [
+  { name: '--width-prose', use: 'Running text' },
+  { name: '--width-content', use: 'Page content column' },
+  { name: '--width-bleed', use: 'Full bleed content' },
+  { name: '--width-nav', use: 'Header pill' },
+  { name: '--gutter', use: 'Side padding, 2rem from md' },
+  { name: '--space-section', use: 'Block padding of every section' },
+  { name: '--header-h', use: 'Header pill height' },
+  { name: '--header-offset', use: 'Header pill gap from the top' },
+] as const;
+
+const radii = [
+  { name: 'inset', className: 'rounded-inset', use: 'Kbd, inline code' },
+  { name: 'field', className: 'rounded-field', use: 'Inputs, code blocks' },
+  { name: 'button', className: 'rounded-button', use: 'Every button' },
+  { name: 'surface', className: 'rounded-surface', use: 'Cards, menu' },
+  { name: 'panel', className: 'rounded-panel', use: 'Large call to action panels' },
+  { name: 'window', className: 'rounded-window', use: 'App windows' },
+  { name: 'pill', className: 'rounded-pill', use: 'Badges, header pill' },
+] as const;
+---
+
+<ShowcaseSection
+  id="space"
+  title="Space and shape"
+  intro="A 4px spacing base, three layout widths, and a radius for each role, so the eye reads hierarchy from shape as well as size."
+>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <Specimen title="Spacing" note="Tailwind's default 4px step. Pick from the scale rather than an arbitrary value.">
+      <ul class="flex flex-col gap-3">
+        {
+          spacing.map((space) => (
+            <li class="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-4">
+              <code class="text-caption text-fg-muted">{space.step}</code>
+              <span class="flex items-center gap-3">
+                <span class:list={['h-3 rounded-inset bg-fg-muted forced-color-adjust-none', space.className]} aria-hidden="true" />
+                <span class="text-caption text-fg-muted">{space.step * 4}px</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </Specimen>
+
+    <Specimen title="Layout" note="Content centers in a column with the page gutter. Editor panes and windows may run wider than the text around them.">
+      <dl class="flex flex-col divide-y divide-line">
+        {
+          layout.map((item) => (
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 first:pt-0 last:pb-0">
+              <dt class="flex flex-col">
+                <code class="text-caption text-fg">{item.name}</code>
+                <span class="text-caption text-fg-muted">{item.use}</span>
+              </dt>
+              <dd class="m-0">
+                <code class="text-caption break-all text-fg-muted">{valueOf(tokens.primitives, item.name)}</code>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </Specimen>
+  </div>
+
+  <Specimen title="Radius" note="Small for inset details, larger as the thing grows. Never one radius everywhere.">
+    <ul class="grid grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-7">
+      {
+        radii.map((radius) => (
+          <li class="flex flex-col gap-3">
+            <span
+              class:list={['h-20 border-2 border-line-strong bg-ground', radius.className]}
+              aria-hidden="true"
+            />
+            <span class="flex flex-col">
+              <code class="text-caption text-fg">--radius-{radius.name}</code>
+              <code class="text-caption text-fg-muted">{valueOf(theme, `--radius-${radius.name}`)}</code>
+              <span class="text-caption text-fg-muted">{radius.use}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </Specimen>
+</ShowcaseSection>
