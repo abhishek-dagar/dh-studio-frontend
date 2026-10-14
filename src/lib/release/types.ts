@@ -13,6 +13,8 @@ export type Download = {
   readonly fileName: string;
   readonly url: string;
   readonly sizeBytes: number;
+  /** 64 lowercase hex characters, from the asset's GitHub digest; absent when not published. */
+  readonly sha256?: string | undefined;
 };
 
 export type Release = {

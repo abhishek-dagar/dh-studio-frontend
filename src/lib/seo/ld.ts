@@ -1,5 +1,5 @@
 import type { ReleaseResult } from '../release/types';
-import { licenseUrl } from '../site';
+import { downloadHref, licenseUrl } from '../site';
 import { SITE_NAME } from './config';
 import { canonicalUrl } from './head';
 
@@ -24,7 +24,8 @@ export const softwareAppLd = ({ site, description, release, imageUrl }: Software
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'macOS, Windows, Linux',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  downloadUrl: release.status === 'live' ? release.release.pageUrl : release.releasesPageUrl,
+  // The download page when live; GitHub's list when this build has no release data (spec 0005, AC-21).
+  downloadUrl: release.status === 'live' ? canonicalUrl(downloadHref, site) : release.releasesPageUrl,
   license: licenseUrl,
   isAccessibleForFree: true,
   ...(release.status === 'live' ? { softwareVersion: release.release.version } : {}),

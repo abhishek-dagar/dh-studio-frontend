@@ -7,6 +7,9 @@ const rawAssetSchema = z.object({
   name: z.string(),
   browser_download_url: z.url(),
   size: z.number().int().nonnegative(),
+  // GitHub's `sha256:<hex>` checksum (spec 0005, download page). Never fails
+  // validation: a missing or odd value only means the hash is not published.
+  digest: z.string().nullable().optional(),
 });
 
 const rawReleaseSchema = z.object({

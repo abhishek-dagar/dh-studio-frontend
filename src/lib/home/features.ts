@@ -3,8 +3,18 @@
 
 export interface FeatureEntryLike {
   readonly id: string;
-  readonly data: { readonly order: number; readonly image?: unknown };
+  readonly data: { readonly order: number; readonly image?: unknown; readonly home?: boolean };
 }
+
+/** The entries Home's browser shows (spec 0008, AC-14): only `home: true`, in the order given. */
+export const homeFeatures = <T extends FeatureEntryLike>(entries: readonly T[]): readonly T[] =>
+  entries.filter((entry) => entry.data.home === true);
+
+/** Why Home's browser can't be built, or undefined: it needs at least one `home: true` entry (spec 0008, AC-10). */
+export const homeListProblem = (entries: readonly FeatureEntryLike[]): string | undefined =>
+  homeFeatures(entries).length > 0
+    ? undefined
+    : '[features] Home needs at least one feature with `home: true` in src/content/features/, or its feature browser renders empty.';
 
 /** The entries in sidebar order, as a new array. */
 export const orderFeatures = <T extends FeatureEntryLike>(entries: readonly T[]): readonly T[] =>

@@ -305,9 +305,40 @@ Every interactive element gets the same focus ring on keyboard focus only: 2px s
 
 `islands/Tooltip.tsx` (`client:visible`). Props: `label` (the trigger's own accessible name), `tip`, `icon?` `'info' | 'keyboard'`, `href?` (makes the trigger a link). Built on Base UI. The trigger is a ghost icon button. It opens on hover after 300ms and at once on keyboard focus, stays open while hovered, and closes on Escape. It renders on `--floating`, `rounded-field`. A tooltip only ever adds to a trigger that already has a name. Never put essential information only in a tooltip.
 
+## Changelog
+
+The `/changelog/` pages (spec 0005), in `src/components/changelog/` and `src/pages/changelog/`.
+
+- **Opener** (`ChangelogHeader`): an editor pane with a `changelog.sql` tab. Line 1 is the page's one `h1` after a `--` comment marker, at `h2` line size; the next lines are the query, colored by `sqlTokens` (`lib/changelog/sql.ts`) through `Tok`. The status bar counts the view's rows.
+- **Filter tabs and feed** (`ChangelogTabs`): plain links in a `nav`, styled like the header nav pills. The current tab carries `aria-current="page"`, `bg-wash` and an underline, so it still reads in forced colors. A `Subscribe` link with the `rss` icon sits at the other end.
+- **Entry** (`ReleaseEntry`): a `Surface` `article`. The version is an `h2` at `text-h3` size, linking to its own page; then `ReleaseMeta` (the date in `text-caption` `--fg-muted`, a signal `Latest` badge, an outline `Prerelease` badge), the notes, and a `View on GitHub` link.
+- **Notes** (`ReleaseNotes`, `.release-notes`): styled from markdown output, not utilities. Headings start at `h3` (`text-h3`); `h4` and below are body size, semibold. Lists use `--fg-muted` markers, links match `Link`, inline code is a quiet chip on `--ground` with `rounded-inset`. Fenced code matches `CodeBlock` (surface, `--line` border, `rounded-field`, `css-variables` colors, no copy button) and scrolls sideways inside itself.
+- **Pager** (`ChangelogPager`): secondary pill buttons for Newer and Older with arrows, and `Page n of m` in `text-caption` between them. Each button is left out at its end.
+- **Version page**: an `All releases` link and `Subscribe` on top, then an `h1` at `text-h1`, the meta row, a `Release notes` `h2` at `text-h3` in `--fg-muted`, and the pager to the neighboring versions. No editor pane: one bold move per page, and on this page it is the version.
+- **Version index**: the shared section index (see *Section index* below) on list pages with 2 or more entries, the container widened to 64rem at `lg`. Versions show in `font-mono`, with the entry `Latest` and `Prerelease` badges. Each entry `article` carries `id="v<version>"` and the shared `scroll-margin-top`.
+
+## Section index
+
+`ui/SectionIndexed.astro` wraps long content with an `On this page` index (spec 0008, AC-6), used by the changelog lists and the features page. Props: `label`, `items` (`readonly { anchor, label, mono?, badges? }[]`, from `lib/ui/section-index.ts`). With no items the content renders alone.
+
+- From `lg` a sticky 14rem right column (at the header offset plus the pill plus 1rem) holds the `SectionIndex` island (`client:idle`): a `text-caption` label, then plain anchor links. The section you are reading (`activeAnchor`) gets a 2px `--fg` start border, `--fg` text and medium weight, never color alone (forced colors use `Highlight` for the border).
+- Below `lg` the same links fold into `ui/SectionJump.astro`, a `<details>` on `bg-surface` with a `--line` border, `rounded-field` and a turning chevron. It never carries the reading mark.
+- The index comes before the content in the DOM, so keyboard order is index then content at every width. Links jump with no JavaScript.
+- **Motion**: the jump is smooth under `prefers-reduced-motion: no-preference` and instant under `reduce`, scoped with `:root:has([data-section-index])` so no other page changes.
+
+## Features page
+
+The `/features/` page (spec 0008), in `src/components/features/` and `src/pages/features.astro`. One `features` collection feeds it and Home, so both list the same entries in the same order; anchors come from `featureSlug` (`lib/features/slug.ts`).
+
+- **Opener** (`FeaturesOpener`): an editor pane with a `features.sql` tab. Line 1 is the page's one `h1` after a `--` marker at `h2` line size, then a comment lead and the query naming the engine columns. Its result is the support matrix, a `stack` result grid (feature rows by `home.yaml` engine columns), each cell an icon (`check`, `contrast`, `minus` from `level-icons.ts`) plus the level word and an optional note. The matrix is the page's one reveal. The status bar reads `<n> rows · <m> engines` and the file name.
+- **Section** (`FeatureSection`): a `text-caption` eyebrow (the tab name), an `h2` at `text-h2`, the benefit at `text-lead` in `--fg-muted`, the `EngineLine`, the screenshot (`home/FeatureShot.astro`, shared with Home) with one page popup card, then `What you can do` (`h3`) and the capabilities as `h4` plus a paragraph, two columns from `md`. Sections are split by a `--line` top border.
+- **Engine line** (`EngineLine`): a `Works with` caption and a wrapped list of engine icons and names. A partial engine adds `(partly, <note>)`; an unsupported one is `--fg-muted` and says `(not supported, <note>)` in words.
+- The page ends with Home's `Closing`. Home's feature panels link in with `More about <tab>`.
+- Engine icons live in `editor/engine-icons.ts` and popup cards in `home/cards/index.ts` (`cardComponents`), shared by Home and this page.
+
 ## Site links
 
-`src/lib/site.ts` is the one place for site wide links: `repoUrl`, `downloadHref` (`/#download`, the header Download, which jumps to the Home result grid; a fallback build links the GitHub releases page instead), `licenseUrl`, `licenseLine`, `navLinks`, `footerLinks`. Add in page anchors to `navLinks` only once their sections exist.
+`src/lib/site.ts` is the one place for site wide links: `repoUrl`, `featuresHref` (`/features/`, the header and footer Features link), `downloadHref` (`/#download`, the header Download, which jumps to the Home result grid; a fallback build links the GitHub releases page instead), `licenseUrl`, `licenseLine`, `navLinks`, `footerLinks`. Add in page anchors to `navLinks` only once their sections exist.
 
 ## Adding a token
 

@@ -18,9 +18,11 @@ interface Props {
   title: string;
   description: string;
   jsonLd?: readonly JsonLdNode[];
+  /** An Atom feed this page announces in the head (the changelog, spec 0005, AC-14). */
+  feedUrl?: string;
 }
 
-const { title, description, jsonLd } = Astro.props;
+const { title, description, jsonLd, feedUrl } = Astro.props;
 
 const [release, home] = await Promise.all([latestRelease, getEntry('home', 'home')]);
 if (home === undefined) throw new Error('[seo] No "home" entry in src/content/home/home.yaml, so the card has no alt text.');
@@ -41,7 +43,7 @@ const tags = headTags(
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
-    <Seo tags={tags} jsonLd={jsonLd === undefined ? undefined : serializeLd(jsonLd)} />
+    <Seo tags={tags} jsonLd={jsonLd === undefined ? undefined : serializeLd(jsonLd)} feedUrl={feedUrl} />
     <!-- Only the Mona Sans latin face is preloaded; Geist Mono loads when code appears. -->
     <Font cssVariable="--font-mona" preload={[{ subset: 'latin' }]} />
     <Font cssVariable="--font-geist" />

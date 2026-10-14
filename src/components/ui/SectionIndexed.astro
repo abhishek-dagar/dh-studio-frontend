@@ -1,0 +1,59 @@
+---
+import { SectionIndex } from '../../islands/SectionIndex';
+import type { SectionIndexItem } from '../../lib/ui/section-index';
+import SectionJump from './SectionJump.astro';
+
+// Content with an `On this page` index (spec 0008, AC-6; spec 0005, AC-18 to
+// AC-23). From lg a sticky 14rem right column holds the SectionIndex island;
+// below lg the same links fold into a <details> above the content. With no
+// items the slot renders alone. The index comes first in the DOM, so keyboard
+// order is index, then content, at every width.
+interface Props {
+  label: string;
+  items: readonly SectionIndexItem[];
+  class?: string;
+}
+
+const { label, items, class: className } = Astro.props;
+const indexed = items.length > 0;
+---
+
+<div
+  class:list={['flex flex-col gap-6', { 'lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-8': indexed }, className]}
+  data-section-index={indexed ? '' : undefined}
+>
+  {
+    indexed && (
+      <div class="hidden lg:col-start-2 lg:row-start-1 lg:block">
+        <div class="sticky top-[calc(var(--header-offset)+var(--header-h)+1rem)]">
+          <SectionIndex client:idle label={label} items={items} />
+        </div>
+      </div>
+    )
+  }
+  {indexed && <SectionJump label={label} items={items} class="lg:hidden" />}
+
+  <div class="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
+    <slot />
+  </div>
+</div>
+
+<style is:global>
+  /* The jump scrolls smoothly only on pages with an index, and never under reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root:has([data-section-index]) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Forced colors keep the reading mark as a border, not only a color. */
+  @media (forced-colors: active) {
+    .section-index-link {
+      border-color: Canvas;
+    }
+
+    .section-index-link[aria-current='location'] {
+      border-color: Highlight;
+    }
+  }
+</style>

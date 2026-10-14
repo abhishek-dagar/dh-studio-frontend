@@ -60,38 +60,4 @@ const { hero, data, copy, tips } = Astro.props;
     font-weight: 400;
     letter-spacing: -0.18em;
   }
-
-  /*
-   * The one reveal (spec 0003, AC-6). While the island has not settled
-   * detection, the rows and status bar are hidden and the result holds about
-   * three rows of height, so nothing jumps when it narrows. base.css fades them
-   * in when the island sets data-revealed. If the island never loads, the
-   * delayed animation shows the built rows after 3 seconds. It changes no
-   * motion, only visibility, so it runs under reduced motion too (hence the
-   * !important over the reduced motion reset). Without JavaScript, html has no
-   * data-js and none of this applies.
-   */
-  html[data-js] [data-dq-state='pending'] [data-dq-hold] {
-    visibility: hidden;
-    animation: dq-hold-timeout 0s linear 3s forwards !important;
-  }
-
-  html[data-js] [data-dq-state='pending'] [data-dq-reserve] {
-    max-block-size: 11.5rem;
-    overflow: hidden;
-  }
-
-  @media (max-width: 47.99rem) {
-    html[data-js] [data-dq-state='pending'] [data-dq-reserve] {
-      max-block-size: 27rem;
-    }
-  }
-
-  @keyframes dq-hold-timeout {
-    to {
-      visibility: visible;
-      opacity: 1;
-      max-block-size: none;
-    }
-  }
 </style>

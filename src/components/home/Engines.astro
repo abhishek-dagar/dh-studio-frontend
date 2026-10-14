@@ -1,10 +1,7 @@
 ---
-import Database from '@lucide/astro/icons/database';
-import MongoDB from '../../assets/icons/databases/mongodb.svg';
-import PostgreSQL from '../../assets/icons/databases/postgresql.svg';
-import SQLite from '../../assets/icons/databases/sqlite.svg';
 import { diagramLayout, type EngineIcon } from '../../lib/home/engines';
 import DiagramTable from '../editor/DiagramTable.astro';
+import { engineIcons } from '../editor/engine-icons';
 import EditorPane from '../editor/EditorPane.astro';
 import Container from '../ui/Container.astro';
 import Section from '../ui/Section.astro';
@@ -14,10 +11,7 @@ import Section from '../ui/Section.astro';
 // schema designer. No island and no JavaScript. The meaning lives in the list
 // (each engine's name and sentence); the hub, the field rows and the lines are
 // decoration. Placement comes from `diagramLayout`, so adding an engine is a
-// content change only (plus its icon below).
-//
-// Icons are Simple Icons (CC0), monochrome in the current text color. Simple
-// Icons carries no AWS logos, so DocumentDB takes the plain lucide database icon.
+// content change only (plus its icon in editor/engine-icons.ts).
 interface Props {
   engines: {
     readonly heading: string;
@@ -33,7 +27,6 @@ interface Props {
 
 const { engines } = Astro.props;
 
-const icons = { sqlite: SQLite, postgresql: PostgreSQL, mongodb: MongoDB, documentdb: Database } as const;
 const layout = diagramLayout(engines.rows);
 const placed = engines.rows.map((row, index) => ({ row, place: layout.engines[index]! }));
 
@@ -58,7 +51,7 @@ const lineParts = ['hub', 'lane', 'engine'] as const;
         <ul class="engines-list" role="list" aria-label="Engines">
           {
             placed.map(({ row, place }) => {
-              const Icon = icons[row.icon];
+              const Icon = engineIcons[row.icon];
               return (
                 <li class="engines-item" data-side={place.side} style={`--row: ${place.sideIndex + 1}`}>
                   <DiagramTable

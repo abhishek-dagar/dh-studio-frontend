@@ -1,0 +1,44 @@
+---
+import type { ImageMetadata } from 'astro';
+import AppWindow from '../editor/AppWindow.astro';
+
+// A feature's screenshot with its popup cards in the slot (spec 0003, AC-19, AC-20;
+// spec 0008, AC-5). The captures hold their own window, so the AppWindow is bare.
+// Without a screenshot (preview and local builds only) a labeled frame of the
+// same size stands in; a production build refuses that before it gets here.
+interface Props {
+  id: string;
+  image?: ImageMetadata | undefined;
+  imageLight?: ImageMetadata | undefined;
+  alt: string;
+  sizes: string;
+}
+
+const { id, image, imageLight, alt, sizes } = Astro.props;
+---
+
+{
+  image === undefined ? (
+    <figure class="window">
+      <div class="window-chrome" aria-hidden="true">
+        <span class="flex gap-1.5">
+          <span class="size-2.5 rounded-pill bg-line" />
+          <span class="size-2.5 rounded-pill bg-line" />
+          <span class="size-2.5 rounded-pill bg-line" />
+        </span>
+        <span class="truncate text-caption text-fg-muted">DH Studio</span>
+        <span />
+      </div>
+      <div class="window-body grid aspect-2220/1544 place-items-center bg-ground" role="img" aria-label={alt}>
+        <span class="text-caption text-fg-muted" aria-hidden="true">
+          Screenshot placeholder: {id}
+        </span>
+      </div>
+      <slot />
+    </figure>
+  ) : (
+    <AppWindow image={image} imageLight={imageLight} alt={alt} title="DH Studio" sizes={sizes} bare>
+      <slot />
+    </AppWindow>
+  )
+}

@@ -1,6 +1,7 @@
 ---
 import { toParagraphs } from '../../lib/home/faq';
 import { resultGridClass } from '../../lib/ui/result';
+import Link from '../ui/Link.astro';
 import EditorLine from '../editor/EditorLine.astro';
 import EditorPane from '../editor/EditorPane.astro';
 import Tok from '../editor/Tok.astro';
@@ -13,7 +14,13 @@ import Section from '../ui/Section.astro';
 interface Props {
   heading: string;
   /** Already in display order. */
-  entries: readonly { readonly id: string; readonly question: string; readonly answer: string }[];
+  entries: readonly {
+    readonly id: string;
+    readonly question: string;
+    readonly answer: string;
+    /** A site page that says more, after the answer (spec 0007, AC-12). */
+    readonly link?: { readonly label: string; readonly href: string };
+  }[];
 }
 
 const { heading, entries } = Astro.props;
@@ -49,6 +56,11 @@ const { heading, entries } = Astro.props;
                     {toParagraphs(entry.answer).map((paragraph) => (
                       <p>{paragraph}</p>
                     ))}
+                    {entry.link && (
+                      <p>
+                        <Link href={entry.link.href}>{entry.link.label}</Link>
+                      </p>
+                    )}
                   </div>
                 </td>
               </tr>

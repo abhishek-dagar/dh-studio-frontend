@@ -1,6 +1,6 @@
 import { Select } from '@base-ui/react/select';
 import { clsx } from 'clsx';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Copy } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import {
   OS_ORDER,
@@ -11,6 +11,7 @@ import {
   type InstallCopy,
   type LaunchTip,
   type LaunchTips,
+  type PageCopy,
   type QueryCopy,
   type QueryState,
 } from '../lib/home/download';
@@ -18,7 +19,9 @@ import { osName } from '../lib/home/format';
 import { installCommandsFor } from '../lib/home/install';
 import { detectPlatform, type Detected, type PlatformHints } from '../lib/platform/detect';
 import type { Os } from '../lib/release/types';
+import { downloadHref } from '../lib/site';
 import { buttonClass } from '../lib/ui/button';
+import { copyText } from '../lib/ui/clipboard';
 import { linkClass } from '../lib/ui/link';
 import { resultClass, resultGridClass } from '../lib/ui/result';
 import { syntaxClass, type SyntaxKind } from '../lib/ui/syntax';
@@ -26,15 +29,26 @@ import { InstallCommandLine } from './InstallCommand';
 
 interface Props {
   data: DownloadData;
-  copy: { readonly query: QueryCopy; readonly download: DownloadCopy; readonly install: InstallCopy };
+  copy: {
+    readonly query: QueryCopy;
+    readonly download: DownloadCopy;
+    readonly install: InstallCopy;
+    /** The download page's own strings; required by the `page` form. */
+    readonly page?: PageCopy;
+  };
   tips: LaunchTips;
-  /** `hero` is the full query and result; `compact` is the closing section's short form. */
-  form?: 'hero' | 'compact';
+  /**
+   * `hero` is Home's full query and result; `compact` is Home's closing short
+   * form; `page` is the download page's query, widened with a sha256 column.
+   */
+  form?: 'hero' | 'compact' | 'page';
   /** The heading line, rendered by Astro as line 1 of the editor. */
   children?: ReactNode;
 }
 
 type FormProps = Omit<Props, 'form'>;
+
+type QueryForm = 'hero' | 'page';
 
 type Choice = Os | 'all';
 
@@ -131,6 +145,23 @@ const useDetection = (data: DownloadData, onDetect: (first: Detected) => void, o
   return detected;
 };
 
+/**
+ * Mirrors the picked system onto `<html data-download-os>`, so the download
+ * page's static First launch cards can show only that system's card (CSS in
+ * download.astro). Every system, or no JavaScript, leaves the attribute off
+ * and all cards show.
+ */
+const usePublishedOs = (os: Os | undefined) => {
+  useEffect(() => {
+    const root = document.documentElement;
+    if (os === undefined) delete root.dataset.downloadOs;
+    else root.dataset.downloadOs = os;
+    return () => {
+      delete root.dataset.downloadOs;
+    };
+  }, [os]);
+};
+
 /** The first launch tip (AC-7): shown after a macOS or Windows download, hidden on request. */
 const useTip = (tips: LaunchTips) => {
   const [tip, setTip] = useState<Os | null>(null);
@@ -186,11 +217,14 @@ const InstallBlock = ({
   copy,
   placement,
   withIntro,
+  children,
 }: {
   state: QueryState;
   copy: InstallCopy;
-  placement: 'hero' | 'final';
+  placement: 'hero' | 'final' | 'page';
   withIntro: boolean;
+  /** Extra notes after the Linux note. */
+  children?: ReactNode;
 }) => {
   const commands = installCommandsFor(state);
   const single = commands.length === 1;
@@ -214,7 +248,72 @@ const InstallBlock = ({
         />
       ))}
       {linux && <p className="text-caption text-fg-muted">{copy.linuxNote}</p>}
+      {children}
     </div>
+  );
+};
+
+type CopyState = 'idle' | 'copied' | 'failed';
+
+const COPY_RESET_MS = 2000;
+
+/**
+ * The sha256 cell of the download page (spec 0005, AC-5, AC-6). The `<code>`
+ * holds all 64 characters and CSS cuts it to 12 plus an ellipsis, so selecting
+ * the text or a screen reader still gets the full value. Once hydrated a Copy
+ * button follows it and reports through a polite live region. A file with no
+ * checksum shows the "not published" text and nothing to copy.
+ */
+const HashCell = ({
+  entry,
+  interactive,
+  page,
+  install,
+}: {
+  entry: DownloadEntry;
+  interactive: boolean;
+  page: PageCopy;
+  install: InstallCopy;
+}) => {
+  const [state, setState] = useState<CopyState>('idle');
+
+  useEffect(() => {
+    if (state !== 'copied') return;
+    const timer = setTimeout(() => setState('idle'), COPY_RESET_MS);
+    return () => clearTimeout(timer);
+  }, [state]);
+
+  const { sha256 } = entry;
+  const onCopy = async () => {
+    if (sha256 !== undefined) setState((await copyText(sha256)) ? 'copied' : 'failed');
+  };
+
+  return (
+    <td role="cell" data-label="sha256" className={clsx(resultClass.mono, 'max-md:col-span-full')}>
+      {sha256 === undefined ? (
+        <span className="text-fg-muted">{page.hashMissing}</span>
+      ) : (
+        <span className="flex flex-wrap items-center gap-x-2">
+          <code className="inline-block max-w-[13ch] overflow-hidden align-middle text-ellipsis whitespace-nowrap">{sha256}</code>
+          {interactive && (
+            <>
+              <button
+                type="button"
+                onClick={onCopy}
+                aria-label={page.copyHashLabel.replace('{file}', entry.fileName)}
+                className={buttonClass({ variant: 'ghost', size: 'md', className: '-my-3 px-2.5 font-sans text-[0.875rem]' })}
+              >
+                {state === 'copied' ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+                {state === 'copied' ? install.copied : page.copyHash}
+              </button>
+              <span role="status" className={clsx('basis-full font-sans text-caption text-fg-muted', state !== 'failed' && 'sr-only')}>
+                {state === 'copied' ? install.copied : state === 'failed' ? install.copyFailed : ''}
+              </span>
+            </>
+          )}
+        </span>
+      )}
+    </td>
   );
 };
 
@@ -223,7 +322,7 @@ const InstallBlock = ({
  * `compact` renders the closing section's short form (AC-22).
  */
 export function DownloadQuery({ form = 'hero', ...props }: Props) {
-  return form === 'compact' ? <CompactDownload {...props} /> : <HeroQuery {...props} />;
+  return form === 'compact' ? <CompactDownload {...props} /> : <HeroQuery {...props} form={form} />;
 }
 
 /**
@@ -232,8 +331,14 @@ export function DownloadQuery({ form = 'hero', ...props }: Props) {
  * of release files, the status bar and the first launch tip. The built HTML is
  * the `in (...)` query with every file; after hydration it detects the system,
  * narrows to that OS with its primary highlighted, and reveals the rows once.
+ *
+ * The `page` form is the download page's (spec 0005, AC-1 to AC-7, AC-11 to
+ * AC-16): the same query with a sha256 column, the primary button in the
+ * highlighted row, the skip note under the install block, and no tip.
  */
-function HeroQuery({ data, copy, tips, children }: FormProps) {
+function HeroQuery({ data, copy, tips, children, form }: FormProps & { form: QueryForm }) {
+  const page = form === 'page' ? copy.page : undefined;
+  if (form === 'page' && page === undefined) throw new Error('[download] The page form needs the `page` copy block.');
   const live = data.status === 'live';
   const [query, setQuery] = useState<QueryState>({ kind: 'all' });
   const detected = useDetection(
@@ -247,6 +352,7 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
       ),
   );
   const { shownTip, onDownload, hideTip } = useTip(tips);
+  usePublishedOs(form === 'page' && query.kind === 'os' ? query.os : undefined);
 
   const pending = live && detected === null;
   const interactive = live && detected !== null;
@@ -268,15 +374,16 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
     '{os}',
     query.kind === 'os' ? osName(query.os) : copy.query.everySystem,
   );
-  // Rows and status bar wait for detection, then reveal once (base.css and Hero.astro).
+  // Rows and status bar wait for detection, then reveal once (base.css).
   const hold = live ? { 'data-dq-hold': '', 'data-reveal': '', 'data-revealed': pending ? undefined : '' } : {};
+  const placement = page === undefined ? { primary: 'hero', row: 'hero-row' } : { primary: 'page', row: 'page-row' };
 
   return (
-    <div data-dq-state={pending ? 'pending' : 'ready'}>
+    <div data-dq-state={pending ? 'pending' : 'ready'} data-dq-form={form}>
       <div className="editor-pane">
         <div className="editor-tabs" aria-hidden="true">
           <span className="editor-tab" data-current="">
-            welcome.sql
+            {page === undefined ? 'welcome.sql' : 'download.sql'}
           </span>
         </div>
 
@@ -285,6 +392,11 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
           <div role="group" aria-label="Downloads for">
             <Line hidden>
               <Tok kind="keyword">select</Tok> file<Tok kind="punctuation">,</Tok> for<Tok kind="punctuation">,</Tok> size
+              {page !== undefined && (
+                <>
+                  <Tok kind="punctuation">,</Tok> sha256
+                </>
+              )}
             </Line>
             <Line hidden>
               <Tok kind="keyword">from</Tok> downloads
@@ -363,6 +475,11 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
                 <th scope="col" role="columnheader">
                   size
                 </th>
+                {page !== undefined && (
+                  <th scope="col" role="columnheader">
+                    sha256
+                  </th>
+                )}
                 <th scope="col" role="columnheader">
                   <span className="sr-only">{copy.download.rowLink}</span>
                 </th>
@@ -374,11 +491,12 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
                   const isPrimary = entry === primary;
                   const download = {
                     href: entry.url,
-                    onClick: onDownload(entry),
+                    // The page shows every first launch step below, so it has no tip (spec 0005, AC-8).
+                    onClick: page === undefined ? onDownload(entry) : undefined,
                     'data-download-os': entry.os,
                     'data-download-arch': entry.arch,
                     'data-download-format': entry.format,
-                    'data-download-placement': isPrimary ? 'hero' : 'hero-row',
+                    'data-download-placement': isPrimary ? placement.primary : placement.row,
                   };
                   return (
                     <tr key={entry.url} role="row" data-current={isPrimary ? '' : undefined}>
@@ -391,18 +509,25 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
                       <td role="cell" data-label="size" className={resultClass.mono}>
                         {entry.sizeLabel}
                       </td>
+                      {page !== undefined && <HashCell entry={entry} interactive={interactive} page={page} install={copy.install} />}
                       <td role="cell" className={resultClass.action}>
-                        <a {...download} className={clsx(linkClass, 'inline-flex items-center max-md:min-h-11')}>
-                          {copy.download.rowLink}
-                          <span className="sr-only"> {entry.fileName}</span>
-                        </a>
+                        {page !== undefined && isPrimary ? (
+                          <a {...download} className={buttonClass({ variant: 'primary', size: 'md', className: 'md:-my-3' })}>
+                            {copy.download.detectedPrefix} {osName(entry.os)}
+                          </a>
+                        ) : (
+                          <a {...download} className={clsx(linkClass, 'inline-flex items-center max-md:min-h-11')}>
+                            {copy.download.rowLink}
+                            <span className="sr-only"> {entry.fileName}</span>
+                          </a>
+                        )}
                       </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr role="row">
-                  <td role="cell" colSpan={4} className="max-md:col-span-full">
+                  <td role="cell" colSpan={page === undefined ? 4 : 5} className="max-md:col-span-full">
                     {copy.download.fallbackRow}{' '}
                     <a href={data.releasesPageUrl} className={linkClass}>
                       {copy.download.seeReleases}
@@ -418,30 +543,42 @@ function HeroQuery({ data, copy, tips, children }: FormProps) {
           <span>
             {rows.length} {copy.download.rowsWord}
           </span>
-          {data.status === 'live' && (
-            <span className="flex flex-wrap gap-x-4">
-              <span>
-                {copy.download.versionPrefix}{' '}
-                <a href={data.pageUrl} className="underline decoration-line-strong underline-offset-[3px] hover:text-fg hover:decoration-fg">
-                  {data.version}
-                </a>
-              </span>
-              <span>
-                {copy.download.releasedWord} <time dateTime={data.publishedAt}>{data.dateLabel}</time>
-              </span>
-            </span>
-          )}
+          <span className="flex flex-wrap gap-x-4">
+            {data.status === 'live' && (
+              <>
+                <span>
+                  {copy.download.versionPrefix}{' '}
+                  <a href={data.changelogPath} className={statusLinkClass}>
+                    {data.version}
+                  </a>
+                </span>
+                <span>
+                  {copy.download.releasedWord} <time dateTime={data.publishedAt}>{data.dateLabel}</time>
+                </span>
+              </>
+            )}
+            {/* Home links to the download page, in both release states (spec 0005, AC-19). */}
+            {page === undefined && (
+              <a href={downloadHref} className={statusLinkClass}>
+                {copy.download.pageLink}
+              </a>
+            )}
+          </span>
         </div>
       </div>
 
       <div className="mt-6 md:ps-[calc(1px+var(--editor-gutter)+var(--editor-code-gap))]" {...hold}>
-        <InstallBlock state={query} copy={copy.install} placement="hero" withIntro />
+        <InstallBlock state={query} copy={copy.install} placement={page === undefined ? 'hero' : 'page'} withIntro>
+          {page !== undefined && <p className="max-w-(--width-prose) text-fg-muted">{page.skipNote}</p>}
+        </InstallBlock>
       </div>
 
-      <TipRegion tip={shownTip} hideLabel={copy.download.hideTip} onHide={hideTip} />
+      {page === undefined && <TipRegion tip={shownTip} hideLabel={copy.download.hideTip} onHide={hideTip} />}
     </div>
   );
 }
+
+const statusLinkClass = 'underline decoration-line-strong underline-offset-[3px] hover:text-fg hover:decoration-fg';
 
 const compactLinkClass = clsx(linkClass, 'inline-flex min-h-11 items-center');
 

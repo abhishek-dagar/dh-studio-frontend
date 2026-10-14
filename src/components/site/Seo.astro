@@ -1,4 +1,5 @@
 ---
+import { RELEASES_FEED_TITLE } from '../../lib/release/config';
 import type { HeadTags } from '../../lib/seo/head';
 
 // The SEO and sharing head (spec 0004, AC-1, AC-2, AC-5, AC-10, AC-11). Every
@@ -6,9 +7,11 @@ import type { HeadTags } from '../../lib/seo/head';
 interface Props {
   tags: HeadTags;
   jsonLd?: string | undefined;
+  /** The release feed link, on changelog pages only (spec 0005, AC-14). */
+  feedUrl?: string | undefined;
 }
 
-const { tags, jsonLd } = Astro.props;
+const { tags, jsonLd, feedUrl } = Astro.props;
 const { og } = tags;
 ---
 
@@ -31,5 +34,6 @@ const { og } = tags;
 <meta property="og:image:type" content={og.imageType} />
 <meta property="og:image:alt" content={og.imageAlt} />
 <meta name="twitter:card" content={tags.twitterCard} />
+{feedUrl !== undefined && <link rel="alternate" type="application/atom+xml" title={RELEASES_FEED_TITLE} href={feedUrl} />}
 
 {jsonLd !== undefined && <script is:inline type="application/ld+json" set:html={jsonLd} />}

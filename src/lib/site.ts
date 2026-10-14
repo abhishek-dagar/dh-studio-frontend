@@ -9,23 +9,32 @@ export interface SiteLink {
 
 export const repoUrl = `https://github.com/${GITHUB_REPO}`;
 
-// The header Download jumps to the Home result grid, which holds the right file (spec 0003, AC-13).
-export const downloadHref = '/#download';
+// Every Download link on the site goes to the download page (spec 0005, AC-17).
+export const downloadHref = '/download/';
 
 export const licenseUrl = `${repoUrl}/blob/HEAD/LICENSE`;
 
 export const licenseLine = 'Open source under the Apache 2.0 license';
 
-// In page anchors for the Home sections (spec 0003).
+export const changelogHref = '/changelog/';
+
+export const featuresHref = '/features/';
+
+// Header links. Features is the features page (spec 0008, AC-8); Download is the
+// header's own button, so it is not repeated here.
 export const navLinks: readonly SiteLink[] = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Questions', href: '/#questions' },
+  { label: 'Features', href: featuresHref },
+  { label: 'Changelog', href: changelogHref },
   { label: 'GitHub', href: repoUrl },
 ];
 
-// Feature #10 adds Privacy.
+// Features opens the list (spec 0008, AC-8); Privacy closes it, after License (spec 0007, AC-1).
 export const footerLinks: readonly SiteLink[] = [
+  { label: 'Features', href: featuresHref },
+  { label: 'Download', href: downloadHref },
+  { label: 'Changelog', href: changelogHref },
   { label: 'GitHub', href: repoUrl },
   { label: 'Releases', href: `${repoUrl}/releases` },
   { label: 'License', href: licenseUrl },
+  { label: 'Privacy', href: '/privacy/' },
 ];

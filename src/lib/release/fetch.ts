@@ -11,6 +11,8 @@ export type FetchDeps = {
   readonly fetch: typeof fetch;
   readonly token?: string | undefined;
   readonly timeoutMs?: number;
+  /** The list to request; `latestRelease` uses the default, the changelog its own (spec 0005). */
+  readonly url?: string;
 };
 
 type Attempt = FetchResult & { readonly retryable: boolean };
@@ -34,7 +36,7 @@ const isRateLimited = (response: Response): boolean =>
 
 const attempt = async (deps: FetchDeps): Promise<Attempt> => {
   try {
-    const response = await deps.fetch(RELEASES_API_URL, {
+    const response = await deps.fetch(deps.url ?? RELEASES_API_URL, {
       headers: requestHeaders(deps.token),
       signal: AbortSignal.timeout(deps.timeoutMs ?? REQUEST_TIMEOUT_MS),
     });

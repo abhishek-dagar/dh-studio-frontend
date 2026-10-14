@@ -45,7 +45,7 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title.md`. The scope lives in 
 Chosen by /audit, installed by `/develop tooling`:
 - Lint and format: ESLint flat config (typescript-eslint, eslint-plugin-astro, react hooks) plus Prettier (prettier-plugin-astro, prettier-plugin-tailwindcss), matching dh-studio.
 - Pre-commit hook: ESLint and Prettier on staged files, plus `astro check`.
-- Tests: Vitest unit tests for `src/lib/` helpers; pages and islands are checked with `/check verify`.
+- Tests: Vitest unit tests for `src/lib/` helpers, kept in a `test/` folder that mirrors `src/lib/` (not next to the source); pages and islands are checked with `/check verify`.
 - CI: none yet; Vercel's build is the only gate.
 
 ## Git

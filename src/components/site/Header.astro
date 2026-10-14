@@ -1,9 +1,8 @@
 ---
 import Download from '@lucide/astro/icons/download';
 import Menu from '@lucide/astro/icons/menu';
-import { getEntry } from 'astro:content';
 import { ThemeToggle } from '../../islands/ThemeToggle';
-import { latestRelease } from '../../lib/release';
+import { withTrailingSlash } from '../../lib/seo/paths';
 import { downloadHref, navLinks } from '../../lib/site';
 import { buttonClass } from '../../lib/ui/button';
 import Button from '../ui/Button.astro';
@@ -20,14 +19,14 @@ interface Props {
 
 const { currentPath } = Astro.props;
 
-// Download jumps to the Home result grid; a build without release data sends it to GitHub instead (spec 0003, AC-8).
-const [release, home] = await Promise.all([latestRelease, getEntry('home', 'home')]);
-const download =
-  release.status === 'live' || home === undefined
-    ? { href: downloadHref, label: 'Download' }
-    : { href: release.releasesPageUrl, label: home.data.download.fallback };
+// Download always goes to the download page, which handles a build without release data itself (spec 0005, AC-17).
+const onDownloadPage = withTrailingSlash(currentPath) === downloadHref;
 
-const isCurrent = (href: string): boolean => href === currentPath;
+// Section pages (the changelog list, its pages and each version) mark their
+// link current from any path beneath it.
+const path = withTrailingSlash(currentPath);
+const isCurrent = (href: string): boolean =>
+  href === currentPath || (href.startsWith('/') && href.endsWith('/') && href !== '/' && path.startsWith(href));
 const navLinkClass = [
   'inline-flex h-11 items-center rounded-button px-3 text-[0.875rem] font-medium text-fg-muted',
   'transition-[background-color,color] duration-(--dur-fast)',
@@ -72,9 +71,9 @@ const navLinkClass = [
         <Menu aria-hidden="true" />
       </button>
 
-      <Button href={download.href} class="ms-1">
+      <Button href={downloadHref} current={onDownloadPage} class="ms-1">
         <Download aria-hidden="true" class="hidden sm:block" />
-        {download.label}
+        Download
       </Button>
     </div>
   </div>

@@ -16,6 +16,8 @@ export default defineConfig({
   // The stylesheet is about 10 KB gzipped. Inlining it saves the render blocking
   // round trip that held back LCP on a throttled phone (feature 11).
   build: { inlineStylesheets: 'always' },
+  // Markdown code (release notes, spec 0005) uses the theme CodeBlock uses, so it swaps with the site theme.
+  markdown: { shikiConfig: { theme: 'css-variables' } },
   // Self hosted fonts (spec 0002). Downloaded at build time, served from our own origin.
   fonts: [
     {
