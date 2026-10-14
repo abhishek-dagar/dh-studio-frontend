@@ -25,7 +25,7 @@ bun run preview     # serve the build
 
 ## Specs
 
-Stored in `docs/specs/`. Format: `docs/specs/NNNN-title.md`. The scope lives in `docs/scope/scope.md`.
+Stored outside the repo in the workspace `frontend-docs/` folder (`../frontend-docs/specs/`). Format: `frontend-docs/specs/NNNN-title.md`. The scope lives in `frontend-docs/scope/scope.md`. Skills that say `docs/` mean `frontend-docs/` (see [../AGENTS.md](../AGENTS.md)).
 
 ## Rules
 
