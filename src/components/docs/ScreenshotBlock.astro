@@ -1,0 +1,24 @@
+---
+import connectionForm from '../../assets/screenshots/connection-form.png';
+import connectionFormLight from '../../assets/screenshots/connection-form-light.png';
+import AppWindow from '../editor/AppWindow.astro';
+
+// `{screenshot}` (spec 0009, AC-8): the connection form capture, the light one
+// when the site is light, with the guide's own alt text. The capture holds its
+// own window, so the AppWindow is bare, as on the features page.
+interface Props {
+  alt: string;
+}
+
+const { alt } = Astro.props;
+---
+
+<AppWindow
+  image={connectionForm}
+  imageLight={connectionFormLight}
+  alt={alt}
+  title="DH Studio"
+  bare
+  sizes="(min-width: 80rem) 40rem, (min-width: 64rem) 60vw, 100vw"
+  class="docs-block"
+/>

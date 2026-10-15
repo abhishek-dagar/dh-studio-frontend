@@ -1,0 +1,61 @@
+---
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import DocsSidebar from '../components/docs/DocsSidebar.astro';
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import { DocsSearch } from '../islands/DocsSearch';
+import type { DocsIndex } from '../lib/docs/load';
+import type { DocsTree } from '../lib/docs/nav';
+import type { JsonLdNode } from '../lib/seo/ld';
+import BaseLayout from './BaseLayout.astro';
+import '../components/docs/docs.css';
+
+// The guide and group page frame (spec 0009, AC-3, AC-14). From lg a sticky
+// left column holds the search and the grouped sidebar; below lg the search
+// sits on top and the sidebar folds into a `Docs menu` <details>, closed by
+// default. Everything but the search works with no JavaScript.
+interface Props {
+  /** The full <title>, already in the `<Page> · DH Studio` pattern. */
+  title: string;
+  description: string;
+  jsonLd?: readonly JsonLdNode[];
+  tree: DocsTree;
+  currentId?: string | undefined;
+  currentGroup?: string | undefined;
+  copy: Pick<DocsIndex, 'page' | 'search'>;
+}
+
+const { title, description, jsonLd, tree, currentId, currentGroup, copy } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <Section class="pt-8 md:pt-12">
+    <Container class="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-10 xl:gap-12">
+      <div
+        class="mb-8 flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-offset)+var(--header-h)+1rem)] lg:mb-0 lg:max-h-[calc(100dvh-var(--header-offset)-var(--header-h)-2rem)] lg:gap-8 lg:self-start lg:overflow-y-auto lg:pe-1 lg:pb-8"
+      >
+        <div class="docs-search-slot">
+          <DocsSearch client:idle copy={copy.search} basePath="/pagefind/" />
+        </div>
+
+        <div class="hidden lg:block">
+          <DocsSidebar tree={tree} currentId={currentId} currentGroup={currentGroup} label="Docs" />
+        </div>
+
+        <details class="docs-menu group rounded-field border border-line bg-surface lg:hidden">
+          <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-field px-4 text-[0.875rem] font-medium">
+            {copy.page.menu}
+            <ChevronDown class="size-4 shrink-0 text-fg-muted transition-transform duration-(--dur-fast) group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <div class="border-t border-line px-4 py-4">
+            <DocsSidebar tree={tree} currentId={currentId} currentGroup={currentGroup} label={copy.page.menu} />
+          </div>
+        </details>
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-8">
+        <slot />
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>

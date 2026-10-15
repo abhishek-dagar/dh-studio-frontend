@@ -7,33 +7,59 @@ import SectionJump from './SectionJump.astro';
 // AC-23). From lg a sticky 14rem right column holds the SectionIndex island;
 // below lg the same links fold into a <details> above the content. With no
 // items the slot renders alone. The index comes first in the DOM, so keyboard
-// order is index, then content, at every width.
+// order is index, then content, at every width. `from="xl"` opens the column
+// one breakpoint later, for pages that already spend lg on a left sidebar (the docs).
+// An optional `lead` slot (the docs guide header) comes before the index: in the
+// grid it takes row 1 of the content column and the index spans both rows, so the
+// column starts level with the lead instead of below it.
 interface Props {
   label: string;
   items: readonly SectionIndexItem[];
+  from?: 'lg' | 'xl';
   class?: string;
 }
 
-const { label, items, class: className } = Astro.props;
+const { label, items, from = 'lg', class: className } = Astro.props;
 const indexed = items.length > 0;
+const led = Astro.slots.has('lead');
+
+// Written out in full so Tailwind finds every class.
+const layout = {
+  lg: {
+    grid: 'lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-8',
+    column: 'hidden lg:col-start-2 lg:row-start-1 lg:block',
+    columnLed: 'lg:row-span-2',
+    jump: 'lg:hidden',
+    lead: 'lg:col-start-1 lg:row-start-1',
+    content: 'lg:col-start-1 lg:row-start-1',
+    contentLed: 'lg:row-start-2',
+  },
+  xl: {
+    grid: 'xl:grid xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-8',
+    column: 'hidden xl:col-start-2 xl:row-start-1 xl:block',
+    columnLed: 'xl:row-span-2',
+    jump: 'xl:hidden',
+    lead: 'xl:col-start-1 xl:row-start-1',
+    content: 'xl:col-start-1 xl:row-start-1',
+    contentLed: 'xl:row-start-2',
+  },
+}[from];
 ---
 
-<div
-  class:list={['flex flex-col gap-6', { 'lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-8': indexed }, className]}
-  data-section-index={indexed ? '' : undefined}
->
+<div class:list={['flex flex-col gap-6', { [layout.grid]: indexed }, className]} data-section-index={indexed ? '' : undefined}>
+  {led && <div class:list={['flex flex-col', { [layout.lead]: indexed }]}><slot name="lead" /></div>}
   {
     indexed && (
-      <div class="hidden lg:col-start-2 lg:row-start-1 lg:block">
+      <div class:list={[layout.column, { [layout.columnLed]: led }]} data-pagefind-ignore>
         <div class="sticky top-[calc(var(--header-offset)+var(--header-h)+1rem)]">
           <SectionIndex client:idle label={label} items={items} />
         </div>
       </div>
     )
   }
-  {indexed && <SectionJump label={label} items={items} class="lg:hidden" />}
+  {indexed && <SectionJump label={label} items={items} class={layout.jump} />}
 
-  <div class="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
+  <div class:list={['flex min-w-0 flex-col gap-6', layout.content, { [layout.contentLed]: led }]}>
     <slot />
   </div>
 </div>

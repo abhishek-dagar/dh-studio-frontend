@@ -3,19 +3,24 @@ import { osName } from '../../lib/home/format';
 import type { LaunchTip } from '../../lib/home/download';
 import type { Os } from '../../lib/release/types';
 import CommandLine from '../ui/CommandLine.astro';
+import Link from '../ui/Link.astro';
 import Surface from '../ui/Surface.astro';
 
 // First launch help, one card per system (spec 0005, AC-8). Static: all three
 // show without JavaScript; once the query above picks a system, only its card
 // shows (the island sets <html data-download-os>, the CSS below follows it).
+// The section ends with a link per system to its install guide (spec 0009,
+// AC-15), hidden and shown the same way.
 interface Props {
   heading: string;
   note: string;
   /** In display order: macOS, Windows, Linux. */
   tips: readonly { readonly os: Os; readonly tip: LaunchTip }[];
+  /** One install guide link per system, in the same order. */
+  guides?: readonly { readonly os: Os; readonly href: string; readonly label: string }[];
 }
 
-const { heading, note, tips } = Astro.props;
+const { heading, note, tips, guides = [] } = Astro.props;
 ---
 
 <section aria-labelledby="launch-heading" class="flex flex-col gap-6">
@@ -39,6 +44,17 @@ const { heading, note, tips } = Astro.props;
       ))
     }
   </ul>
+  {
+    guides.length > 0 && (
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        {guides.map((guide) => (
+          <li data-launch-os={guide.os}>
+            <Link href={guide.href}>{guide.label}</Link>
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </section>
 
 <style is:global>

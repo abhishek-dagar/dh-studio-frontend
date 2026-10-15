@@ -18,7 +18,7 @@ interface Props {
   /** The red primary copy button, for the one command that answers the visitor's system. */
   primary: boolean;
   /** For analytics (#10): where this command sits on the page. */
-  placement: 'hero' | 'final' | 'page';
+  placement: 'hero' | 'final' | 'page' | 'docs';
 }
 
 /**

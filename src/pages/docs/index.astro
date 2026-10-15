@@ -1,0 +1,56 @@
+---
+import DocsOpener from '../../components/docs/DocsOpener.astro';
+import GuideList from '../../components/docs/GuideList.astro';
+import Container from '../../components/ui/Container.astro';
+import Section from '../../components/ui/Section.astro';
+import { DocsSearch } from '../../islands/DocsSearch';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { loadDocs } from '../../lib/docs/load';
+import { groupHref } from '../../lib/docs/nav';
+import '../../components/docs/docs.css';
+
+// /docs/ (spec 0009, AC-4, AC-14): the opener with its three getting started
+// steps, the search box, then every group with its guides. No sidebar: this
+// page is the index the sidebar would repeat.
+const { index, tree } = await loadDocs();
+const { meta, opener, gettingStarted, search } = index;
+---
+
+<BaseLayout title={meta.title} description={meta.description}>
+  <Section class="pt-10 md:pt-16">
+    <Container class="flex flex-col gap-12">
+      <DocsOpener opener={opener} steps={gettingStarted} />
+
+      <div class="docs-search-slot max-w-(--width-prose)">
+        <DocsSearch client:idle copy={search} basePath="/pagefind/" />
+      </div>
+
+      <div class="flex flex-col gap-14">
+        {
+          tree.map(({ group, guides }) => (
+            <section aria-labelledby={`group-${group.key}`} class="flex flex-col gap-5">
+              <div class="flex max-w-(--width-prose) flex-col gap-2">
+                <h2 id={`group-${group.key}`} class="text-h3">
+                  <a href={groupHref(group.key)} class="rounded-inset underline decoration-line-strong decoration-1 underline-offset-[5px] hover:decoration-fg">
+                    {group.label}
+                  </a>
+                </h2>
+                <p class="text-fg-muted">{group.description}</p>
+              </div>
+              <GuideList guides={guides} headingLevel={3} />
+            </section>
+          ))
+        }
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<script>
+  // The one reveal (design.md, Motion): the steps fade in as if the query just ran.
+  // Two frames, so the hidden start paints before the transition begins. Without
+  // JavaScript, or under reduced motion, base.css never hides it.
+  document.querySelectorAll<HTMLElement>('[data-docs-reveal]').forEach((grid) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => grid.setAttribute('data-revealed', '')));
+  });
+</script>

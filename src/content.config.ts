@@ -314,4 +314,106 @@ const changelog = defineCollection({
   }),
 });
 
-export const collections = { home, download, notFound, privacy, launchTips, features, featuresPage, faq, releases, changelog };
+// The docs guides (spec 0009, Data model sketch). One Markdown file per guide in
+// `src/content/docs/<group>/<slug>.md`; the id is that path, so the group, the URL
+// and the breadcrumb all come from it. Rules that span guides or collections
+// (groups, order, one install guide per system, markers) live in lib/docs/rules.ts.
+const semver = z.string().regex(/^\d+\.\d+\.\d+$/, 'appVersion must look like 0.5.6');
+
+const docs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/docs' }),
+  schema: z.object({
+    /** The h1; the <title> adds ` · DH Studio`. */
+    title: text,
+    description: z.string().min(50).max(160),
+    sidebarLabel: z.string().min(1).max(28),
+    /** Position in its group, unique within it. */
+    order: z.number().int(),
+    /** The app version every fact was checked against (AC-10). */
+    appVersion: semver,
+    /** Set by hand when the meaning changes, not on every edit. */
+    updated: z.coerce.date(),
+    /** Install guides only, one per system. */
+    os: z.enum(['macos', 'windows', 'linux']).optional(),
+    /** Install guides only. */
+    requirements: z.array(z.object({ label: text, value: text })).min(1).max(6).optional(),
+    /** Connect guides only; needs a `{screenshot}` line. */
+    screenshot: z.boolean().default(false),
+    screenshotAlt: text.optional(),
+  }),
+});
+
+const DOCS_GROUP_KEYS = ['install', 'connect', 'app'] as const;
+const docsPath = z.string().startsWith('/docs/');
+
+// The /docs/ page copy, the groups and the shared docs copy (spec 0009). One entry, id `docsIndex`.
+const docsIndex = defineCollection({
+  loader: file('src/content/docs-index/docs-index.yaml'),
+  schema: z.object({
+    meta: z.object({ title: text, description: text }),
+    opener: z.object({ tab: text, comment: text, query: z.array(text).min(1) }),
+    gettingStarted: z
+      .array(z.object({ title: text, text, links: z.array(z.object({ label: text, href: docsPath })).min(1) }))
+      .length(3),
+    groups: z
+      .array(z.object({ key: z.enum(DOCS_GROUP_KEYS), label: text, description: text, order: z.number().int() }))
+      .min(1)
+      .refine((groups) => new Set(groups.map((group) => group.key)).size === groups.length, {
+        message: 'Each group key appears once.',
+      }),
+    search: z.object({
+      label: text,
+      placeholder: text,
+      loading: text,
+      /** `{n}` is replaced by the number of guides found. */
+      found: text.includes('{n}'),
+      empty: text,
+      devUnavailable: text,
+      unavailable: text,
+    }),
+    page: z.object({
+      docsCrumb: text,
+      onThisPage: text,
+      previous: text,
+      next: text,
+      checkedAgainst: text,
+      updated: text,
+      menu: text,
+      /** `{os}` is replaced by the system's name. */
+      fullGuideFor: text.includes('{os}'),
+      canChange: text,
+    }),
+  }),
+});
+
+// The keyboard shortcuts table (spec 0009, AC-9). One entry, id `shortcuts`.
+const keys = z.array(text).min(1).max(4);
+
+const shortcuts = defineCollection({
+  loader: file('src/content/docs-data/shortcuts.yaml'),
+  schema: z.object({
+    appVersion: semver,
+    rows: z
+      .array(z.object({ area: text, action: text, mac: keys, other: keys, remappable: z.boolean() }))
+      .min(1)
+      .refine((rows) => new Set(rows.map((row) => row.action)).size === rows.length, {
+        message: 'Each action appears once.',
+      }),
+  }),
+});
+
+export const collections = {
+  home,
+  download,
+  notFound,
+  privacy,
+  launchTips,
+  features,
+  featuresPage,
+  faq,
+  releases,
+  changelog,
+  docs,
+  docsIndex,
+  shortcuts,
+};

@@ -1,0 +1,23 @@
+---
+import { InstallCommandLine } from '../../islands/InstallCommand';
+import type { InstallCopy } from '../../lib/home/download';
+import { installCommandFor } from '../../lib/home/install';
+import type { Os } from '../../lib/release/types';
+
+// `{install-command}` (spec 0009, AC-7, AC-11): the one line install for one
+// system, with the same command, copy button and copy text Home uses. The
+// command is selectable without JavaScript and copies once hydrated.
+interface Props {
+  os: Os;
+  copy: InstallCopy;
+}
+
+const { os, copy } = Astro.props;
+const install = installCommandFor(os);
+---
+
+<div class="docs-block flex flex-col gap-2">
+  <InstallCommandLine client:visible install={install} copy={copy} primary={false} placement="docs" />
+  <p class="text-caption text-fg-muted">{copy.note}</p>
+  {os === 'linux' && <p class="text-caption text-fg-muted">{copy.linuxNote}</p>}
+</div>
