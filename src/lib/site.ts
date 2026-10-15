@@ -20,17 +20,23 @@ export const changelogHref = '/changelog/';
 
 export const featuresHref = '/features/';
 
-// Header links. Features is the features page (spec 0008, AC-8); Download is the
-// header's own button, so it is not repeated here.
+export const docsHref = '/docs/';
+
+// Header links. Features is the features page (spec 0008, AC-8); Docs sits
+// between it and Changelog (spec 0009, AC-15); Download is the header's own
+// button, so it is not repeated here.
 export const navLinks: readonly SiteLink[] = [
   { label: 'Features', href: featuresHref },
+  { label: 'Docs', href: docsHref },
   { label: 'Changelog', href: changelogHref },
   { label: 'GitHub', href: repoUrl },
 ];
 
-// Features opens the list (spec 0008, AC-8); Privacy closes it, after License (spec 0007, AC-1).
+// Features opens the list (spec 0008, AC-8), Docs follows it (spec 0009, AC-15);
+// Privacy closes it, after License (spec 0007, AC-1).
 export const footerLinks: readonly SiteLink[] = [
   { label: 'Features', href: featuresHref },
+  { label: 'Docs', href: docsHref },
   { label: 'Download', href: downloadHref },
   { label: 'Changelog', href: changelogHref },
   { label: 'GitHub', href: repoUrl },

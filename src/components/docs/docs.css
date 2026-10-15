@@ -1,0 +1,166 @@
+/* The docs (spec 0009). Guide bodies come from Markdown, so they are styled
+   here rather than with utilities, following .release-notes and .privacy-body
+   (design.md, Changelog and Docs). `.docs-body` holds the guide; each run of
+   Markdown sits in a `.docs-prose` and each marker block between them, so the
+   prose rules never reach inside a block. Imported once by DocsLayout. */
+
+.docs-prose {
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.docs-prose > :first-child {
+  margin-block-start: 0;
+}
+
+/* Sections read as subsections of the page title, so h2 sits at h3 size. */
+.docs-prose h2 {
+  scroll-margin-top: calc(var(--header-offset) + var(--header-h) + 1rem);
+  margin-block: 2.5rem 0.75rem;
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+  letter-spacing: var(--text-h3--letter-spacing);
+  font-weight: 600;
+}
+
+.docs-prose h3 {
+  scroll-margin-top: calc(var(--header-offset) + var(--header-h) + 1rem);
+  margin-block: 1.75rem 0.5rem;
+  font-weight: 600;
+}
+
+.docs-prose :is(p, ul, ol, blockquote, pre, table) {
+  margin-block: 0.75rem;
+  max-inline-size: var(--width-prose);
+}
+
+.docs-prose :is(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
+
+.docs-prose ul {
+  list-style: disc;
+}
+
+.docs-prose ol {
+  list-style: decimal;
+}
+
+.docs-prose li + li,
+.docs-prose li > :is(ul, ol) {
+  margin-block-start: 0.375rem;
+}
+
+.docs-prose li::marker {
+  color: var(--fg-muted);
+}
+
+.docs-prose strong {
+  font-weight: 600;
+}
+
+.docs-prose a[href] {
+  color: var(--fg);
+  text-decoration: underline 1px var(--line-strong);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-fast);
+}
+
+.docs-prose a[href]:hover {
+  text-decoration-color: var(--fg);
+}
+
+.docs-prose blockquote {
+  border-inline-start: 2px solid var(--line);
+  padding-inline-start: 1rem;
+  color: var(--fg-muted);
+}
+
+/* Inline code, in Kbd's quiet chip. Long paths break inside the chip on a phone (AC-17). */
+.docs-prose :not(pre) > code {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-inset);
+  background: var(--ground);
+  padding: 0.05em 0.35em;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
+}
+
+/* Fenced code in the CodeBlock look, scrolling sideways inside itself (AC-17). */
+.docs-prose pre {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  overflow-wrap: normal;
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+  line-height: var(--text-code--line-height);
+}
+
+/* A plain Markdown table scrolls inside itself too. */
+.docs-prose table:not(.result-grid) {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  overflow-wrap: normal;
+}
+
+.docs-prose table:not(.result-grid) :is(th, td) {
+  border: 1px solid var(--line);
+  padding: 0.375rem 0.75rem;
+  text-align: start;
+}
+
+/* A block placed by a marker line, between two runs of prose. */
+.docs-body > .docs-block {
+  margin-block: 1.25rem;
+}
+
+.docs-body > :first-child {
+  margin-block-start: 0;
+}
+
+/* A result grid's flat frame, scrolling sideways inside itself (AC-17). */
+.docs-frame {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-surface);
+  background: var(--surface);
+  overflow-wrap: normal;
+}
+
+/* Keep the search's place while it hydrates, only where a script will fill it. */
+:root[data-js] .docs-search-slot {
+  min-block-size: 4.75rem;
+}
+
+/* A match in a search excerpt: weight and an underline, never color alone. */
+.docs-excerpt mark {
+  background: transparent;
+  color: var(--fg);
+  font-weight: 600;
+  text-decoration: underline 1px var(--line-strong);
+  text-underline-offset: 2px;
+}
+
+/* The menu's marker is the chevron, so Safari's own triangle goes too. */
+.docs-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .docs-frame,
+  .docs-menu {
+    border-color: CanvasText;
+  }
+
+  .docs-nav-link[aria-current='page'] {
+    border-color: Highlight;
+  }
+
+  .docs-excerpt mark {
+    color: Highlight;
+  }
+}

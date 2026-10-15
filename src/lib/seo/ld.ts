@@ -37,6 +37,37 @@ export const websiteLd = (site: URL): JsonLdNode => ({
   url: canonicalUrl('/', site),
 });
 
+// Docs guides (spec 0009, AC-16).
+export type TechArticleInput = {
+  readonly site: URL;
+  readonly path: string;
+  readonly title: string;
+  readonly description: string;
+  readonly updated: Date;
+};
+
+export const techArticleLd = ({ site, path, title, description, updated }: TechArticleInput): JsonLdNode => ({
+  '@type': 'TechArticle',
+  headline: title,
+  description,
+  dateModified: updated.toISOString().slice(0, 10),
+  url: canonicalUrl(path, site),
+  isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: canonicalUrl('/', site) },
+});
+
+export type BreadcrumbItem = { readonly name: string; readonly path: string };
+
+/** Every item carries its own page URL, the last one included, as Google asks. */
+export const breadcrumbLd = (site: URL, items: readonly BreadcrumbItem[]): JsonLdNode => ({
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: canonicalUrl(item.path, site),
+  })),
+});
+
 /** One @graph, with every `<` escaped so no value can close the script tag. */
 export const serializeLd = (nodes: readonly JsonLdNode[]): string =>
   JSON.stringify({ '@context': 'https://schema.org', '@graph': nodes }).replace(/</g, '\\u003c');

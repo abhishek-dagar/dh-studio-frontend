@@ -1,0 +1,34 @@
+---
+import { resultGridClass } from '../../lib/ui/result';
+
+// `{requirements}` (spec 0009, AC-7): the guide's own `requirements` rows as a
+// two column result grid.
+interface Props {
+  rows: readonly { readonly label: string; readonly value: string }[];
+  system: string;
+}
+
+const { rows, system } = Astro.props;
+---
+
+<div class="docs-block docs-frame">
+  <table class={resultGridClass()}>
+    <caption>What DH Studio needs on {system}</caption>
+    <thead>
+      <tr>
+        <th scope="col">requirement</th>
+        <th scope="col">value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>{row.value}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

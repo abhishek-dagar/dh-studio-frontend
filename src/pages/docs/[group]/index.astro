@@ -1,0 +1,52 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Breadcrumb from '../../../components/docs/Breadcrumb.astro';
+import GuideList from '../../../components/docs/GuideList.astro';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { loadDocs } from '../../../lib/docs/load';
+import { docsCrumbs, findBranch, groupHref } from '../../../lib/docs/nav';
+import { siteOrigin, SITE_NAME } from '../../../lib/seo/config';
+import { breadcrumbLd } from '../../../lib/seo/ld';
+import { docsHref } from '../../../lib/site';
+
+// A docs group page (spec 0009, AC-5): breadcrumb, the group label as h1, its
+// description, and its guides in order. Only `docsIndex.groups` keys are built,
+// so any other group path falls to the 404 page.
+
+export const getStaticPaths = (async () => {
+  const { index } = await loadDocs();
+  return index.groups.map((group) => ({ params: { group: group.key } }));
+}) satisfies GetStaticPaths;
+
+const { group: key } = Astro.params;
+const docs = await loadDocs();
+const branch = findBranch(docs.tree, key);
+if (branch === undefined) throw new Error(`[docs] No docsIndex group "${key}" (spec 0009, AC-5).`);
+
+const { group, guides } = branch;
+const { page, search } = docs.index;
+const site = siteOrigin(Astro.site);
+const jsonLd = [
+  breadcrumbLd(site, [
+    { name: page.docsCrumb, path: docsHref },
+    { name: group.label, path: groupHref(group.key) },
+  ]),
+];
+---
+
+<DocsLayout
+  title={`${group.label} · ${SITE_NAME}`}
+  description={group.description}
+  jsonLd={jsonLd}
+  tree={docs.tree}
+  currentGroup={group.key}
+  copy={{ page, search }}
+>
+  <header class="flex flex-col gap-4">
+    <Breadcrumb crumbs={docsCrumbs(page.docsCrumb, group)} class="mb-2" />
+    <h1 class="text-h1">{group.label}</h1>
+    <p class="max-w-(--width-prose) text-lead text-fg-muted">{group.description}</p>
+  </header>
+
+  <GuideList guides={guides} />
+</DocsLayout>

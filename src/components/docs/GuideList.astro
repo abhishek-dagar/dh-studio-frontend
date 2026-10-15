@@ -1,0 +1,35 @@
+---
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import { guideHref, type DocsGuide } from '../../lib/docs/nav';
+
+// A group's guides as links with their descriptions (spec 0009, AC-4, AC-5).
+// Used by the group pages and by every group on /docs/.
+interface Props {
+  guides: readonly DocsGuide[];
+  /** The heading level of each guide title, so the outline stays in order. */
+  headingLevel?: 2 | 3;
+  class?: string;
+}
+
+const { guides, headingLevel = 2, class: className } = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+---
+
+<ul class:list={['grid gap-3 md:grid-cols-2', className]}>
+  {
+    guides.map((guide) => (
+      <li class="flex">
+        <a
+          href={guideHref(guide.id)}
+          class="group flex w-full flex-col gap-1.5 rounded-surface border border-line bg-surface p-5 shadow-(--highlight) transition-[border-color] duration-(--dur-fast) hover:border-line-strong"
+        >
+          <Heading class="flex items-center justify-between gap-3 text-h3 text-fg">
+            {guide.title}
+            <ArrowRight class="size-4 shrink-0 text-fg-muted transition-[color] duration-(--dur-fast) group-hover:text-fg" aria-hidden="true" />
+          </Heading>
+          <p class="text-fg-muted">{guide.description}</p>
+        </a>
+      </li>
+    ))
+  }
+</ul>

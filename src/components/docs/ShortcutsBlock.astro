@@ -1,0 +1,73 @@
+---
+import { resultGridClass } from '../../lib/ui/result';
+import Kbd from '../ui/Kbd.astro';
+
+// `{shortcuts}` (spec 0009, AC-9): one result grid per area, with the macOS and
+// the Windows and Linux keys side by side, both always visible. A shortcut you
+// can remap says so in words, not with a symbol or a color. Below md each row
+// stacks into a block with both key columns labelled, so neither hides off screen.
+interface Row {
+  readonly area: string;
+  readonly action: string;
+  readonly mac: readonly string[];
+  readonly other: readonly string[];
+  readonly remappable: boolean;
+}
+
+interface Props {
+  rows: readonly Row[];
+  canChange: string;
+}
+
+const { rows, canChange } = Astro.props;
+
+// Areas in the order they first appear in the file.
+const areas = [...new Set(rows.map((row) => row.area))].map((area) => ({
+  area,
+  rows: rows.filter((row) => row.area === area),
+}));
+---
+
+<div class="docs-block flex flex-col gap-6">
+  {
+    areas.map(({ area, rows: areaRows }) => (
+      <div class="docs-frame">
+        <table class:list={[resultGridClass({ stack: true }), 'docs-shortcuts']} role="table">
+          <caption>{area}</caption>
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader">action</th>
+              <th scope="col" role="columnheader">macOS</th>
+              <th scope="col" role="columnheader">Windows and Linux</th>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            {areaRows.map((row) => (
+              <tr role="row">
+                <th scope="row" role="rowheader" class="font-normal">
+                  {row.action}
+                  {row.remappable && <span class="block text-caption text-fg-muted">{canChange}</span>}
+                </th>
+                <td role="cell" data-label="macOS" class="whitespace-nowrap">
+                  <Kbd keys={row.mac} />
+                </td>
+                <td role="cell" data-label="Windows and Linux" class="whitespace-nowrap">
+                  <Kbd keys={row.other} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ))
+  }
+</div>
+
+<style is:global>
+  /* Stacked, the action heads its block across both key cells. */
+  @media (max-width: 47.99rem) {
+    .docs-shortcuts.stack tbody th[scope='row'] {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

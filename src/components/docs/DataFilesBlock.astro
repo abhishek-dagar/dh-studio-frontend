@@ -1,0 +1,37 @@
+---
+import { resultClass, resultGridClass } from '../../lib/ui/result';
+
+// `{data-files}` (spec 0009, AC-9, AC-11): the files in the data folder, from
+// the privacy entry's `files`, the same list the privacy page shows.
+interface Props {
+  files: readonly { readonly name: string; readonly holds: string; readonly encrypted: boolean }[];
+}
+
+const { files } = Astro.props;
+---
+
+<div class="docs-block docs-frame">
+  <table class={resultGridClass()}>
+    <caption>Files in the DH Studio data folder</caption>
+    <thead>
+      <tr>
+        <th scope="col">file</th>
+        <th scope="col">holds</th>
+        <th scope="col">encrypted</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        files.map((file) => (
+          <tr>
+            <th scope="row" class:list={[resultClass.mono, 'whitespace-nowrap']}>
+              {file.name}
+            </th>
+            <td>{file.holds}</td>
+            <td class={resultClass.mono}>{file.encrypted ? 'yes' : 'no'}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

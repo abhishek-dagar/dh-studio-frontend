@@ -1,0 +1,53 @@
+---
+import { groupHref, guideHref, type DocsTree } from '../../lib/docs/nav';
+
+// The grouped docs list (spec 0009, AC-3): groups in `docsIndex` order, each
+// group label linking to its group page, then its guides by `order`. The page
+// you are on carries aria-current plus a 2px start border and medium weight, so
+// the mark never rests on color alone. Static, so it works with no JavaScript.
+// DocsLayout draws it twice: as the sticky column from lg and inside the
+// `Docs menu` fold below lg; only one shows at a time.
+interface Props {
+  tree: DocsTree;
+  /** The guide you are reading. */
+  currentId?: string | undefined;
+  /** The group page you are on. */
+  currentGroup?: string | undefined;
+  label: string;
+}
+
+const { tree, currentId, currentGroup, label } = Astro.props;
+
+const itemClass = [
+  'docs-nav-link flex min-h-9 items-center border-s-2 border-line py-1 ps-3 text-[0.875rem] text-fg-muted',
+  'transition-[border-color,color] duration-(--dur-fast) hover:border-line-strong hover:text-fg',
+  'aria-[current=page]:border-fg aria-[current=page]:font-medium aria-[current=page]:text-fg',
+].join(' ');
+---
+
+<nav aria-label={label}>
+  <ul class="flex flex-col gap-6">
+    {
+      tree.map(({ group, guides }) => (
+        <li class="flex flex-col gap-2">
+          <a
+            href={groupHref(group.key)}
+            class="docs-nav-group inline-flex min-h-9 items-center self-start rounded-inset text-caption font-medium text-fg-muted transition-[color] duration-(--dur-fast) hover:text-fg aria-[current=page]:text-fg aria-[current=page]:underline aria-[current=page]:underline-offset-[3px]"
+            aria-current={currentGroup === group.key ? 'page' : undefined}
+          >
+            {group.label}
+          </a>
+          <ul class="flex flex-col">
+            {guides.map((guide) => (
+              <li>
+                <a href={guideHref(guide.id)} class={itemClass} aria-current={currentId === guide.id ? 'page' : undefined}>
+                  {guide.sidebarLabel}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

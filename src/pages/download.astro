@@ -7,18 +7,22 @@ import Link from '../components/ui/Link.astro';
 import Section from '../components/ui/Section.astro';
 import { DownloadQuery } from '../islands/DownloadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadDocs } from '../lib/docs/load';
+import { guideHref } from '../lib/docs/nav';
 import { OS_ORDER, toDownloadData, type LaunchTip } from '../lib/home/download';
+import { osName } from '../lib/home/format';
 import { latestRelease } from '../lib/release';
 import { RELEASES_PAGE_URL } from '../lib/release/config';
 
 // The download page (spec 0005): Home's download query widened with a sha256
 // column, then first launch help and the release links.
 // Everything below the query is static, so it reads the same without JavaScript.
-const [release, page, home, tipEntries] = await Promise.all([
+const [release, page, home, tipEntries, docs] = await Promise.all([
   latestRelease,
   getEntry('download', 'download'),
   getEntry('home', 'home'),
   getCollection('launchTips'),
+  loadDocs(),
 ]);
 
 if (page === undefined) {
@@ -37,6 +41,15 @@ const tips = OS_ORDER.flatMap((os) => {
   const tip = tipFor(os);
   if (tip === undefined) throw new Error(`[download] No "${os}" entry in src/content/home/launch-tips.yaml (spec 0005, AC-8).`);
   return [{ os, tip }];
+});
+
+// Each system's install guide, found by its `os` (spec 0009, AC-15). loadDocs
+// already checked that every system has exactly one.
+const guides = OS_ORDER.flatMap((os) => {
+  const entry = docs.entries.find((candidate) => candidate.data.os === os);
+  return entry === undefined
+    ? []
+    : [{ os, href: guideHref(entry.id), label: docs.index.page.fullGuideFor.replaceAll('{os}', osName(os)) }];
 });
 
 const { meta, heading, skipNote, hashMissing, copyHash, copyHashLabel, launch, links } = page.data;
@@ -63,7 +76,7 @@ const data = toDownloadData(release);
 
   <Section class="pt-0">
     <Container class="flex flex-col gap-(--space-section)">
-      <LaunchHelp heading={launch.heading} note={launch.note} tips={tips} />
+      <LaunchHelp heading={launch.heading} note={launch.note} tips={tips} guides={guides} />
       <p class="flex flex-wrap gap-x-6 gap-y-2">
         {release.status === 'live' && <Link href={release.release.pageUrl}>{links.releaseNotes}</Link>}
         <Link href={RELEASES_PAGE_URL}>{links.olderVersions}</Link>

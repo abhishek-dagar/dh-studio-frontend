@@ -1,0 +1,21 @@
+---
+import type { LaunchTip } from '../../lib/home/download';
+import CommandLine from '../ui/CommandLine.astro';
+import Surface from '../ui/Surface.astro';
+
+// `{launch-tip}` (spec 0009, AC-7, AC-11): the system's first launch help from
+// launch-tips.yaml, drawn as the Download page draws its cards.
+interface Props {
+  tip: LaunchTip;
+}
+
+const { tip } = Astro.props;
+---
+
+<Surface class="docs-block flex min-w-0 flex-col gap-3">
+  <p class="font-medium text-fg">{tip.title}</p>
+  <ol class="flex list-decimal flex-col gap-1 ps-5 text-fg-muted marker:text-fg-muted">
+    {tip.steps.map((step) => <li>{step}</li>)}
+  </ol>
+  {tip.command !== undefined && <CommandLine command={tip.command} />}
+</Surface>

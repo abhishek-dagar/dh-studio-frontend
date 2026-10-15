@@ -1,0 +1,35 @@
+# The keyboard shortcuts guide's table (spec 0009, AC-9). Copied by hand from the app:
+# the remappable defaults from src/shared/hooks/shortcut-registry.ts (SHORTCUT_ACTIONS),
+# shown the way formatBinding draws them, and the native menu accelerators from
+# src-tauri/src/app_menu.rs, which can't be changed. Recheck on every app minor release.
+shortcuts:
+  appVersion: 0.5.6
+  rows:
+    # Areas show in the order they first appear here.
+    - { area: Anywhere in the app, action: Open command palette, mac: ['⌘', 'P'], other: [Ctrl, P], remappable: true }
+    - { area: Anywhere in the app, action: Open command palette (commands), mac: ['⌘', '⇧', 'P'], other: [Ctrl, Shift, P], remappable: true }
+    - { area: Anywhere in the app, action: Open settings, mac: ['⌘', ','], other: [Ctrl, ','], remappable: true }
+
+    - { area: Editor, action: Run query, mac: ['⌘', '⏎'], other: [Ctrl, Enter], remappable: true }
+    - { area: Editor, action: Run targeted statement, mac: ['⌘', '⇧', '⏎'], other: [Ctrl, Shift, Enter], remappable: true }
+    - { area: Editor, action: Explain statement, mac: ['⌘', '⇧', 'E'], other: [Ctrl, Shift, E], remappable: true }
+    - { area: Editor, action: Save, mac: ['⌘', 'S'], other: [Ctrl, S], remappable: true }
+    - { area: Editor, action: Save to library, mac: ['⌘', '⇧', 'S'], other: [Ctrl, Shift, S], remappable: true }
+    - { area: Editor, action: Find in editor, mac: ['⌘', 'F'], other: [Ctrl, F], remappable: true }
+    - { area: Editor, action: Join lines, mac: ['⌘', 'J'], other: [Ctrl, J], remappable: true }
+    - { area: Editor, action: Delete blank lines, mac: ['⌘', '⇧', 'J'], other: [Ctrl, Shift, J], remappable: true }
+    - { area: Editor, action: Uppercase selection, mac: ['⌘', '⇧', 'U'], other: [Ctrl, Shift, U], remappable: true }
+    - { area: Editor, action: Lowercase selection, mac: ['⌘', '⇧', 'L'], other: [Ctrl, Shift, L], remappable: true }
+    - { area: Editor, action: Cycle naming style (snake/camel/Pascal), mac: ['⌘', '⇧', 'C'], other: [Ctrl, Shift, C], remappable: true }
+    - { area: Editor, action: Paste as SQL IN condition, mac: ['⌘', '⇧', 'V'], other: [Ctrl, Shift, V], remappable: true }
+    - { area: Editor, action: Build delimited list…, mac: ['⌘', '⇧', 'D'], other: [Ctrl, Shift, D], remappable: true }
+    - { area: Editor, action: Editor zoom in, mac: ['⌘', '='], other: [Ctrl, '='], remappable: true }
+    - { area: Editor, action: Editor zoom out, mac: ['⌘', '-'], other: [Ctrl, '-'], remappable: true }
+    - { area: Editor, action: Editor zoom reset, mac: ['⌘', '0'], other: [Ctrl, '0'], remappable: true }
+
+    - { area: Table grid, action: Reload table data, mac: ['⌘', 'R'], other: [Ctrl, R], remappable: true }
+
+    - { area: Menu commands, action: New Window, mac: ['⌘', '⇧', 'N'], other: [Ctrl, Shift, N], remappable: false }
+    - { area: Menu commands, action: New SQL Editor, mac: ['⌘', 'T'], other: [Ctrl, T], remappable: false }
+    - { area: Menu commands, action: Open File…, mac: ['⌘', 'O'], other: [Ctrl, O], remappable: false }
+    - { area: Menu commands, action: Toggle Developer Tools, mac: ['⌘', '⌥', 'I'], other: [Ctrl, Alt, I], remappable: false }
