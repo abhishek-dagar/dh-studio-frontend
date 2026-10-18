@@ -19,6 +19,16 @@ describe('markerRulesFor', () => {
     expect(markerRulesFor('app/shortcuts', false).required).toEqual(['shortcuts']);
     expect(markerRulesFor('app/updating', false)).toEqual({ allowed: [], required: [] });
   });
+
+  it('adds {screenshot} beside an app guide\'s own block when screenshot is true', () => {
+    expect(markerRulesFor('app/data', true)).toEqual({ allowed: ['data-files', 'screenshot'], required: ['data-files', 'screenshot'] });
+    expect(markerRulesFor('app/shortcuts', true).required).toEqual(['shortcuts', 'screenshot']);
+    expect(markerRulesFor('app/updating', true)).toEqual({ allowed: ['screenshot'], required: ['screenshot'] });
+  });
+
+  it('never gives an install guide {screenshot}', () => {
+    expect(markerRulesFor('install/macos', true).allowed).not.toContain('screenshot');
+  });
 });
 
 describe('splitGuide', () => {

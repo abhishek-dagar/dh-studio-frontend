@@ -337,7 +337,7 @@ const docs = defineCollection({
     os: z.enum(['macos', 'windows', 'linux']).optional(),
     /** Install guides only. */
     requirements: z.array(z.object({ label: text, value: text })).min(1).max(6).optional(),
-    /** Connect guides only; needs a `{screenshot}` line. */
+    /** Connect and app guides only; needs a `{screenshot}` line and its pair in src/assets/screenshots/docs/ (spec 0010). */
     screenshot: z.boolean().default(false),
     screenshotAlt: text.optional(),
   }),

@@ -28,13 +28,13 @@ export interface MarkerRules {
 
 const INSTALL_MARKERS: readonly Marker[] = ['downloads', 'install-command', 'launch-tip', 'requirements'];
 
-/** Which markers a guide may and must hold, from its id and its `screenshot` flag (spec 0009, Markers table). */
+/** Which markers a guide may and must hold, from its id and its `screenshot` flag (spec 0009, Markers table; spec 0010, AC-6). */
 export const markerRulesFor = (id: string, screenshot: boolean): MarkerRules => {
   if (guideGroup(id) === 'install') return { allowed: INSTALL_MARKERS, required: INSTALL_MARKERS };
-  if (guideGroup(id) === 'connect') return screenshot ? { allowed: ['screenshot'], required: ['screenshot'] } : { allowed: [], required: [] };
-  if (id === 'app/data') return { allowed: ['data-files'], required: ['data-files'] };
-  if (id === 'app/shortcuts') return { allowed: ['shortcuts'], required: ['shortcuts'] };
-  return { allowed: [], required: [] };
+  // A guide's own block, plus {screenshot} when it shows a picture (spec 0010, AC-6).
+  const own: readonly Marker[] = id === 'app/data' ? ['data-files'] : id === 'app/shortcuts' ? ['shortcuts'] : [];
+  const markers: readonly Marker[] = screenshot ? [...own, 'screenshot'] : own;
+  return { allowed: markers, required: markers };
 };
 
 const MARKER_LINE = /<p>\{([a-z][a-z0-9-]*)\}<\/p>/g;

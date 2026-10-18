@@ -8,6 +8,9 @@ import { groupHref, guideGroup, guideHref } from './nav';
 // system, the install and screenshot fields, and the links on /docs/. Each
 // problem names the file. Marker rules are checked per guide by splitGuide.
 
+/** The groups whose guides may show a picture (spec 0010, AC-6). */
+const SCREENSHOT_GROUPS: readonly string[] = ['connect', 'app'];
+
 export interface GuideFacts {
   /** `install/macos`. */
   readonly id: string;
@@ -36,12 +39,23 @@ const guideProblems = (guide: GuideFacts, groupKeys: readonly string[]): readonl
     ...(!install && guide.requirements !== undefined
       ? [`${guide.file} sets \`requirements\`, which only install guides may set`]
       : []),
-    ...(guide.screenshot && group !== 'connect' ? [`${guide.file} sets \`screenshot\`, which only connect guides may set`] : []),
-    ...(guide.screenshot && group === 'connect' && guide.screenshotAlt === undefined
+    ...(guide.screenshot && !SCREENSHOT_GROUPS.includes(group)
+      ? [`${guide.file} sets \`screenshot\`, which only connect and app guides may set`]
+      : []),
+    ...(guide.screenshot && guide.screenshotAlt === undefined
       ? [`${guide.file} sets \`screenshot: true\`, so it needs \`screenshotAlt\``]
       : []),
   ];
 };
+
+/** Each guide's picture is its own, so no two may share an alt (spec 0010, AC-6). */
+const duplicateAlts = (guides: readonly GuideFacts[]): readonly string[] =>
+  guides.flatMap((guide, index) => {
+    const twin = guides.find(
+      (other, otherIndex) => otherIndex < index && guide.screenshotAlt !== undefined && other.screenshotAlt === guide.screenshotAlt,
+    );
+    return twin === undefined ? [] : [`${guide.file} and ${twin.file} share the same \`screenshotAlt\``];
+  });
 
 const duplicateOrders = (guides: readonly GuideFacts[]): readonly string[] =>
   guides.flatMap((guide, index) => {
@@ -77,6 +91,7 @@ export const docsProblems = (
   return [
     ...guides.flatMap((guide) => guideProblems(guide, groupKeys)),
     ...duplicateOrders(guides),
+    ...duplicateAlts(guides),
     ...systemProblems(guides),
     ...links
       .filter((href) => !pages.has(href))

@@ -4,7 +4,9 @@ description: Every DH Studio keyboard shortcut on macOS, Windows and Linux, from
 sidebarLabel: Keyboard shortcuts
 order: 1
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
+screenshot: true
+screenshotAlt: DH Studio's Settings dialog on the Shortcuts section, listing default shortcuts such as Open command palette (⌘ P), Run query (⌘ Return) and Save (⌘ S), each with a Change button and a reset button.
 ---
 
 ## The shortcuts
@@ -16,6 +18,8 @@ On macOS the shortcuts use the Command key (⌘); on Windows and Linux they use 
 ## Change a shortcut
 
 Open **Settings** (⌘ , on macOS, Ctrl , on Windows and Linux) and go to **Shortcuts**. Every shortcut marked *can be changed* is listed there. Choose **Change** next to one, then press the keys you want; Escape cancels. If another shortcut already uses those keys, DH Studio says `Already used by` and names it, and keeps waiting for a different combination. The reset button next to each shortcut puts back its default, and you can reset them all at once.
+
+{screenshot}
 
 The menu commands at the bottom of the list belong to the app's menu bar, so they keep their keys.
 

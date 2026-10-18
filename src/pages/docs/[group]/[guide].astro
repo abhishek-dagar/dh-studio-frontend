@@ -139,7 +139,7 @@ const data = toDownloadData(release);
             ) : part.name === 'requirements' && requirements !== undefined && os !== undefined ? (
               <RequirementsBlock rows={requirements} system={osName(os)} />
             ) : part.name === 'screenshot' && screenshotAlt !== undefined ? (
-              <ScreenshotBlock alt={screenshotAlt} />
+              <ScreenshotBlock id={entry.id} alt={screenshotAlt} />
             ) : part.name === 'data-files' && privacy !== undefined ? (
               <DataFilesBlock files={privacy.data.files} />
             ) : part.name === 'shortcuts' && shortcuts !== undefined ? (

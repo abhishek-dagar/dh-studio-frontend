@@ -4,9 +4,9 @@ description: Connect DH Studio to a PostgreSQL server with a URL or by hand, and
 sidebarLabel: PostgreSQL
 order: 2
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
 screenshot: true
-screenshotAlt: DH Studio's New Connection card with PostgreSQL selected among SQLite, MongoDB and Amazon DocumentDB, and a Next button.
+screenshotAlt: DH Studio's new connection form for PostgreSQL on the Connection tab, filled in with the name Shop, host db.example.com, port 5432, user app, a hidden password and the database shop.
 ---
 
 ## Start a connection
@@ -15,8 +15,6 @@ screenshotAlt: DH Studio's New Connection card with PostgreSQL selected among SQ
 2. Choose **PostgreSQL**, then **Next**.
 3. Fill in the Connection tab, or paste a URL (below).
 4. Choose **Test** to check it, then **Connect**.
-
-{screenshot}
 
 **Test** shows `Connection successful.` or the server's error. **Save** adds the connection to your Saved list in the sidebar, and **Connect** connects.
 
@@ -27,6 +25,8 @@ If you have a connection string, paste it into **URL** and choose **Fill the for
 The URL fills the host, port, user, password and database. It also reads `sslmode`, `sslrootcert`, `sslcert` and `sslkey` from the query string into the TLS/SSL tab. A MongoDB URL is refused with a note to go back and pick MongoDB.
 
 ## The Connection tab
+
+{screenshot}
 
 | Field | What it does |
 | --- | --- |

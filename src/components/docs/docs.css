@@ -131,6 +131,21 @@
   overflow-wrap: normal;
 }
 
+/* A guide's capture (spec 0010, AC-10): a crop, not a whole window, so a
+   plain hairline frame with no title bar. The block caps its own width. */
+.docs-shot {
+  overflow: hidden;
+  margin-inline: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-surface);
+}
+
+.docs-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* Keep the search's place while it hydrates, only where a script will fill it. */
 :root[data-js] .docs-search-slot {
   min-block-size: 4.75rem;
@@ -152,6 +167,7 @@
 
 @media (forced-colors: active) {
   .docs-frame,
+  .docs-shot,
   .docs-menu {
     border-color: CanvasText;
   }

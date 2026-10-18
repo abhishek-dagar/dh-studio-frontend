@@ -4,9 +4,9 @@ description: Connect DH Studio to an Amazon DocumentDB cluster with TLS and the 
 sidebarLabel: Amazon DocumentDB
 order: 4
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
 screenshot: true
-screenshotAlt: DH Studio's New Connection card, where Amazon DocumentDB sits beside SQLite, PostgreSQL and MongoDB as a database type.
+screenshotAlt: DH Studio's new connection form for Amazon DocumentDB on the Connection tab, filled in with the name Shop, host docdb.example.com, port 27017, user app and a hidden password, with auth source admin and replica set rs0.
 ---
 
 ## Start a connection
@@ -19,8 +19,6 @@ DocumentDB has its own type in DH Studio. It uses the MongoDB form, with Documen
 4. On the TLS/SSL tab, pick Amazon's CA bundle.
 5. Choose **Test** to check it, then **Connect**.
 
-{screenshot}
-
 ## What's different from MongoDB
 
 - **TLS is on** from the start, as DocumentDB requires.
@@ -30,6 +28,8 @@ DocumentDB has its own type in DH Studio. It uses the MongoDB form, with Documen
 - **Client certificate** is off: DocumentDB signs in with a password, not a client certificate.
 
 ## The Connection tab
+
+{screenshot}
 
 | Field | What it does |
 | --- | --- |

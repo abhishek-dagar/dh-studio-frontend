@@ -4,7 +4,9 @@ description: The folder where DH Studio keeps saved connections, encrypted passw
 sidebarLabel: Where your data lives
 order: 2
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
+screenshot: true
+screenshotAlt: A macOS Finder window in list view on the com.dh-studio.dev folder, showing the files DH Studio keeps there.
 ---
 
 ## The data folder
@@ -14,6 +16,8 @@ DH Studio keeps everything it saves in one folder on your computer. Nothing goes
 - **macOS:** `~/Library/Application Support/com.dh-studio.dev`
 - **Windows:** `%APPDATA%\com.dh-studio.dev`
 - **Linux:** `~/.local/share/com.dh-studio.dev`
+
+{screenshot}
 
 ## What's in it
 

@@ -4,7 +4,9 @@ description: Reach a PostgreSQL, MongoDB or DocumentDB server through a bastion 
 sidebarLabel: SSH tunnel
 order: 5
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
+screenshot: true
+screenshotAlt: DH Studio's new connection form for PostgreSQL on the SSH Tunnel tab, with Use an SSH tunnel ticked, SSH host bastion.example.com, port 22, user app, authentication set to key and the private key ~/.ssh/id_ed25519.
 ---
 
 ## When you need one
@@ -18,6 +20,8 @@ The **SSH Tunnel** tab is on the PostgreSQL, MongoDB and Amazon DocumentDB forms
 1. Fill in the Connection tab as the bastion sees the database. If the database runs on the bastion itself, the host is `localhost`.
 2. Open the **SSH Tunnel** tab and tick **Use an SSH tunnel**.
 3. Fill in the fields below, then choose **Test**.
+
+{screenshot}
 
 | Field | What it does |
 | --- | --- |

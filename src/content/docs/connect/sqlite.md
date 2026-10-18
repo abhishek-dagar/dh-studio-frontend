@@ -4,9 +4,9 @@ description: Open a SQLite database file in DH Studio, name the connection, and 
 sidebarLabel: SQLite
 order: 1
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
 screenshot: true
-screenshotAlt: DH Studio's New Connection card, listing SQLite, PostgreSQL, MongoDB and Amazon DocumentDB as database types, with saved connections in the sidebar.
+screenshotAlt: DH Studio's new connection form for SQLite on the Connection tab, named Shop (local), with the file /Users/you/data/shop.db chosen and an Open button.
 ---
 
 ## Open the file
@@ -18,11 +18,11 @@ A SQLite database is a single file on your computer, so there's no server, user 
 3. Next to **File**, choose **Browse…** and pick your database. The picker shows files ending in `.db`, `.sqlite` or `.sqlite3`.
 4. Choose **Open**.
 
-{screenshot}
-
 The quickest way skips the form entirely: double click a `.db`, `.sqlite` or `.sqlite3` file, and DH Studio opens it.
 
 ## The Connection tab
+
+{screenshot}
 
 | Field | What it does |
 | --- | --- |

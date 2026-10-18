@@ -1,12 +1,24 @@
+import type { ImageMetadata } from 'astro';
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import { VERCEL_ENV } from 'astro:env/server';
 import { docsTree, type DocsGuide, type DocsTree } from './nav';
 import { docsProblems, type GuideFacts } from './rules';
+import { byFileName, shotProblems } from './shots';
 
 // Loads the docs collections for the docs pages (spec 0009). The one edge of
 // lib/docs: everything it calls is pure. A broken rule fails the build here,
 // naming every file at once (AC-12), so a writer fixes them in one pass.
 
 export type DocsEntry = CollectionEntry<'docs'>;
+
+/** Every docs capture by file name (`connect-postgresql.png`), each guide's pair named by its id (spec 0010, AC-4). */
+export const docsShots: ReadonlyMap<string, ImageMetadata> = byFileName(
+  Object.fromEntries(
+    Object.entries(import.meta.glob<{ default: ImageMetadata }>('../../assets/screenshots/docs/*.png', { eager: true })).map(
+      ([path, module]) => [path, module.default],
+    ),
+  ),
+);
 export type DocsIndex = CollectionEntry<'docsIndex'>['data'];
 
 export interface DocsData {
@@ -45,13 +57,17 @@ export const loadDocs = async (): Promise<DocsData> => {
     );
   }
 
-  const problems = docsProblems(
-    entries.map(toFacts),
-    index.data.groups.map((group) => group.key),
-    index.data.gettingStarted.flatMap((step) => step.links.map((link) => link.href)),
-  );
+  const facts = entries.map(toFacts);
+  const problems = [
+    ...docsProblems(
+      facts,
+      index.data.groups.map((group) => group.key),
+      index.data.gettingStarted.flatMap((step) => step.links.map((link) => link.href)),
+    ),
+    ...shotProblems(facts, docsShots, { production: VERCEL_ENV === 'production' }),
+  ];
   if (problems.length > 0) {
-    throw new Error(`[docs] The guides break ${problems.length} rules (spec 0009, AC-12):\n  ${problems.join('\n  ')}`);
+    throw new Error(`[docs] The guides break ${problems.length} rules (spec 0009, AC-12; spec 0010, AC-6 to AC-8):\n  ${problems.join('\n  ')}`);
   }
 
   return { index: index.data, entries, tree: docsTree(index.data.groups, entries.map(toGuide)) };

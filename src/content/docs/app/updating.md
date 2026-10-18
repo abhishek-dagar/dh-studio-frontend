@@ -4,7 +4,9 @@ description: How DH Studio checks for new versions, downloads an update only whe
 sidebarLabel: Updating
 order: 3
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
+screenshot: true
+screenshotAlt: DH Studio's Update available dialog saying version 0.5.6 (you have 0.5.5) is available, with that release's notes and the Later and Update buttons.
 ---
 
 ## How it checks
@@ -18,6 +20,8 @@ When a new version is out, the title bar shows **Update available** with the ver
 1. Choose **Update available** in the title bar. The window shows what's new in that release.
 2. Choose **Update**. The download starts and shows its progress. You can choose **Later** and keep working; the download carries on.
 3. When it's done, choose **Restart now**. DH Studio installs the update and opens again on the new version.
+
+{screenshot}
 
 Nothing downloads until you choose **Update**, and nothing installs until you choose **Restart now**.
 

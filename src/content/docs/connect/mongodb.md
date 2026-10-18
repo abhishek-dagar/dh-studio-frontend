@@ -4,9 +4,9 @@ description: Connect DH Studio to MongoDB with a mongodb:// or mongodb+srv:// UR
 sidebarLabel: MongoDB
 order: 3
 appVersion: 0.5.6
-updated: 2026-10-15
+updated: 2026-10-16
 screenshot: true
-screenshotAlt: DH Studio's New Connection card listing SQLite, PostgreSQL, MongoDB and Amazon DocumentDB, the four database types you can pick from.
+screenshotAlt: DH Studio's new connection form for MongoDB on the Connection tab, filled in with the name Shop, host db.example.com, port 27017, user app, a hidden password and the database shop.
 ---
 
 ## Start a connection
@@ -15,8 +15,6 @@ screenshotAlt: DH Studio's New Connection card listing SQLite, PostgreSQL, Mongo
 2. Choose **MongoDB**, then **Next**.
 3. Fill in the Connection tab, or paste a URL (below).
 4. Choose **Test** to check it, then **Connect**.
-
-{screenshot}
 
 **Test** shows `Connection successful.` or the server's error. **Save** adds the connection to your Saved list in the sidebar, and **Connect** connects.
 
@@ -27,6 +25,8 @@ Paste a `mongodb://` or `mongodb+srv://` URL into **URL** and choose **Fill the 
 The URL fills the hosts, port, user, password and database. It also reads these query options: `authSource`, `replicaSet`, `tls=true`, `tlsCAFile`, `tlsCertificateKeyFile` and `retryWrites=false`.
 
 ## The Connection tab
+
+{screenshot}
 
 | Field | What it does |
 | --- | --- |

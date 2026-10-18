@@ -57,17 +57,35 @@ describe('docsProblems', () => {
     );
   });
 
-  it('refuses os, requirements or screenshot outside their groups', () => {
-    const problems = docsProblems([...sound, facts('app/updating', { order: 3, os: 'macos', requirements: [], screenshot: true })], GROUPS, []);
+  it('refuses os and requirements outside install guides', () => {
+    const problems = docsProblems([...sound, facts('app/updating', { order: 3, os: 'macos', requirements: [] })], GROUPS, []);
     expect(problems).toContainEqual(expect.stringContaining('sets `os`'));
     expect(problems).toContainEqual(expect.stringContaining('sets `requirements`'));
-    expect(problems).toContainEqual(expect.stringContaining('sets `screenshot`'));
   });
 
-  it('needs screenshotAlt on a connect guide with a screenshot', () => {
-    expect(docsProblems([...sound, facts('connect/mongodb', { order: 3, screenshot: true })], GROUPS, [])).toContainEqual(
-      'src/content/docs/connect/mongodb.md sets `screenshot: true`, so it needs `screenshotAlt`',
+  it('lets connect and app guides set screenshot, but not install guides', () => {
+    const appShot = facts('app/updating', { order: 3, screenshot: true, screenshotAlt: 'The update dialog' });
+    expect(docsProblems([...sound, appShot], GROUPS, [])).toEqual([]);
+    const installShot = { ...install('install/macos', 'macos', 1), screenshot: true, screenshotAlt: 'Open Anyway' };
+    expect(docsProblems([installShot, ...sound.slice(1)], GROUPS, [])).toEqual([
+      'src/content/docs/install/macos.md sets `screenshot`, which only connect and app guides may set',
+    ]);
+  });
+
+  it('needs screenshotAlt on any guide with a screenshot', () => {
+    const problems = docsProblems(
+      [...sound, facts('connect/mongodb', { order: 3, screenshot: true }), facts('app/shortcuts', { order: 2, screenshot: true })],
+      GROUPS,
+      [],
     );
+    expect(problems).toContainEqual('src/content/docs/connect/mongodb.md sets `screenshot: true`, so it needs `screenshotAlt`');
+    expect(problems).toContainEqual('src/content/docs/app/shortcuts.md sets `screenshot: true`, so it needs `screenshotAlt`');
+  });
+
+  it('refuses two guides sharing a screenshotAlt', () => {
+    expect(docsProblems([...sound, facts('app/shortcuts', { order: 2, screenshot: true, screenshotAlt: 'The form' })], GROUPS, [])).toEqual([
+      'src/content/docs/app/shortcuts.md and src/content/docs/connect/sqlite.md share the same `screenshotAlt`',
+    ]);
   });
 
   it('names a /docs/ link to a page that is not built', () => {

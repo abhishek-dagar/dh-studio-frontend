@@ -1,24 +1,59 @@
 ---
-import connectionForm from '../../assets/screenshots/connection-form.png';
-import connectionFormLight from '../../assets/screenshots/connection-form-light.png';
-import AppWindow from '../editor/AppWindow.astro';
+import { Picture } from 'astro:assets';
+import { docsShots } from '../../lib/docs/load';
+import { shotFileNames, shotName } from '../../lib/docs/shots';
 
-// `{screenshot}` (spec 0009, AC-8): the connection form capture, the light one
-// when the site is light, with the guide's own alt text. The capture holds its
-// own window, so the AppWindow is bare, as on the features page.
+// `{screenshot}` (spec 0010): the guide's own capture, found by its id, the
+// light one when the site is light. A crop is not a whole window, so it sits in
+// a plain frame with no title bar (AC-10). Without the files (local and preview
+// builds only) a labeled 4:3 frame stands in; production refuses that in
+// loadDocs before it gets here (AC-7).
 interface Props {
+  /** The guide's id, `connect/postgresql`. */
+  id: string;
   alt: string;
 }
 
-const { alt } = Astro.props;
+const { id, alt } = Astro.props;
+const names = shotFileNames(id);
+const dark = docsShots.get(names.dark);
+const light = docsShots.get(names.light);
+const shots =
+  dark === undefined || light === undefined
+    ? []
+    : [
+        { src: dark, theme: 'dark' },
+        { src: light, theme: 'light' },
+      ];
+
+// Retina captures: never wider on the page than their pixels at 2x.
+const maxWidth = dark === undefined ? undefined : `${Math.round(dark.width / 2)}px`;
+const widths = dark === undefined ? [] : [...[480, 800, 1200].filter((width) => width < dark.width), dark.width];
 ---
 
-<AppWindow
-  image={connectionForm}
-  imageLight={connectionFormLight}
-  alt={alt}
-  title="DH Studio"
-  bare
-  sizes="(min-width: 80rem) 40rem, (min-width: 64rem) 60vw, 100vw"
-  class="docs-block"
-/>
+{
+  shots.length === 0 ? (
+    <figure class="docs-block docs-shot">
+      <div class="grid aspect-4/3 place-items-center bg-ground" role="img" aria-label={alt}>
+        <span class="text-caption text-fg-muted" aria-hidden="true">
+          Screenshot placeholder: {shotName(id)}
+        </span>
+      </div>
+    </figure>
+  ) : (
+    <figure class="docs-block docs-shot" style={{ maxInlineSize: maxWidth }}>
+      {shots.map((shot) => (
+        <Picture
+          src={shot.src}
+          alt={alt}
+          widths={widths}
+          sizes={`min(${maxWidth}, 100vw)`}
+          formats={['avif', 'webp']}
+          loading="lazy"
+          decoding="async"
+          pictureAttributes={{ 'data-shot-theme': shot.theme }}
+        />
+      ))}
+    </figure>
+  )
+}
