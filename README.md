@@ -27,3 +27,21 @@ Docs search uses [Pagefind](https://pagefind.app), which indexes the built site,
 | `/changelog` | `src/pages/changelog/` |
 | `/docs` | `src/pages/docs/` (install, connect and app guides) |
 | `/privacy` | `src/pages/privacy.astro` |
+
+## Project structure
+
+```text
+src/
+  pages/       routes (one file or folder per URL)
+  layouts/     BaseLayout and DocsLayout page shells
+  components/  Astro components, grouped by page (home, docs, download, ...) plus shared ui/ and site/
+  islands/     React components hydrated on the client (search, theme toggle, copy button, ...)
+  content/     page copy and data, read through content.config.ts
+  lib/         typed helpers and data logic per page, plus seo/ and release/
+  styles/      global CSS and Tailwind theme tokens
+public/        static files served as-is
+test/          vitest tests
+design.md      visual design notes for the site
+```
+
+Keep components static Astro by default. Reach for a React island only when something needs client-side interactivity.
