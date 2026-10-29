@@ -1,0 +1,94 @@
+---
+import { sqlTokens } from '../../lib/changelog/sql';
+import { resultClass, resultGridClass } from '../../lib/ui/result';
+import EditorLine from '../editor/EditorLine.astro';
+import EditorPane from '../editor/EditorPane.astro';
+import Tok from '../editor/Tok.astro';
+import Link from '../ui/Link.astro';
+
+// The /docs/ opener (spec 0009, AC-4): an editor pane whose comment line is the
+// page's one h1, then a short query, then its answer, the three getting
+// started steps with links to their guides. Below md the grid stacks. The grid
+// is the page's one reveal; the page script sets data-revealed once it loads.
+interface Props {
+  opener: { readonly tab: string; readonly comment: string; readonly query: readonly string[] };
+  steps: readonly {
+    readonly title: string;
+    readonly text: string;
+    readonly links: readonly { readonly label: string; readonly href: string }[];
+  }[];
+}
+
+const { opener, steps } = Astro.props;
+---
+
+<EditorPane tabs={[{ label: opener.tab, current: true }]}>
+  <EditorLine size="h2">
+    <h1><span class="docs-comment" aria-hidden="true">--</span> {opener.comment}</h1>
+  </EditorLine>
+  {
+    opener.query.map((line) => (
+      <EditorLine decorative>{sqlTokens(line).map((token) => (token.kind === null ? token.text : <Tok kind={token.kind}>{token.text}</Tok>))}</EditorLine>
+    ))
+  }
+
+  <table slot="result" class:list={[resultGridClass({ stack: true }), 'docs-steps']} role="table" data-reveal data-docs-reveal>
+    <caption>Getting started in three steps</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th scope="col" role="columnheader">step</th>
+        <th scope="col" role="columnheader">what</th>
+        <th scope="col" role="columnheader">guides</th>
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {
+        steps.map((step, index) => (
+          <tr role="row">
+            <th scope="row" role="rowheader" class="font-medium">
+              <span class:list={[resultClass.mono, 'text-fg-muted']}>{index + 1}.</span> {step.title}
+            </th>
+            <td role="cell" data-label="what" class="text-fg-muted">
+              {step.text}
+            </td>
+            <td role="cell" data-label="guides" class={resultClass.action}>
+              <ul class="flex flex-wrap gap-x-4 gap-y-1">
+                {step.links.map((link) => (
+                  <li>
+                    <Link href={link.href} class="inline-flex min-h-11 items-center font-medium md:min-h-0">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  <span slot="status">{steps.length} rows</span>
+  <span slot="status">{opener.tab}</span>
+</EditorPane>
+
+<style is:global>
+  /* The comment marker before the heading, pulled together like the changelog's. */
+  .docs-comment {
+    color: var(--syntax-comment);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: -0.18em;
+  }
+
+  .docs-steps :is(th, td) {
+    vertical-align: top;
+  }
+
+  /* Stacked, each step's title heads its block across both cell columns. */
+  @media (max-width: 47.99rem) {
+    .docs-steps.stack tbody th[scope='row'] {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

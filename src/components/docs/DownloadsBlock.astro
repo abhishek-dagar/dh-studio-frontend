@@ -1,0 +1,83 @@
+---
+import Download from '@lucide/astro/icons/download';
+import type { DownloadData } from '../../lib/home/download';
+import { osName } from '../../lib/home/format';
+import type { Os } from '../../lib/release/types';
+import { downloadHref } from '../../lib/site';
+import { resultClass, resultGridClass } from '../../lib/ui/result';
+import Link from '../ui/Link.astro';
+
+// `{downloads}` (spec 0009, AC-7, AC-11): the latest release's files for one
+// system, straight from the release data, then a link to the download page for
+// checksums and older versions. A build with no release data shows one line and
+// GitHub's releases page instead. The copy is Home's, so both pages read the same.
+interface Props {
+  os: Os;
+  data: DownloadData;
+  copy: {
+    readonly rowLink: string;
+    readonly pageLink: string;
+    readonly fallbackRow: string;
+    readonly seeReleases: string;
+  };
+}
+
+const { os, data, copy } = Astro.props;
+const rows = data.status === 'live' ? data.downloads.filter((entry) => entry.os === os) : [];
+---
+
+<div class="docs-block flex flex-col gap-3" data-pagefind-ignore>
+  {
+    data.status === 'live' ? (
+      <>
+        <div class="docs-frame">
+          <table class={resultGridClass({ stack: true })} role="table">
+            <caption>
+              DH Studio <span class="font-mono">{data.version}</span> for {osName(os)}
+            </caption>
+            <thead role="rowgroup">
+              <tr role="row">
+                <th scope="col" role="columnheader">file</th>
+                <th scope="col" role="columnheader">for</th>
+                <th scope="col" role="columnheader">size</th>
+                <th scope="col" role="columnheader">
+                  <span class="sr-only">{copy.rowLink}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody role="rowgroup">
+              {rows.map((entry) => (
+                <tr role="row">
+                  <td role="cell" data-label="file" class={resultClass.mono}>
+                    {entry.fileName}
+                  </td>
+                  <td role="cell" data-label="for">
+                    {entry.forLabel}
+                  </td>
+                  <td role="cell" data-label="size" class:list={[resultClass.mono, 'whitespace-nowrap']}>
+                    {entry.sizeLabel}
+                  </td>
+                  <td role="cell" class={resultClass.action}>
+                    <Link href={entry.url} class="inline-flex min-h-11 items-center gap-1.5 font-medium">
+                      <Download class="size-4 shrink-0" aria-hidden="true" />
+                      {copy.rowLink}
+                      <span class="sr-only">{entry.fileName}</span>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <Link href={downloadHref}>{copy.pageLink}</Link>
+        </p>
+      </>
+    ) : (
+      <p class="flex flex-wrap gap-x-3 gap-y-1">
+        <span class="text-fg-muted">{copy.fallbackRow}</span>
+        <Link href={data.releasesPageUrl}>{copy.seeReleases}</Link>
+      </p>
+    )
+  }
+</div>

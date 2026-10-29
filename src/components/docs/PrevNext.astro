@@ -1,0 +1,45 @@
+---
+import ArrowLeft from '@lucide/astro/icons/arrow-left';
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import { guideHref, type Neighbors } from '../../lib/docs/nav';
+
+// Previous and next guides in full sidebar order (spec 0009, AC-6). Each side is
+// left out at its end. Flat bordered links, so they read as navigation, not cards.
+interface Props {
+  neighbors: Neighbors;
+  copy: { readonly previous: string; readonly next: string };
+}
+
+const { neighbors, copy } = Astro.props;
+const { previous, next } = neighbors;
+
+const linkClass = [
+  'group flex min-h-11 min-w-0 flex-col gap-1 rounded-field border border-line px-4 py-3',
+  'transition-[border-color,background-color] duration-(--dur-fast) hover:border-line-strong hover:bg-wash',
+].join(' ');
+---
+
+{
+  (previous !== undefined || next !== undefined) && (
+    <nav aria-label="Previous and next guides" class="grid gap-3 border-t border-line pt-8 sm:grid-cols-2" data-pagefind-ignore>
+      {previous !== undefined && (
+        <a href={guideHref(previous.id)} rel="prev" class={linkClass}>
+          <span class="flex items-center gap-1.5 text-caption text-fg-muted">
+            <ArrowLeft class="size-3.5" aria-hidden="true" />
+            {copy.previous}
+          </span>
+          <span class="font-medium text-fg">{previous.title}</span>
+        </a>
+      )}
+      {next !== undefined && (
+        <a href={guideHref(next.id)} rel="next" class:list={[linkClass, 'sm:col-start-2 sm:items-end sm:text-end']}>
+          <span class="flex items-center gap-1.5 text-caption text-fg-muted">
+            {copy.next}
+            <ArrowRight class="size-3.5" aria-hidden="true" />
+          </span>
+          <span class="font-medium text-fg">{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )
+}

@@ -1,0 +1,36 @@
+---
+import type { Crumb } from '../../lib/docs/nav';
+
+// The docs breadcrumb (spec 0009, AC-5, AC-6): every crumb but the last links,
+// and the last one names the page you are on.
+interface Props {
+  crumbs: readonly Crumb[];
+  class?: string;
+}
+
+const { crumbs, class: className } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class={className}>
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-fg-muted">
+    {
+      crumbs.map((crumb, index) => (
+        <li class="flex items-center gap-2">
+          {index > 0 && <span aria-hidden="true">›</span>}
+          {crumb.href === undefined ? (
+            <span aria-current="page" class="text-fg">
+              {crumb.label}
+            </span>
+          ) : (
+            <a
+              href={crumb.href}
+              class="rounded-inset underline decoration-line-strong decoration-1 underline-offset-[3px] transition-[color,text-decoration-color] duration-(--dur-fast) hover:text-fg hover:decoration-fg"
+            >
+              {crumb.label}
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

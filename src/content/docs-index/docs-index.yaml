@@ -1,0 +1,73 @@
+# The /docs/ page, the docs groups and the copy every docs page shares (spec 0009).
+# Edit freely; the schema in src/content.config.ts checks every field, and the build
+# checks that every getting started link points at a real docs page.
+docsIndex:
+  meta:
+    title: Docs · DH Studio
+    description: Guides for DH Studio. Install it on macOS, Windows or Linux, connect to SQLite, PostgreSQL or MongoDB, and learn the shortcuts.
+
+  # The editor pane that opens /docs/. `comment` is the page's h1, after the `--` marker.
+  opener:
+    tab: docs.sql
+    comment: Get started with DH Studio
+    query:
+      - select step, what, guides
+      - from getting_started order by step;
+
+  # The opener's result grid: exactly three steps, each linking to its guides.
+  gettingStarted:
+    - title: Install
+      text: Download the app or run the one line install, then get past the first launch warning.
+      links:
+        - { label: macOS, href: /docs/install/macos/ }
+        - { label: Windows, href: /docs/install/windows/ }
+        - { label: Linux, href: /docs/install/linux/ }
+    - title: Connect
+      text: Add your first connection and learn what each field in the form means.
+      links:
+        - { label: SQLite, href: /docs/connect/sqlite/ }
+        - { label: PostgreSQL, href: /docs/connect/postgresql/ }
+        - { label: MongoDB, href: /docs/connect/mongodb/ }
+    - title: Learn the shortcuts
+      text: Run queries, open the command palette and save without reaching for the mouse.
+      links:
+        - { label: Keyboard shortcuts, href: /docs/app/shortcuts/ }
+
+  # The sidebar and /docs/ list groups in `order`. A guide's folder names its group.
+  groups:
+    - key: install
+      label: Install
+      description: Get DH Studio onto your computer and past the first launch warning.
+      order: 1
+    - key: connect
+      label: Connect
+      description: Connect to each database DH Studio supports, directly or through an SSH tunnel.
+      order: 2
+    - key: app
+      label: Using the app
+      description: Keyboard shortcuts, where DH Studio keeps your data, and how updates work.
+      order: 3
+
+  # The search box at the top of the sidebar and on /docs/.
+  search:
+    label: Search the docs
+    placeholder: Install, SSL mode, shortcuts…
+    loading: Loading search…
+    # `{n}` is replaced by the number of guides found.
+    found: '{n} guides found'
+    empty: No guides match
+    devUnavailable: Search works on the built site
+    unavailable: Search is unavailable right now
+
+  # Copy shared by the guide and group pages.
+  page:
+    docsCrumb: Docs
+    onThisPage: On this page
+    previous: Previous
+    next: Next
+    checkedAgainst: Checked against DH Studio
+    updated: Updated
+    menu: Docs menu
+    # The Download page's link to each install guide; `{os}` is replaced by the system's name.
+    fullGuideFor: Full install guide for {os}
+    canChange: can be changed

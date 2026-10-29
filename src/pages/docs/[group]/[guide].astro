@@ -1,0 +1,155 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, getEntry } from 'astro:content';
+import Breadcrumb from '../../../components/docs/Breadcrumb.astro';
+import DataFilesBlock from '../../../components/docs/DataFilesBlock.astro';
+import DownloadsBlock from '../../../components/docs/DownloadsBlock.astro';
+import GuideStamp from '../../../components/docs/GuideStamp.astro';
+import InstallBlock from '../../../components/docs/InstallBlock.astro';
+import LaunchTipBlock from '../../../components/docs/LaunchTipBlock.astro';
+import PrevNext from '../../../components/docs/PrevNext.astro';
+import RequirementsBlock from '../../../components/docs/RequirementsBlock.astro';
+import ScreenshotBlock from '../../../components/docs/ScreenshotBlock.astro';
+import ShortcutsBlock from '../../../components/docs/ShortcutsBlock.astro';
+import SectionIndexed from '../../../components/ui/SectionIndexed.astro';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { markerRulesFor, splitGuide } from '../../../lib/docs/body';
+import { guideFile, loadDocs, toGuide, type DocsEntry } from '../../../lib/docs/load';
+import { docsCrumbs, findBranch, groupHref, guideGroup, guideHref, guideSlug, neighbors } from '../../../lib/docs/nav';
+import { staleWarning } from '../../../lib/docs/stale';
+import { toDownloadData, type LaunchTip } from '../../../lib/home/download';
+import { osName } from '../../../lib/home/format';
+import { latestRelease } from '../../../lib/release';
+import { siteOrigin, SITE_NAME } from '../../../lib/seo/config';
+import { breadcrumbLd, techArticleLd } from '../../../lib/seo/ld';
+import { docsHref } from '../../../lib/site';
+
+// One docs guide (spec 0009, AC-6 to AC-12, AC-16): breadcrumb, h1, stamp, the
+// Markdown body with its blocks placed at their marker lines, an `On this page`
+// index, and previous and next. Static, so it reads in full without JavaScript.
+
+export const getStaticPaths = (async () => {
+  // Fails the build, naming every file, when a rule breaks (AC-12).
+  const docs = await loadDocs();
+
+  // Runs once per build, so each stale guide is logged once (AC-13).
+  const release = await latestRelease;
+  if (release.status === 'live') {
+    const checked = docs.entries.map((entry) => ({ file: guideFile(entry), appVersion: entry.data.appVersion }));
+    const warning = staleWarning(checked, release.release.version);
+    if (warning !== undefined) console.warn(warning);
+  }
+
+  return docs.entries.map((entry) => ({
+    params: { group: guideGroup(entry.id), guide: guideSlug(entry.id) },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: DocsEntry;
+}
+
+const { entry } = Astro.props;
+const file = guideFile(entry);
+
+const [docs, release, home, privacy, tipEntries, shortcuts] = await Promise.all([
+  loadDocs(),
+  latestRelease,
+  getEntry('home', 'home'),
+  getEntry('privacy', 'privacy'),
+  getCollection('launchTips'),
+  getEntry('shortcuts', 'shortcuts'),
+]);
+if (home === undefined) throw new Error('[docs] No "home" entry in src/content/home/home.yaml, which holds the install and download copy.');
+
+const branch = findBranch(docs.tree, guideGroup(entry.id));
+if (branch === undefined) throw new Error(`[docs] ${file} is in no docsIndex group (spec 0009, AC-12).`);
+const { group } = branch;
+const guide = toGuide(entry);
+const { page, search } = docs.index;
+const { title, description, appVersion, updated, os, requirements, screenshotAlt } = entry.data;
+
+// The body, split at its marker lines (AC-7, AC-12).
+const rules = markerRulesFor(entry.id, entry.data.screenshot);
+const body = splitGuide(entry.rendered?.html ?? '', rules.allowed, rules.required);
+if (!body.ok) throw new Error(`[docs] ${file} ${body.error} (spec 0009, AC-12).`);
+const blocks = new Set(body.value.flatMap((part) => (part.kind === 'block' ? [part.name] : [])));
+
+// Each block's source, checked only when the guide places that block.
+const tip: LaunchTip | undefined = (() => {
+  if (!blocks.has('launch-tip') || os === undefined) return undefined;
+  const found = tipEntries.find((candidate) => candidate.id === os);
+  if (found === undefined) throw new Error(`[docs] ${file} places {launch-tip}, but launch-tips.yaml has no "${os}" entry (spec 0009, AC-7).`);
+  return { title: found.data.title, steps: found.data.steps, command: found.data.command };
+})();
+if (blocks.has('data-files') && privacy === undefined) {
+  throw new Error(`[docs] ${file} places {data-files}, but there is no "privacy" entry in src/content/privacy/privacy.md (spec 0009, AC-9).`);
+}
+if (blocks.has('shortcuts') && shortcuts === undefined) {
+  throw new Error(`[docs] ${file} places {shortcuts}, but src/content/docs-data/shortcuts.yaml has no "shortcuts" entry (spec 0009, AC-9).`);
+}
+
+// On this page, from the rendered h2 headings, left out under two (AC-6).
+const headings = (entry.rendered?.metadata?.headings ?? []) as readonly { depth: number; slug: string; text: string }[];
+const sections = headings.filter((heading) => heading.depth === 2).map((heading) => ({ anchor: heading.slug, label: heading.text }));
+const indexItems = sections.length >= 2 ? sections : [];
+
+const path = guideHref(entry.id);
+const site = siteOrigin(Astro.site);
+const jsonLd = [
+  techArticleLd({ site, path, title, description, updated }),
+  breadcrumbLd(site, [
+    { name: page.docsCrumb, path: docsHref },
+    { name: group.label, path: groupHref(group.key) },
+    { name: guide.sidebarLabel, path },
+  ]),
+];
+const data = toDownloadData(release);
+---
+
+<DocsLayout
+  title={`${title} · ${SITE_NAME}`}
+  description={description}
+  jsonLd={jsonLd}
+  tree={docs.tree}
+  currentId={entry.id}
+  copy={{ page, search }}
+>
+  <article class="flex min-w-0 flex-col gap-8" data-pagefind-body>
+    <SectionIndexed label={page.onThisPage} items={indexItems} from="xl">
+      {/* The header is the lead, so the On this page column starts level with the breadcrumb. */}
+      <header slot="lead" class="mb-2 flex flex-col gap-4 xl:mb-0">
+        <Breadcrumb crumbs={docsCrumbs(page.docsCrumb, group, guide)} class="mb-2" />
+        <h1 class="text-h1" data-pagefind-meta="title">{title}</h1>
+        <GuideStamp appVersion={appVersion} updated={updated} copy={page} />
+      </header>
+
+      <div class="docs-body">
+        {
+          body.value.map((part) =>
+            part.kind === 'html' ? (
+              <div class="docs-prose" set:html={part.html} />
+            ) : part.name === 'downloads' && os !== undefined ? (
+              <DownloadsBlock os={os} data={data} copy={home.data.download} />
+            ) : part.name === 'install-command' && os !== undefined ? (
+              <InstallBlock os={os} copy={home.data.install} />
+            ) : part.name === 'launch-tip' && tip !== undefined ? (
+              <LaunchTipBlock tip={tip} />
+            ) : part.name === 'requirements' && requirements !== undefined && os !== undefined ? (
+              <RequirementsBlock rows={requirements} system={osName(os)} />
+            ) : part.name === 'screenshot' && screenshotAlt !== undefined ? (
+              <ScreenshotBlock id={entry.id} alt={screenshotAlt} />
+            ) : part.name === 'data-files' && privacy !== undefined ? (
+              <DataFilesBlock files={privacy.data.files} />
+            ) : part.name === 'shortcuts' && shortcuts !== undefined ? (
+              <ShortcutsBlock rows={shortcuts.data.rows} canChange={page.canChange} />
+            ) : null,
+          )
+        }
+      </div>
+    </SectionIndexed>
+  </article>
+
+  <PrevNext neighbors={neighbors(docs.tree, entry.id)} copy={page} />
+</DocsLayout>
