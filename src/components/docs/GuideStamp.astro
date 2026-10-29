@@ -1,0 +1,18 @@
+---
+import { formatReleaseDate } from '../../lib/home/format';
+
+// The line under a guide's h1 (spec 0009, AC-6, AC-10): the app version every
+// fact was checked against, and when the guide's meaning last changed.
+interface Props {
+  appVersion: string;
+  updated: Date;
+  copy: { readonly checkedAgainst: string; readonly updated: string };
+}
+
+const { appVersion, updated, copy } = Astro.props;
+const iso = updated.toISOString();
+---
+
+<p class="text-caption text-fg-muted" data-pagefind-ignore>
+  {`${copy.checkedAgainst} ${appVersion} · ${copy.updated} `}<time datetime={iso.slice(0, 10)}>{formatReleaseDate(iso)}</time>
+</p>

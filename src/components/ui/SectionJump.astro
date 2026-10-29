@@ -15,7 +15,7 @@ interface Props {
 const { label, items, class: className } = Astro.props;
 ---
 
-<details class:list={['section-jump group rounded-field border border-line bg-surface', className]}>
+<details class:list={['section-jump group rounded-field border border-line bg-surface', className]} data-pagefind-ignore>
   <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-field px-4 text-[0.875rem] font-medium">
     {label}
     <ChevronDown class="size-4 shrink-0 text-fg-muted transition-transform duration-(--dur-fast) group-open:rotate-180" aria-hidden="true" />
